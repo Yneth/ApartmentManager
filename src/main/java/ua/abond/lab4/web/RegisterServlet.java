@@ -4,6 +4,7 @@ import ua.abond.lab4.dao.jdbc.JdbcAuthorityDAO;
 import ua.abond.lab4.dao.jdbc.JdbcUserDAO;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.impl.ServiceException;
 import ua.abond.lab4.service.impl.UserServiceImpl;
 import ua.abond.lab4.util.DataSourceProvider;
 
@@ -12,23 +13,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.Optional;
 
-@WebServlet(urlPatterns = "/login")
-public class LoginServlet extends HttpServlet {
-//    private final UserService userService;
-//
-//    public LoginServlet(UserService userService) {
-//        this.userService = userService;
-//    }
+@WebServlet(urlPatterns = "/register")
+public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+        req.getRequestDispatcher("register.jsp").forward(req, resp);
     }
 
     @Override
@@ -36,27 +30,28 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         // TODO remove this code from here
         DataSource ds = DataSourceProvider.getInstance().getDataSource();
-        UserService userService =
+        UserService service =
                 new UserServiceImpl(new JdbcUserDAO(ds), new JdbcAuthorityDAO(ds));
 
+        // TODO add validation and object parsing
         String login = req.getParameter("login");
         String password = req.getParameter("password");
+        String firstName = req.getParameter("firstName");
+        String lastName = req.getParameter("lastName");
 
-        Optional<User> user = userService.findByName(login);
-        boolean rightCredentials = user.
-                map(User::getPassword).
-                map(pwd -> pwd.equals(password)).
-                orElse(false);
+        User user = new User();
+        user.setLogin(login);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
 
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            session.invalidate();
+        try {
+            service.register(user);
+        } catch (ServiceException e) {
+            // TODO add logging
+            e.printStackTrace();
         }
-        if (rightCredentials) {
-            session = req.getSession();
-            session.setAttribute("user", user.get());
-            session.setAttribute("authorities", user.get().getAuthority().getName());
-        }
+
         resp.sendRedirect("/");
     }
 }

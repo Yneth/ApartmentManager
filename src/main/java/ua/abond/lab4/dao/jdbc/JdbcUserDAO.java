@@ -39,7 +39,10 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     @Override
     public Optional<User> getById(Long id) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.querySingle("SELECT id, first_name, last_name, login, password FROM users WHERE id = ?",
+        return jdbc.querySingle("SELECT u.id, u.first_name, u.last_name, u.login, u.password, u.authority_id, a.name " +
+                        "FROM users u " +
+                        "INNER JOIN authorities a ON a.id = authority_id " +
+                        "WHERE id = ?;",
                 ps -> ps.setLong(1, id),
                 new UserMapper()
         );
@@ -48,7 +51,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     @Override
     public void update(User entity) {
         Jdbc jdbc = new Jdbc(dataSource);
-        jdbc.execute("UPDATE users SET first_name = ?, last_name = ?, password = ? WHERE id = ?",
+        jdbc.execute("UPDATE users SET first_name = ?, last_name = ?, password = ? WHERE id = ?;",
                 ps -> {
                     ps.setString(1, entity.getFirstName());
                     ps.setString(2, entity.getLastName());
@@ -61,16 +64,19 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     @Override
     public void deleteById(Long id) {
         Jdbc jdbc = new Jdbc(dataSource);
-        jdbc.execute("DELETE FROM users WHERE id = ?",
+        jdbc.execute("DELETE FROM users WHERE id = ?;",
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
-    public Optional<User> getByName(String name) {
+    public Optional<User> getByLogin(String login) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.querySingle("SELECT id, first_name, last_name, login, password FROM users WHERE id = ?",
-                ps -> ps.setString(1, name),
+        return jdbc.querySingle("SELECT u.id, u.first_name, u.last_name, u.login, u.password, u.authority_id, a.name " +
+                        "FROM users u " +
+                        "INNER JOIN authorities a ON a.id = authority_id " +
+                        "WHERE login = ?;",
+                ps -> ps.setString(1, login),
                 new UserMapper()
         );
     }

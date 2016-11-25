@@ -25,7 +25,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO AUTHORITY (id, name) VALUES (DEFAULT, ?);",
+                    "INSERT INTO authorities (id, name) VALUES (DEFAULT, ?);",
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, entity.getName());
@@ -37,7 +37,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public Optional<Authority> getById(Long id) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.querySingle("SELECT id, name FROM Authority WHERE id = ?",
+        return jdbc.querySingle("SELECT id, name FROM authorities WHERE id = ?",
                 ps -> ps.setLong(1, id),
                 new AuthorityMapper()
         );
@@ -46,7 +46,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public void update(Authority entity) {
         Jdbc jdbc = new Jdbc(dataSource);
-        jdbc.execute("UPDATE Authority SET name = ? WHERE id = ?",
+        jdbc.execute("UPDATE authorities SET name = ? WHERE id = ?",
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -57,7 +57,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public void deleteById(Long id) {
         Jdbc jdbc = new Jdbc(dataSource);
-        jdbc.execute("DELETE FROM Authority WHERE id = ?",
+        jdbc.execute("DELETE FROM authorities WHERE id = ?",
                 ps -> ps.setLong(1, id)
         );
     }
@@ -65,7 +65,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public Optional<Authority> getByName(String name) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.querySingle("SELECT id, name FROM Authority WHERE name = ?",
+        return jdbc.querySingle("SELECT id, name FROM authorities WHERE name = ?",
                 ps -> ps.setString(1, name),
                 new AuthorityMapper()
         );
