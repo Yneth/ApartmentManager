@@ -2,7 +2,7 @@ package ua.abond.lab4.domain;
 
 public class User extends Entity<Long> {
     private String firstName;
-    private String secondName;
+    private String lastName;
 
     private String login;
     private String password;
@@ -10,7 +10,10 @@ public class User extends Entity<Long> {
     private Authority authority;
 
     public User() {
+    }
 
+    public User(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -21,12 +24,12 @@ public class User extends Entity<Long> {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLogin() {

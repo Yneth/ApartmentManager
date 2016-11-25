@@ -8,6 +8,14 @@ public class ApartmentType extends Entity<Long> {
     public ApartmentType() {
     }
 
+    public ApartmentType(Long id, String name) {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(name);
+
+        this.id = id;
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
