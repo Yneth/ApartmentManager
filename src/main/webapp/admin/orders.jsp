@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
 <t:admin-page>
     <c:if test="${not empty orders}">
         <div class="container">
@@ -19,10 +20,10 @@
                         <tbody>
                         <c:forEach items="${orders}" var="order">
                             <tr>
-                                <td>order.id</td>
-                                <td>order.roomCount</td>
-                                <td>order.apartmentType.name</td>
-                                <td><a class="btn btn-primary" href="/admin/order">View</a></td>
+                                <td>${order.id}</td>
+                                <td>${order.roomCount}</td>
+                                <td>${order.apartmentType.name}</td>
+                                <td><a class="btn btn-primary" href="/admin/order/${order.id}">View</a></td>
                             </tr>
                         </c:forEach>
                         </tbody>

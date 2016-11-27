@@ -1,16 +1,16 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: anton
-  Date: 2016-11-25
-  Time: 3:47 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Title</title>
-</head>
-<body>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-</body>
-</html>
+
+<t:user-page>
+    <div class="container">
+        <div class="jumbotron">
+            <t:order-partial order="${order}"/>
+            <form class="form-group" action="/users/orders/delete" method="post">
+                <input type="hidden" name="id" value="${order.id}"/>
+                <input class="form-control btn btn-danger" type="submit" value="Delete"/>
+            </form>
+        </div>
+    </div>
+</t:user-page>
