@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+    <apartment_types id="0" name="business"/>
+    <apartment_types id="1" name="vip"/>
+    <apartments id="0" room_count="4" apartment_type_id="0"/>
+    <apartments id="1" room_count="2" apartment_type_id="1"/>
+
+    <authorities id="0" name="ADMIN"/>
+    <authorities id="1" name="USER"/>
+    <users id="0" login="admin" password="admin" authority_id="0"/>
+    <users id="1" second_name="Taras" last_name="Bulba" login="Taras" password="Bulba" authority_id="1"/>
+
+    <orders id="0" user_id="0" room_count="2" apartment_type_id="0" duration="12"/>
+    <orders id="1" user_id="1" room_count="4" apartment_type_id="1" duration="12"/>
+</dataset>

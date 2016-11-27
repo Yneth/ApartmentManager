@@ -20,13 +20,12 @@ public class Authority extends Entity<Long> {
         if (!(o instanceof Authority))
             return false;
         Authority that = (Authority) o;
-        return Objects.equals(getId(), that.getId())
-                || Objects.equals(getName(), that.getName());
+        return Objects.equals(getName(), that.getName());
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName());
+        return Objects.hash(getName());
     }
 }

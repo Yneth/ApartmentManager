@@ -1,6 +1,6 @@
 package ua.abond.lab4.util.jdbc;
 
-import ua.abond.lab4.domain.Entity;
+import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,15 +58,15 @@ public class Jdbc {
         }
     }
 
-    public <T extends Entity<? extends Number>> List<T> query(String sql,
-                                                              PreparedStatementSetter pss,
-                                                              RowMapper<T> rsm)
+    public <T> List<T> query(String sql,
+                             PreparedStatementSetter pss,
+                             RowMapper<T> rsm)
             throws DataAccessException {
         Objects.requireNonNull(sql, "Sql should not be null");
 
         List<T> result = null;
         Connection conn = ConnectionUtils.getConnection(dataSource);
-        try (PreparedStatement ps = conn.prepareStatement(sql)){
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             pss.set(ps);
 
             List<T> values = new ArrayList<>();
@@ -78,16 +78,15 @@ public class Jdbc {
         } catch (SQLException e) {
             ConnectionUtils.rollback(conn);
             throw new DataAccessException("", e);
-        }
-        finally {
+        } finally {
             ConnectionUtils.closeConnection(conn);
         }
         return result;
     }
 
-    public <T extends Entity<? extends Number>> Optional<T> querySingle(String sql,
-                                                                        PreparedStatementSetter pss,
-                                                                        RowMapper<T> rsm)
+    public <T> Optional<T> querySingle(String sql,
+                                       PreparedStatementSetter pss,
+                                       RowMapper<T> rsm)
             throws DataAccessException {
         List<T> query = query(sql, pss, rsm);
         return query.stream().findFirst();

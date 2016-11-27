@@ -33,4 +33,18 @@ public class Apartment extends Entity<Long> {
     public void setType(ApartmentType type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Apartment)) return false;
+        Apartment apartment = (Apartment) o;
+        return getRoomCount() == apartment.getRoomCount() &&
+                Objects.equals(getType(), apartment.getType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRoomCount(), getType());
+    }
 }

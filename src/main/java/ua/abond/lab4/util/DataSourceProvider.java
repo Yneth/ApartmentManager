@@ -14,7 +14,7 @@ public class DataSourceProvider {
 
     private DataSource createDataSource() {
         PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        dataSource.setDatabaseName("apartments-test");
+        dataSource.setDatabaseName("apartments");
         dataSource.setUser("postgres");
         dataSource.setPassword("123");
         return dataSource;

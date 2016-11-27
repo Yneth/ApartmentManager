@@ -1,5 +1,7 @@
 package ua.abond.lab4.dao.jdbc;
 
+import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.util.jdbc.Jdbc;
@@ -12,9 +14,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+@Component
 public class JdbcAuthorityDAO extends JdbcDAO<Authority>
         implements AuthorityDAO {
 
+    @Inject
     public JdbcAuthorityDAO(DataSource dataSource) {
         super(dataSource);
     }

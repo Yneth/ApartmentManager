@@ -1,5 +1,7 @@
 package ua.abond.lab4.domain;
 
+import java.util.Objects;
+
 public class User extends Entity<Long> {
     private String firstName;
     private String lastName;
@@ -54,5 +56,19 @@ public class User extends Entity<Long> {
 
     public void setAuthority(Authority authority) {
         this.authority = authority;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getLogin(), user.getLogin()) &&
+                Objects.equals(getAuthority(), user.getAuthority());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLogin(), getAuthority());
     }
 }

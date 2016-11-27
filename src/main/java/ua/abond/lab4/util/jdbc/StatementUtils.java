@@ -6,7 +6,6 @@ import java.sql.Statement;
 public final class StatementUtils {
 
     private StatementUtils() {
-
     }
 
     public static void releaseStatement(Statement statement)

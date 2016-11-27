@@ -1,13 +1,11 @@
 package ua.abond.lab4.domain;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Order extends Entity<Long> {
     private User user;
     private Apartment lookup;
-    private Duration duration;
+    private int duration;
 
     public Order() {
     }
@@ -28,18 +26,35 @@ public class Order extends Entity<Long> {
         this.lookup = lookup;
     }
 
-    public Duration getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Order))
+            return false;
+        Order order = (Order) o;
+        return Objects.equals(getUser(), order.getUser()) &&
+                Objects.equals(getLookup(), order.getLookup()) &&
+                Objects.equals(getDuration(), order.getDuration());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUser(), getLookup(), getDuration());
+    }
+
     public static class Builder {
+        private int duration;
         private User user;
         private Apartment lookup;
-        private Duration duration;
 
         public Builder createUserFromId(Long id) {
             Objects.requireNonNull(id);
@@ -53,18 +68,17 @@ public class Order extends Entity<Long> {
             return this;
         }
 
-        public Builder setDurationInMinutes(long amount) {
+        public Builder setDurationInMinutes(int amount) {
             if (amount <= 0) {
                 throw new IllegalArgumentException();
             }
-            this.duration = Duration.of(amount, ChronoUnit.MINUTES);
+            this.duration = amount;
             return this;
         }
 
         public Order build() {
             Objects.requireNonNull(user);
             Objects.requireNonNull(lookup);
-            Objects.requireNonNull(duration);
 
             Order order = new Order();
             order.setUser(user);

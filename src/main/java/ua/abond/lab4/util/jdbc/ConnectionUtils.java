@@ -1,6 +1,7 @@
 package ua.abond.lab4.util.jdbc;
 
 import org.apache.log4j.Logger;
+import ua.abond.lab4.util.jdbc.exception.CannotGetConnectionException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

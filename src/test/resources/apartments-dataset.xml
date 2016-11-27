@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <apartment_types id="0" name="business"/>
+    <apartment_types id="1" name="vip"/>
+    <apartments id="0" room_count="4" apartment_type_id="0"/>
+    <apartments id="1" room_count="2" apartment_type_id="1"/>
+</dataset>

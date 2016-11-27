@@ -1,5 +1,7 @@
 package ua.abond.lab4.dao.jdbc;
 
+import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
@@ -16,8 +18,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
+    @Inject
     public JdbcOrderDAO(DataSource dataSource) {
         super(dataSource);
     }
@@ -34,7 +38,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
             ps.setLong(3, entity.getLookup().getType().getId());
-            ps.setInt(4, (int) entity.getDuration().toDays());
+            ps.setInt(4, entity.getDuration());
             return ps;
         }, holder);
         entity.setId(holder.getKey().longValue());
@@ -43,10 +47,10 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     @Override
     public Optional<Order> getById(Long id) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.querySingle("SELECT id, user_id, room_count, apartment_type_id, at.name duration " +
-                        "FROM orders " +
-                        "INNER JOIN APARTMENT_TYPE at ON at.id = apartment_type_id " +
-                        "WHERE id = ?;",
+        return jdbc.querySingle("SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
+                        "FROM orders o " +
+                        "INNER JOIN apartment_types at ON at.id = o.apartment_type_id " +
+                        "WHERE o.id = ?;",
                 ps -> ps.setLong(1, id),
                 new OrderMapper()
         );
@@ -55,7 +59,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     @Override
     public void update(Order entity) {
         Jdbc jdbc = new Jdbc(dataSource);
-        jdbc.execute("UPDATE orders SET user_id = ?, room_count = ?, apartment_type_id = ? WHERE id = ?",
+        jdbc.execute("UPDATE orders SET user_id = ?, room_count = ?, apartment_type_id = ?, duration = ? " +
+                        "WHERE id = ?",
                 ps -> {
                     ps.setLong(1, entity.getUser().getId());
                     ps.setInt(2, entity.getLookup().getRoomCount());
@@ -76,10 +81,10 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     @Override
     public List<Order> getUserOrders(Long userId) {
         Jdbc jdbc = new Jdbc(dataSource);
-        return jdbc.query("SELECT id, user_id, room_count, apartment_type_id, at.name, duration " +
-                        "FROM orders " +
-                        "INNER JOIN apartment_types at ON at.id = apartment_type_id " +
-                        "WHERE user_id = ?",
+        return jdbc.query("SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
+                        "FROM orders o " +
+                        "INNER JOIN apartment_types at ON at.id = o.apartment_type_id " +
+                        "WHERE o.user_id = ?",
                 ps -> ps.setLong(1, userId),
                 new OrderMapper()
         );
@@ -93,7 +98,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
             order.setUser(new User(rs.getLong(2)));
             ApartmentType type = new ApartmentType(rs.getLong(4), rs.getString(5));
             order.setLookup(new Apartment(rs.getInt(3), type));
-            order.setId(rs.getLong(1));
+            order.setDuration(rs.getInt(6));
             return order;
         }
     }

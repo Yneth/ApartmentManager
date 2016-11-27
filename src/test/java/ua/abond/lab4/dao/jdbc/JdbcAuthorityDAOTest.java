@@ -2,33 +2,32 @@ package ua.abond.lab4.dao.jdbc;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
 
+import java.util.Optional;
+
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-public class JdbcAuthorityDAOTest {
+public class JdbcAuthorityDAOTest extends JdbcDAOTest {
     private AuthorityDAO authorityDAO;
+
+    public JdbcAuthorityDAOTest() throws Exception {
+        super("authorities-dataset.xml");
+    }
 
     @Before
     public void setUp() throws Exception {
-        System.out.println("before");
-        PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        dataSource.setDatabaseName("apartments-test");
-        dataSource.setUser("postgres");
-        dataSource.setPassword("123");
-        dataSource.setCurrentSchema("public");
-
+        super.setUp();
         authorityDAO = new JdbcAuthorityDAO(dataSource);
     }
 
     @Test
     public void create() throws Exception {
-        System.out.println("in");
         Authority authority = new Authority();
-        authority.setName("USER");
+        authority.setName("TEST");
         authorityDAO.create(authority);
 
         assertNotNull(authority.getId());
@@ -36,21 +35,29 @@ public class JdbcAuthorityDAOTest {
 
     @Test
     public void getById() throws Exception {
-        System.out.println("in");
-        Authority authority = new Authority();
-        authority.setName("USER");
-        authorityDAO.create(authority);
-
-        assertEquals(authority, authorityDAO.getById(authority.getId()).get());
+        Optional<Authority> byId = authorityDAO.getById(1L);
+        assertNotEquals(Optional.empty(), byId);
+        assertEquals("USER", byId.get().getName());
     }
 
     @Test
     public void update() throws Exception {
+        Authority authority = authorityDAO.getById(0L).get();
+        authority.setName("Test1");
+        authorityDAO.update(authority);
 
+        assertEquals(authority, authorityDAO.getById(0L).get());
     }
 
     @Test
     public void deleteById() throws Exception {
-//        authorityDAO.deleteById();
+        Authority authority = new Authority();
+        authority.setName("TEST");
+        authorityDAO.create(authority);
+
+        authorityDAO.deleteById(authority.getId());
+
+        Optional<Authority> byId = authorityDAO.getById(authority.getId());
+        assertEquals(Optional.empty(), byId);
     }
 }
