@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ViewAvailableApartments extends HttpServlet {
+public class ViewApartments extends HttpServlet {
     private final ApartmentService apartmentService;
 
-    public ViewAvailableApartments(ApartmentService apartmentService) {
+    public ViewApartments(ApartmentService apartmentService) {
         this.apartmentService = apartmentService;
     }
 
