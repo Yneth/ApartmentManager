@@ -4,7 +4,7 @@ import ua.abond.lab4.dao.jdbc.JdbcAuthorityDAO;
 import ua.abond.lab4.dao.jdbc.JdbcUserDAO;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.service.impl.ServiceException;
+import ua.abond.lab4.service.ServiceException;
 import ua.abond.lab4.service.impl.UserServiceImpl;
 import ua.abond.lab4.util.DataSourceProvider;
 

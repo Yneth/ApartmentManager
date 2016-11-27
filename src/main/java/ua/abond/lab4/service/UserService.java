@@ -1,7 +1,6 @@
 package ua.abond.lab4.service;
 
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.impl.ServiceException;
 
 import java.util.Optional;
 

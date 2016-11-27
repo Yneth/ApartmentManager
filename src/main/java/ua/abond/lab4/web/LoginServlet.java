@@ -1,5 +1,6 @@
 package ua.abond.lab4.web;
 
+import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.jdbc.JdbcAuthorityDAO;
 import ua.abond.lab4.dao.jdbc.JdbcUserDAO;
 import ua.abond.lab4.domain.User;
@@ -19,11 +20,8 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
-//    private final UserService userService;
-//
-//    public LoginServlet(UserService userService) {
-//        this.userService = userService;
-//    }
+    @Inject
+    private UserService userService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

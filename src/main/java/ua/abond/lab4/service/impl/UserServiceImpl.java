@@ -3,6 +3,7 @@ package ua.abond.lab4.service.impl;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.service.ServiceException;
 import ua.abond.lab4.service.UserService;
 
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
                     userDAO.create(user);
                     return user;
                 }).
-                orElseThrow(() -> new ServiceException("Failed to create USER authority."));
+                orElseThrow(() -> new ServiceException("Failed to get USER authority."));
     }
 
     @Override
