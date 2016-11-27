@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<t:site-page>
-    <c:if test="${not empty orders && not empty sessionScope.user && sessionScope.user.authority.name == 'ADMIN' }">
+<t:admin-page>
+    <c:if test="${not empty orders}">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 center">
@@ -31,4 +31,4 @@
             </div>
         </div>
     </c:if>
-</t:site-page>
+</t:admin-page>
