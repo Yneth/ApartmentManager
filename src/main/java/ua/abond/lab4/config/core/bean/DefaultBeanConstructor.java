@@ -1,7 +1,7 @@
 package ua.abond.lab4.config.core.bean;
 
-import ua.abond.lab4.config.core.ApplicationContext;
 import ua.abond.lab4.config.core.BeanConstructor;
+import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.exception.BeanInstantiationException;
 
 import java.util.Arrays;
@@ -9,13 +9,13 @@ import java.util.Arrays;
 public class DefaultBeanConstructor implements BeanConstructor {
 
     @Override
-    public boolean canCreate(ApplicationContext context, String bean, BeanDefinition beanDefinition) {
+    public boolean canCreate(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
         return !beanDefinition.isAbstract()
                 && hasNoDefaultConstructor(beanDefinition.getType());
     }
 
     @Override
-    public Object create(ApplicationContext context, String bean, BeanDefinition beanDefinition) {
+    public Object create(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
         if (beanDefinition.isAbstract()) {
             throw new BeanInstantiationException("Declared bean \"" + bean + "\" of type " + beanDefinition.getType() +
                     " is abstract so it cannot be created.");
