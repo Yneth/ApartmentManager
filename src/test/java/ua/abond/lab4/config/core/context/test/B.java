@@ -1,4 +1,4 @@
-package ua.abond.lab4.config.core.context;
+package ua.abond.lab4.config.core.context.test;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
