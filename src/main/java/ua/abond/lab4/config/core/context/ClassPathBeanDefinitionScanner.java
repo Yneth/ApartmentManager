@@ -1,7 +1,8 @@
-package ua.abond.lab4.config.core.bean;
+package ua.abond.lab4.config.core.context;
 
 import ua.abond.lab4.config.core.BeanDefinitionRegistry;
 import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.config.core.bean.BeanDefinition;
 import ua.abond.lab4.util.reflection.ReflectionUtil;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class ClassPathBeanDefinitionScanner {
                     filter(c -> predicates.stream().
                             allMatch(p -> p.test(c))
                     ).
+                    map(BeanDefinition::new).
                     forEach(registry::register);
         }
     }

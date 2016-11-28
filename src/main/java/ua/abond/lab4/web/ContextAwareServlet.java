@@ -1,6 +1,7 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.ApplicationContext;
+import ua.abond.lab4.config.core.BeanFactory;
+import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.config.core.exception.ApplicationContextException;
 
 import javax.servlet.ServletException;
@@ -9,40 +10,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ContextAwareServlet extends HttpServlet {
+public abstract class ContextAwareServlet extends HttpServlet {
+    private static final String CONTEXT_CONFIG_LOCATION_ATTRIBUTE_NAME = "contextConfigLocation";
+
     private Class<?> contextClass;
     private String contextConfigLocation;
 
-    private ApplicationContext context;
-
-//    private MappingTranslatorResolver mappingTranslatorResolver;
-//    private MappingResolver mappingResolver;
-//    private ViewResolver viewResolver;
+    private BeanFactory beanFactory;
 
     public ContextAwareServlet() {
     }
 
     @Override
     public void init() throws ServletException {
-        if (context == null) {
-
+        if (beanFactory == null) {
+//            beanFactory = createContext();
+            beanFactory = new AnnotationBeanFactory(getContextConfigLocation());
         }
     }
 
-    private ApplicationContext createContext() {
+    private BeanFactory createContext() {
         Class<?> contextClass = getContextClass();
-        if (!ApplicationContext.class.isAssignableFrom(contextClass)) {
+        if (!BeanFactory.class.isAssignableFrom(contextClass)) {
             throw new ApplicationContextException();
         }
-        ApplicationContext ac = (ApplicationContext) instantiate(contextClass);
-//        ac.setConfigLocation(contextConfigLocation);
+        BeanFactory ac = (BeanFactory) instantiate(contextClass);
 
         prepare(ac);
 
         return ac;
     }
 
-    private void prepare(ApplicationContext ac) {
+    private void prepare(BeanFactory ac) {
         ac.prepare();
     }
 
@@ -50,41 +49,37 @@ public class ContextAwareServlet extends HttpServlet {
         try {
             return type.newInstance();
         } catch (InstantiationException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        processRequest(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        processRequest(req, resp);
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        processRequest(req, resp);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+        processRequest(req, resp);
     }
 
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doDispatch(req, resp);
     }
 
-    private void doDispatch(HttpServletRequest req, HttpServletResponse resp) {
-
-    }
+    protected abstract void doDispatch(HttpServletRequest req, HttpServletResponse resp);
 
     public Class<?> getContextClass() {
         return contextClass;
@@ -95,6 +90,10 @@ public class ContextAwareServlet extends HttpServlet {
     }
 
     public String getContextConfigLocation() {
+        if (contextConfigLocation == null) {
+            contextConfigLocation = (String)
+                    getServletContext().getAttribute(CONTEXT_CONFIG_LOCATION_ATTRIBUTE_NAME);
+        }
         return contextConfigLocation;
     }
 

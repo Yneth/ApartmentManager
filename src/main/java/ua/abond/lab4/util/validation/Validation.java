@@ -13,10 +13,13 @@ public final class Validation<T, E> {
     private List<E> exceptions;
 
     public Validation(T value) {
+        Objects.requireNonNull(value);
         this.value = value;
     }
 
     public Validation<T, E> validate(Predicate<T> predicate, E message) {
+        Objects.requireNonNull(predicate);
+        Objects.requireNonNull(message);
         if (!predicate.test(value)) {
             getExceptions().add(message);
         }
@@ -24,6 +27,9 @@ public final class Validation<T, E> {
     }
 
     public <V> Validation<T, E> validate(Function<T, V> f, Predicate<V> predicate, E message) {
+        Objects.requireNonNull(f);
+        Objects.requireNonNull(predicate);
+        Objects.requireNonNull(message);
         return validate(f.andThen(predicate::test)::apply, message);
     }
 
@@ -31,7 +37,7 @@ public final class Validation<T, E> {
         return exceptions == null || exceptions.isEmpty();
     }
 
-    private List<E> getExceptions() {
+    public List<E> getExceptions() {
         if (exceptions == null) {
             exceptions = new ArrayList<>();
         }
