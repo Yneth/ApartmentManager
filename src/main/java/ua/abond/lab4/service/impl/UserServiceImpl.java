@@ -1,18 +1,22 @@
 package ua.abond.lab4.service.impl;
 
+import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.ServiceException;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ServiceException;
 
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
     private final AuthorityDAO authorityDAO;
 
+    @Inject
     public UserServiceImpl(UserDAO userDAO, AuthorityDAO authorityDAO) {
         this.userDAO = userDAO;
         this.authorityDAO = authorityDAO;
