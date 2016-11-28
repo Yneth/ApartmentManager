@@ -3,6 +3,7 @@
 <%@ attribute name="head" fragment="true" %>
 <%@ attribute name="header" fragment="true" %>
 <%@ attribute name="footer" fragment="true" %>
+
 <html>
 <head>
     <jsp:invoke fragment="head"/>
