@@ -1,4 +1,4 @@
-package ua.abond.lab4.service;
+package ua.abond.lab4.service.exception;
 
 public class ServiceException extends Exception {
     public ServiceException() {
