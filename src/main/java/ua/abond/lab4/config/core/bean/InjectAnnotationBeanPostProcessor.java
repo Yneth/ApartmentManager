@@ -1,6 +1,5 @@
 package ua.abond.lab4.config.core.bean;
 
-import ua.abond.lab4.config.core.BeanFactory;
 import ua.abond.lab4.config.core.BeanPostProcessor;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.Ordered;
@@ -20,11 +19,17 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         return bean;
     }
 
-    private void inject(BeanFactory factory, Object bean, Field f) {
+    private void inject(ConfigurableBeanFactory factory, Object bean, Field f) {
         if (!f.isAccessible()) {
             f.setAccessible(true);
         }
-        Object injectable = factory.getBean(f.getType());
+        Object injectable;
+        if (!factory.containsBean(f.getType())) {
+            BeanDefinition bd = factory.getBeanDefinition(f.getType());
+            injectable = factory.createBean(bd.getType().getSimpleName(), bd);
+        } else {
+            injectable = factory.getBean(f.getType());
+        }
         try {
             f.set(bean, injectable);
         } catch (IllegalAccessException e) {
