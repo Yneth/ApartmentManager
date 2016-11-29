@@ -1,6 +1,7 @@
 package ua.abond.lab4.util.jdbc;
 
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
+import ua.abond.lab4.util.jdbc.util.ConnectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -84,6 +85,11 @@ public class Jdbc {
         return result;
     }
 
+    public <T> List<T> query(String sql, RowMapper<T> rsm)
+            throws DataAccessException {
+        return query(sql, new DefaultPreparedStatementSetter(), rsm);
+    }
+
     public <T> Optional<T> querySingle(String sql,
                                        PreparedStatementSetter pss,
                                        RowMapper<T> rsm)
@@ -92,5 +98,11 @@ public class Jdbc {
         return query.stream().findFirst();
     }
 
-//    private static SimpleResultSetExtractor()
+    private static class DefaultPreparedStatementSetter implements PreparedStatementSetter {
+
+        @Override
+        public void set(PreparedStatement ps) throws SQLException {
+
+        }
+    }
 }
