@@ -1,7 +1,5 @@
 package ua.abond.lab4.util.validation;
 
-import ua.abond.lab4.domain.User;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,16 +44,5 @@ public final class Validation<T, E> {
 
     public static <T, E> Reader<T, Validation<T, E>> reader() {
         return new Reader<T, Validation<T, E>>(Validation::new);
-    }
-
-    public static void main(String[] args) {
-        Validation.<User, String>reader().map(
-                v -> v.validate(User::getPassword, Objects::nonNull, "password cannot be null").
-                        validate(User::getLogin, Objects::nonNull, "login cannot be null").
-                        validate(User::getLogin, login -> login.length() > 6 && login.length() < 20, "")
-        ).run(new User());
-        Validation.<User, Exception>reader().map(
-                v -> v.validate(User::getPassword, Objects::nonNull, new IllegalArgumentException("password cannot be null"))
-        ).run(new User());
     }
 }
