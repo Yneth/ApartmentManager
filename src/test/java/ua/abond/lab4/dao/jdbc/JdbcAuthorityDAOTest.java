@@ -41,6 +41,25 @@ public class JdbcAuthorityDAOTest extends JdbcDAOTest {
     }
 
     @Test
+    public void getByName() throws Exception {
+        Optional<Authority> byId = authorityDAO.getByName("USER");
+        assertNotEquals(Optional.empty(), byId);
+        assertEquals("USER", byId.get().getName());
+    }
+
+    @Test
+    public void getByIdNonExisting() throws Exception {
+        Optional<Authority> byId = authorityDAO.getById(100L);
+        assertEquals(Optional.empty(), byId);
+    }
+
+    @Test
+    public void getByNameNonExisting() throws Exception {
+        Optional<Authority> byId = authorityDAO.getByName("da");
+        assertEquals(Optional.empty(), byId);
+    }
+
+    @Test
     public void update() throws Exception {
         Authority authority = authorityDAO.getById(0L).get();
         authority.setName("Test1");

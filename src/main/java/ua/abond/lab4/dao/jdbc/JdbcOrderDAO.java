@@ -2,6 +2,7 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
@@ -75,6 +76,19 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
         Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("DELETE FROM orders WHERE id = ?;",
                 ps -> ps.setLong(1, id)
+        );
+    }
+
+    @Override
+    public List<Order> paginate(Pageable pageable) {
+        Jdbc jdbc = new Jdbc(dataSource);
+        return jdbc.query(
+                "SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
+                        "FROM orders o " +
+                        "INNER JOIN apartment_types at ON at.id = o.apartment_type_id " +
+                        "ORDER BY o.id ASC " +
+                        "FETCH FIRST 10 ROWS ONLY",
+                new OrderMapper()
         );
     }
 

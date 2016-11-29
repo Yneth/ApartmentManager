@@ -6,7 +6,7 @@ import ua.abond.lab4.service.exception.ServiceException;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<User> findByName(String name);
+    Optional<User> findByLogin(String name);
 
     void register(User user) throws ServiceException;
     void updateAccount(User user);

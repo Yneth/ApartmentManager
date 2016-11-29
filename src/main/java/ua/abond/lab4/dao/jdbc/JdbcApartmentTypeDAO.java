@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -62,6 +63,11 @@ public class JdbcApartmentTypeDAO implements ApartmentTypeDAO {
                 ps -> ps.setString(1, name),
                 new ApartmentTypeRowMapper()
         );
+    }
+
+    @Override
+    public List<ApartmentType> list() {
+        return jdbc.query("SELECT id, name FROM apartment_types", new ApartmentTypeRowMapper());
     }
 
     private static class ApartmentTypeRowMapper implements RowMapper<ApartmentType> {

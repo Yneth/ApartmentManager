@@ -35,6 +35,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getUserOrders(Long userId) {
-        return null;
+        return orderDAO.getUserOrders(userId);
     }
 }

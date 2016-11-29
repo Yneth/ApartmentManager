@@ -3,6 +3,9 @@ package ua.abond.lab4.dao.jdbc;
 import org.junit.Test;
 
 public class JdbcUserDAOTest {
+
+
+
     @Test
     public void create() throws Exception {
 
