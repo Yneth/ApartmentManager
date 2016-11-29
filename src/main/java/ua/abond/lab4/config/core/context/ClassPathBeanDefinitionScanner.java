@@ -6,6 +6,7 @@ import ua.abond.lab4.config.core.bean.BeanDefinition;
 import ua.abond.lab4.util.reflection.ReflectionUtil;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +44,11 @@ public class ClassPathBeanDefinitionScanner {
         if (predicates == null) {
             predicates = new ArrayList<>();
         }
-        predicates.add(c -> !c.isAnnotation() && c.isAnnotationPresent(Component.class));
+        predicates.add(c -> !c.isAnnotation() &&
+                c.isAnnotationPresent(Component.class) ||
+                Arrays.stream(c.getAnnotations()).
+                        map(Annotation::annotationType).
+                        anyMatch(at -> at.isAnnotationPresent(Component.class))
+        );
     }
 }
