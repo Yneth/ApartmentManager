@@ -68,14 +68,6 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
         return factory.createBean(bd.getType().getSimpleName(), bd);
     }
 
-    private Object getBean(ConfigurableBeanFactory factory, String beanName) {
-        if (factory.containsBean(beanName)) {
-            return factory.getBean(beanName);
-        }
-        BeanDefinition bd = factory.getBeanDefinition(beanName);
-        return factory.createBean(bd.getType().getSimpleName(), bd);
-    }
-
     private List<Constructor<?>> getInjectableConstructors(BeanDefinition beanDefinition) {
         return getInjectableConstructorsStream(beanDefinition).
                 collect(Collectors.toList());
