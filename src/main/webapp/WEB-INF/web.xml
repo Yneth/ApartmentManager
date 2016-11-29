@@ -3,26 +3,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
 
-    <!--<servlet>-->
-        <!--<servlet-name>FrontController</servlet-name>-->
-        <!--<servlet-class>ua.abond.lab4.web.ContextAwareServlet</servlet-class>-->
-        <!--<init-param>-->
-            <!--<param-name>contextClass</param-name>-->
-            <!--<param-value>ua.abond.lab4.config.core.context.AnnotationApplicationContext</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<param-name>contextConfigLocation</param-name>-->
-            <!--<param-value>classpath:ua/abond/lab4/config</param-value>-->
-        <!--</init-param>-->
-        <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
+    <servlet>
+        <servlet-name>FrontController</servlet-name>
+        <servlet-class>ua.abond.lab4.config.core.web.servlet.FrontControllerServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>ua.abond.lab4.config.core.context.AnnotationBeanFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>ua.abond.lab4.config</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>FrontController</servlet-name>-->
-        <!--<url-pattern>/*</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Default</servlet-name>
+        <servlet-class>ua.abond.lab4.config.core.web.servlet.DefaultServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Default</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
 </web-app>
