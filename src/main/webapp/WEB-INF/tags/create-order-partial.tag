@@ -3,11 +3,17 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <div class="container row">
-    <form class="form-group col-sm-5 center" method="post" action="/users/orders/new">
+    <form class="form-group col-sm-5 center" method="post" action="/user/order/new">
+        <label for="duration-input">Duration:</label>
+        <input class="form-control" id="duration-input" type="text" name="duration"/>
         <label for="room-count-input">Room count:</label>
         <input class="form-control" id="room-count-input" type="text" name="roomCount"/>
-        <label for="apartment-type-input">Apartment type:</label>
-        <input class="form-control" id="apartment-type-input" type="text" name="apartmentType"/>
+        <label for="apartment-type-select">Apartment type:</label>
+        <select class="form-control" id="apartment-type-select" name="apartmentTypeId">
+            <c:forEach items="${apartmentTypes}" var="apartmentType">
+                <option value="${apartmentType.id}">${apartmentType.name}</option>
+            </c:forEach>
+        </select>
         <input class="form-control btn btn-primary" type="submit" name="Make order"/>
     </form>
 </div>
