@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 @Component
 @ComponentScan("ua.abond.lab4.dao.jdbc")
 public class DatabaseConfig {
-    private String url = "jdbc:postgresql://localhost:5432/apartments-test";
+    private String url = "jdbc:postgresql://localhost:5432/apartments";
     private String driver = "org.postgresql.Driver";
     private String username = "postgres";
     private String password = "123";
