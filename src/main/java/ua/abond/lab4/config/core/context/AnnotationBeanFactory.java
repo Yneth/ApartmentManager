@@ -190,7 +190,9 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
     @Override
     public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotation) {
-        return null;
+        return beans.entrySet().stream().
+                filter(e -> e.getValue().getClass().isAnnotationPresent(annotation)).
+                collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
     @Override
