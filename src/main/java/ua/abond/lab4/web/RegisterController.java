@@ -7,11 +7,12 @@ import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.web.mapper.UserRequestMapper;
+import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @Controller
@@ -23,31 +24,14 @@ public class RegisterController {
     @RequestMapping
     public void getRegisterPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            User user = (User) session.getAttribute("user");
-            if (user != null) {
-                resp.sendRedirect("/");
-            }
-        }
+        User user = new UserSessionRequestMapper().map(req);
         req.getRequestDispatcher("register.jsp").forward(req, resp);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public void register(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // TODO add validation and object parsing
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
-        String firstName = req.getParameter("firstName");
-        String lastName = req.getParameter("lastName");
-
-        User user = new User();
-        user.setLogin(login);
-        user.setPassword(password);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-
+        User user = new UserRequestMapper().map(req);
         try {
             service.register(user);
         } catch (ServiceException e) {

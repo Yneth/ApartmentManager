@@ -6,6 +6,9 @@ import ua.abond.lab4.config.core.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.web.dto.LoginDTO;
+import ua.abond.lab4.web.mapper.LoginDTORequestMapper;
+import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +22,7 @@ public class LoginController {
     @Inject
     private UserService userService;
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping("/login")
     public void getLoginPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         req.getRequestDispatcher("login.jsp").forward(req, resp);
@@ -27,25 +30,21 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void login(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            User user = (User) session.getAttribute("user");
-            if (user != null) {
-                resp.sendRedirect("/");
-                return;
-            }
+            throws IOException, ServletException {
+        User sessionUser = new UserSessionRequestMapper().map(req);
+        if (sessionUser != null) {
+            resp.sendRedirect("/");
+            return;
         }
+        LoginDTO loginDTO = new LoginDTORequestMapper().map(req);
 
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
-
-        Optional<User> user = userService.findByLogin(login);
+        Optional<User> user = userService.findByLogin(loginDTO.getLogin());
         boolean rightCredentials = user.
                 map(User::getPassword).
-                map(pwd -> pwd.equals(password)).
+                map(pwd -> pwd.equals(loginDTO.getPassword())).
                 orElse(false);
 
+        HttpSession session = req.getSession(false);
         if (session != null) {
             session.invalidate();
         }
@@ -53,7 +52,10 @@ public class LoginController {
             session = req.getSession();
             session.setAttribute("user", user.get());
             session.setAttribute("authorities", user.get().getAuthority().getName());
+            resp.sendRedirect("/");
+        } else {
+            req.setAttribute("errorMessage", "Wrong credentials");
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
         }
-        resp.sendRedirect("/");
     }
 }

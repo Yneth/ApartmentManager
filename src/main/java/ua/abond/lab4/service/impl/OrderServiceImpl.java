@@ -2,6 +2,7 @@ package ua.abond.lab4.service.impl;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
@@ -29,12 +30,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmOrder(Order order) {
+    public void confirmOrder(Long id, int price) {
 
     }
 
     @Override
     public List<Order> getUserOrders(Long userId) {
         return orderDAO.getUserOrders(userId);
+    }
+
+    @Override
+    public void deleteOrder(Long id) {
+        orderDAO.deleteById(id);
+    }
+
+    @Override
+    public List<Order> list(Pageable pageable) {
+        return orderDAO.list(pageable);
     }
 }
