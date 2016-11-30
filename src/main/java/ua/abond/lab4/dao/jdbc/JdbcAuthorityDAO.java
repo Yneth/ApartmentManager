@@ -4,7 +4,6 @@ import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
-import ua.abond.lab4.util.jdbc.Jdbc;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
@@ -25,7 +24,6 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void create(Authority entity) {
-        Jdbc jdbc = new Jdbc(dataSource);
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
@@ -40,7 +38,6 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public Optional<Authority> getById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         return jdbc.querySingle("SELECT id, name FROM authorities WHERE id = ?",
                 ps -> ps.setLong(1, id),
                 new AuthorityMapper()
@@ -49,7 +46,6 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void update(Authority entity) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("UPDATE authorities SET name = ? WHERE id = ?",
                 ps -> {
                     ps.setString(1, entity.getName());
@@ -60,7 +56,6 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void deleteById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("DELETE FROM authorities WHERE id = ?",
                 ps -> ps.setLong(1, id)
         );
@@ -68,7 +63,6 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public Optional<Authority> getByName(String name) {
-        Jdbc jdbc = new Jdbc(dataSource);
         return jdbc.querySingle("SELECT id, name FROM authorities WHERE name = ?",
                 ps -> ps.setString(1, name),
                 new AuthorityMapper()

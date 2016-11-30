@@ -2,10 +2,10 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
-import ua.abond.lab4.util.jdbc.Jdbc;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
@@ -27,7 +27,6 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void create(Apartment entity) {
-        Jdbc jdbc = new Jdbc(dataSource);
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
@@ -43,7 +42,6 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Optional<Apartment> getById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         return jdbc.querySingle("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
                         "FROM apartments a " +
                         "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
@@ -55,7 +53,6 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void update(Apartment entity) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("UPDATE apartments SET room_count = ?, apartment_type_id = ? WHERE id = ?",
                 ps -> {
                     ps.setInt(1, entity.getRoomCount());
@@ -67,22 +64,30 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void deleteById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("DELETE FROM apartments WHERE id = ?",
                 ps -> ps.setLong(1, id)
         );
     }
 
+
     @Override
-    public List<Apartment> filterBy(Apartment apartment) {
-        Jdbc jdbc = new Jdbc(dataSource);
+    public List<Apartment> list(Pageable pageable) {
         return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
                         "FROM apartments a " +
-                        "INNER JOIN apartment_types a ON at.id = a.apartment_type_id " +
+                        "INNER JOIN apartment_types at ON at.id = a.apartment_type_id;",
+                new ApartmentMapper()
+        );
+    }
+
+    @Override
+    public List<Apartment> list(Pageable pageable, Apartment filter) {
+        return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
+                        "FROM apartments a " +
+                        "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
                         "WHERE a.room_count = ? AND at.name = ?;",
                 ps -> {
-                    ps.setInt(1, apartment.getRoomCount());
-                    ps.setString(2, apartment.getType().getName());
+                    ps.setInt(1, filter.getRoomCount());
+                    ps.setString(2, filter.getType().getName());
                 },
                 new ApartmentMapper()
         );

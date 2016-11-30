@@ -8,7 +8,6 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.util.jdbc.Jdbc;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
@@ -31,8 +30,6 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     public void create(Order entity) {
         final String sql = "INSERT INTO orders (id, user_id, room_count, apartment_type_id, duration) " +
                 "VALUES (DEFAULT, ?, ?, ?, ?);";
-
-        Jdbc jdbc = new Jdbc(dataSource);
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -47,7 +44,6 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Optional<Order> getById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         return jdbc.querySingle("SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
                         "FROM orders o " +
                         "INNER JOIN apartment_types at ON at.id = o.apartment_type_id " +
@@ -59,7 +55,6 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void update(Order entity) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("UPDATE orders SET user_id = ?, room_count = ?, apartment_type_id = ?, duration = ? " +
                         "WHERE id = ?",
                 ps -> {
@@ -73,15 +68,13 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void deleteById(Long id) {
-        Jdbc jdbc = new Jdbc(dataSource);
         jdbc.execute("DELETE FROM orders WHERE id = ?;",
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
-    public List<Order> paginate(Pageable pageable) {
-        Jdbc jdbc = new Jdbc(dataSource);
+    public List<Order> list(Pageable pageable) {
         return jdbc.query(
                 "SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
                         "FROM orders o " +
@@ -94,7 +87,6 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public List<Order> getUserOrders(Long userId) {
-        Jdbc jdbc = new Jdbc(dataSource);
         return jdbc.query("SELECT o.id, o.user_id, o.room_count, o.apartment_type_id, at.name, o.duration " +
                         "FROM orders o " +
                         "INNER JOIN apartment_types at ON at.id = o.apartment_type_id " +
@@ -105,6 +97,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     }
 
     private static class OrderMapper implements RowMapper<Order> {
+
         @Override
         public Order mapRow(ResultSet rs) throws SQLException {
             Order order = new Order();

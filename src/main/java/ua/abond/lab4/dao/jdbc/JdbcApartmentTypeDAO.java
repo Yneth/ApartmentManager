@@ -4,7 +4,6 @@ import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
-import ua.abond.lab4.util.jdbc.Jdbc;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
@@ -16,12 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class JdbcApartmentTypeDAO implements ApartmentTypeDAO {
-    private final Jdbc jdbc;
+public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
+        implements ApartmentTypeDAO {
 
     @Inject
     public JdbcApartmentTypeDAO(DataSource dataSource) {
-        this.jdbc = new Jdbc(dataSource);
+        super(dataSource);
     }
 
     @Override
