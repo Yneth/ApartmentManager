@@ -9,7 +9,8 @@
                 <form class="form-group" method="post" action="/admin/order/confirm">
                     <input type="hidden" name="id" value="${order.id}"/>
                     <t:order-partial order="${order}"/>
-                    <input class="form-control" type="text" name="cost"/>
+                    <label for="cost-text">Price</label>
+                    <input class="form-control" id="cost-text" type="text" name="cost"/>
                     <input class="form-control btn btn-success" type="submit" value="Confirm"/>
                 </form>
             </c:if>

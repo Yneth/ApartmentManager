@@ -4,33 +4,31 @@
 
 <t:admin-page>
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 center">
-                <h1>Apartments</h1>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <td>Id</td>
-                        <td>Room count</td>
-                        <td>Apartment type</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:if test="${not empty apartments}">
-                        <c:forEach items="${apartments}" var="apartment">
-                            <tr>
-                                <td>${apartment.id}</td>
-                                <td>${apartment.roomCount}</td>
-                                <td>${apartment.apartmentType.name}</td>
-                            </tr>
-                        </c:forEach>
-                    </c:if>
-                    </tbody>
-                </table>
-                <c:if test="${empty apartments}">
-                    <p>No apartments yet.</p>
+        <div class="jumbotron">
+            <h1>Apartments</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>Room count</td>
+                    <td>Apartment type</td>
+                </tr>
+                </thead>
+                <tbody>
+                <c:if test="${not empty apartments}">
+                    <c:forEach items="${apartments}" var="apartment">
+                        <tr>
+                            <td>${apartment.id}</td>
+                            <td>${apartment.roomCount}</td>
+                            <td>${apartment.apartmentType.name}</td>
+                        </tr>
+                    </c:forEach>
                 </c:if>
-            </div>
+                </tbody>
+            </table>
+            <c:if test="${empty apartments}">
+                <p>No apartments yet.</p>
+            </c:if>
         </div>
     </div>
 </t:admin-page>
