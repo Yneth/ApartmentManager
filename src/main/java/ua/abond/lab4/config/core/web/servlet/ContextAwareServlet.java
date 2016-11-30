@@ -56,7 +56,7 @@ public abstract class ContextAwareServlet extends HttpServlet {
 
     }
 
-    protected abstract void doDispatch(HttpServletRequest req, HttpServletResponse resp);
+    protected abstract void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
     public Class<?> getContextClass() {
         return contextClass;

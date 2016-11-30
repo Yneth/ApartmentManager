@@ -3,7 +3,6 @@ package ua.abond.lab4.config.core.context;
 import org.junit.Before;
 import org.junit.Test;
 import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.context.test.A;
 import ua.abond.lab4.config.core.context.test.B;
 import ua.abond.lab4.config.core.exception.NoSuchBeanException;
@@ -21,6 +20,11 @@ public class AnnotationBeanFactoryTest {
     @Before
     public void setUp() {
         beanFactory = new AnnotationBeanFactory(TEST_PACKAGE);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testConstructorWithNullArg() {
+        new AnnotationBeanFactory(null);
     }
 
     @Test
@@ -99,16 +103,6 @@ public class AnnotationBeanFactoryTest {
     }
 
     @Test
-    public void testConstructor() {
-        BeanFactory ac = new AnnotationBeanFactory("ua.abond.lab4.config");
-
-
-        ConfigurableBeanFactory cbf = (ConfigurableBeanFactory) ac;
-        assertEquals(13, cbf.getBeanDefinitionCount());
-        assertEquals(13, cbf.getBeanDefinitionsOfType(Object.class).size());
-    }
-
-    @Test
     public void testInjectableConstructor() {
         AnnotationBeanFactory ac = new AnnotationBeanFactory(TEST_PACKAGE);
         B bean = ac.getBean(B.class);
@@ -117,20 +111,10 @@ public class AnnotationBeanFactoryTest {
     }
 
     @Test
-    public void testBadPackage() {
-        assertFalse(new AnnotationBeanFactory("..").containsBean("DataBaseConfig"));
-    }
-
-    @Test
     public void testInjectBeanPostProcessor() {
         AnnotationBeanFactory ac = new AnnotationBeanFactory(TEST_PACKAGE);
         B bean = ac.getBean(B.class);
         assertNotNull(bean);
         assertEquals(new A().getA(), bean.getA1().getA());
-    }
-
-    @Test
-    public void testNoArgConstructor() {
-        assertFalse(new AnnotationBeanFactory().containsBean("DatabaseConfig"));
     }
 }

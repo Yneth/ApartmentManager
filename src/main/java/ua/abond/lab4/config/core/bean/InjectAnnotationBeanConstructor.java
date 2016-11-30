@@ -1,5 +1,6 @@
 package ua.abond.lab4.config.core.bean;
 
+import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.BeanConstructor;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.annotation.Inject;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class InjectAnnotationBeanConstructor implements BeanConstructor {
+    private static final Logger logger = Logger.getLogger(InjectAnnotationBeanConstructor.class);
 
     @Override
     public boolean canCreate(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
@@ -32,15 +34,16 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
 
     @Override
     public Object create(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
+        logger.debug("Creating new instance of '" + bean + "'.");
         if (beanDefinition.hasFactoryMethod()) {
             try {
                 Method method = beanDefinition.getFactoryMethod();
                 method.setAccessible(true);
                 return method.invoke(getBean(context, beanDefinition.getDeclaringClass()));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new BeanInstantiationException("Is " + bean + "'s constructor private?", e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                throw new BeanInstantiationException("Constructor threw an exception.", e);
             }
         }
 
@@ -54,7 +57,7 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
         } catch (InstantiationException e) {
             throw new BeanInstantiationException("Is " + bean + " abstract?", e);
         } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException("Are " + bean + "'s constructors private?", e);
+            throw new BeanInstantiationException("Is " + bean + "'s constructor private?", e);
         } catch (InvocationTargetException e) {
             throw new BeanInstantiationException("Constructor threw an exception.", e);
         }

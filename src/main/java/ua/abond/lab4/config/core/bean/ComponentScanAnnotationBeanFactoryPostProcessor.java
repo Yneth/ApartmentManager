@@ -1,5 +1,6 @@
 package ua.abond.lab4.config.core.bean;
 
+import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.BeanFactoryPostProcessor;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.Ordered;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ComponentScanAnnotationBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
+    private static final Logger logger = Logger.getLogger(ComponentScanAnnotationBeanFactoryPostProcessor.class);
 
     @Override
     public void postProcess(ConfigurableBeanFactory context) {
@@ -22,6 +24,7 @@ public class ComponentScanAnnotationBeanFactoryPostProcessor implements BeanFact
                 filter(type -> type.isAnnotationPresent(ComponentScan.class)).
                 map(type -> type.getAnnotation(ComponentScan.class)).
                 map(ComponentScan::value).
+                peek(v -> logger.debug("Scanning '" + v + "' for components.")).
                 flatMap(Arrays::stream).
                 collect(Collectors.toList());
         String[] pathArray = new String[paths.size()];

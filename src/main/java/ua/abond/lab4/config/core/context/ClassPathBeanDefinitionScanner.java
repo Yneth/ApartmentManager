@@ -1,5 +1,6 @@
 package ua.abond.lab4.config.core.context;
 
+import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.BeanDefinitionRegistry;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.bean.BeanDefinition;
@@ -14,6 +15,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ClassPathBeanDefinitionScanner {
+    private static final Logger logger = Logger.getLogger(ClassPathBeanDefinitionScanner.class);
+
     private BeanDefinitionRegistry registry;
     private List<Predicate<Class>> predicates;
 
@@ -31,6 +34,7 @@ public class ClassPathBeanDefinitionScanner {
         Objects.requireNonNull(sourcePackages);
 
         for (String sourcePackage : sourcePackages) {
+            logger.debug("Scanning '" + sourcePackage + "' for components.");
             Arrays.stream(ReflectionUtil.getClasses(sourcePackage)).
                     filter(c -> predicates.stream().
                             allMatch(p -> p.test(c))

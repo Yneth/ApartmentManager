@@ -28,6 +28,17 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     private final Map<String, BeanDefinition> beanDefinitions = new ConcurrentHashMap<>(16);
 
     public AnnotationBeanFactory() {
+        initDefault();
+    }
+
+    public AnnotationBeanFactory(String path) {
+        Objects.requireNonNull(path);
+        initDefault();
+        scan(path);
+        prepare();
+    }
+
+    private void initDefault() {
         this.scanner = new ClassPathBeanDefinitionScanner(this);
         this.beanConstructors.add(new DefaultBeanConstructor());
         this.beanConstructors.add(new InjectAnnotationBeanConstructor());
@@ -36,14 +47,9 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         this.beanFactoryPostProcessors.add(new ComponentScanAnnotationBeanFactoryPostProcessor());
     }
 
-    public AnnotationBeanFactory(String path) {
-        this();
-        scan(path);
-        prepare();
-    }
-
     @Override
     public void register(BeanDefinition beanDefinition) {
+        logger.debug("Registering BeanDefinition of " + beanDefinition.getType() + " type.");
         beanDefinitions.put(beanDefinition.getType().getSimpleName(), beanDefinition);
     }
 
@@ -205,6 +211,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         if (containsBean(simpleName)) {
             return getBean(simpleName);
         }
+        logger.debug("Trying to create new instance of '" + simpleName + "'.");
         return createBean(simpleName, beanDefinition, true);
     }
 
