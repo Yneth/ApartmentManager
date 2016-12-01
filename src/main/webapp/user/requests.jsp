@@ -6,9 +6,9 @@
     <div class="container">
         <div class="jumbotron">
             <div class="row">
-                <t:orders-partial/>
-                <c:if test="${empty orders}">
-                    <p>No orders yet, but you can make one <a href="/user/order/new">here</a>.</p>
+                <t:requests-partial/>
+                <c:if test="${empty requests}">
+                    <p>No requests yet, but you can make one <a href="/user/request/new">here</a>.</p>
                 </c:if>
             </div>
         </div>

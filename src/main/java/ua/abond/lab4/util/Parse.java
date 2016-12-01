@@ -1,5 +1,8 @@
 package ua.abond.lab4.util;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 public final class Parse {
 
     private Parse() {
@@ -19,7 +22,7 @@ public final class Parse {
         return integer(str, null);
     }
 
-    public static Long longInt(String str) {
+    public static Long longValue(String str) {
         Long result;
         try {
             result = Long.parseLong(str);
@@ -37,5 +40,21 @@ public final class Parse {
             result = defaultValue;
         }
         return result;
+    }
+
+    public static Double doubleValue(String price) {
+        Double result;
+        try {
+            result = Double.valueOf(price);
+        } catch (NumberFormatException | NullPointerException e) {
+            result = null;
+        }
+        return result;
+    }
+
+    public static BigDecimal bigDecimal(String price) {
+        return Optional.ofNullable(Parse.doubleValue(price)).
+                map(BigDecimal::new).
+                orElse(null);
     }
 }

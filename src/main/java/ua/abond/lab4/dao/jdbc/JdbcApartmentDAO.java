@@ -6,6 +6,7 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
+import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
@@ -30,11 +31,12 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO apartments (id, room_count, apartment_type_id) VALUES (DEFAULT, ?, ?)",
+                    "INSERT INTO apartments (id, room_count, apartment_type_id, price) VALUES (DEFAULT, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setInt(1, entity.getRoomCount());
             ps.setLong(2, entity.getType().getId());
+            ps.setBigDecimal(3, entity.getPrice());
             return ps;
         }, holder);
         entity.setId(holder.getKey().longValue());
@@ -42,7 +44,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Optional<Apartment> getById(Long id) {
-        return jdbc.querySingle("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
+        return jdbc.querySingle("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
                         "FROM apartments a " +
                         "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
                         "WHERE a.id = ?;",
@@ -53,11 +55,13 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void update(Apartment entity) {
-        jdbc.execute("UPDATE apartments SET room_count = ?, apartment_type_id = ? WHERE id = ?",
+        jdbc.execute("UPDATE apartments SET room_count = ?, apartment_type_id = ?, price = ? WHERE id = ?",
                 ps -> {
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
-                    ps.setLong(3, entity.getId());
+                    ps.setBigDecimal(3, entity.getPrice());
+
+                    ps.setLong(4, entity.getId());
                 }
         );
     }
@@ -72,7 +76,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public List<Apartment> list(Pageable pageable) {
-        return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
+        return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
                         "FROM apartments a " +
                         "INNER JOIN apartment_types at ON at.id = a.apartment_type_id;",
                 new ApartmentMapper()
@@ -80,14 +84,15 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     }
 
     @Override
-    public List<Apartment> list(Pageable pageable, Apartment filter) {
-        return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name " +
+    public List<Apartment> list(Pageable pageable, Request filter) {
+        return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
                         "FROM apartments a " +
                         "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
+                        "INNER JOIN orders " +
                         "WHERE a.room_count = ? AND at.name = ?;",
                 ps -> {
-                    ps.setInt(1, filter.getRoomCount());
-                    ps.setString(2, filter.getType().getName());
+                    ps.setInt(1, filter.getLookup().getRoomCount());
+                    ps.setString(2, filter.getLookup().getType().getName());
                 },
                 new ApartmentMapper()
         );
@@ -104,6 +109,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
             ApartmentType type = new ApartmentType();
             type.setId(rs.getLong(3));
             type.setName(rs.getString(4));
+            apartment.setPrice(rs.getBigDecimal(5));
             apartment.setType(type);
             return apartment;
         }

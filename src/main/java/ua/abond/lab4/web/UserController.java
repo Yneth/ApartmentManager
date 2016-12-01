@@ -6,11 +6,12 @@ import ua.abond.lab4.config.core.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
-import ua.abond.lab4.domain.Order;
+import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.web.mapper.OrderRequestMapper;
+import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.web.mapper.ApartmentRequestRequestMapper;
 import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
 
 import javax.servlet.ServletException;
@@ -25,11 +26,11 @@ public class UserController {
     @Inject
     private UserService userService;
     @Inject
-    private OrderService orderService;
+    private RequestService requestService;
     @Inject
     private ApartmentTypeDAO apartmentTypeDAO;
 
-    @RequestMapping("/orders")
+    @RequestMapping("/requests")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
@@ -38,13 +39,13 @@ public class UserController {
             return;
         }
 
-        List<Order> userOrders = orderService.getUserOrders(user.getId());
-        req.setAttribute("orders", userOrders);
+        List<Request> userRequests = requestService.getUserRequests(user.getId());
+        req.setAttribute("requests", userRequests);
 
-        req.getRequestDispatcher("orders.jsp").forward(req, resp);
+        req.getRequestDispatcher("requests.jsp").forward(req, resp);
     }
 
-    @RequestMapping("/order")
+    @RequestMapping("/request")
     public void viewOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
@@ -54,13 +55,13 @@ public class UserController {
         }
 
         Long id = Long.parseLong(req.getParameter("id"));
-        orderService.getById(id).ifPresent(order -> {
-            req.setAttribute("order", order);
+        requestService.getById(id).ifPresent(order -> {
+            req.setAttribute("request", order);
         });
-        req.getRequestDispatcher("order.jsp").forward(req, resp);
+        req.getRequestDispatcher("request.jsp").forward(req, resp);
     }
 
-    @RequestMapping("/order/new")
+    @RequestMapping("/request/new")
     public void getCreateOrderPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
@@ -71,11 +72,11 @@ public class UserController {
 
         List<ApartmentType> list = apartmentTypeDAO.list();
         req.setAttribute("apartmentTypes", list);
-        req.getRequestDispatcher("create-order.jsp").forward(req, resp);
+        req.getRequestDispatcher("create-request.jsp").forward(req, resp);
     }
 
-    @RequestMapping(value = "/order/new", method = RequestMethod.POST)
-    public void createOrder(HttpServletRequest req, HttpServletResponse resp)
+    @RequestMapping(value = "/request/new", method = RequestMethod.POST)
+    public void createRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
         if (!isAuthorized(user)) {
@@ -83,14 +84,14 @@ public class UserController {
             return;
         }
 
-        Order order = new OrderRequestMapper().map(req);
-        order.setUser(user);
-        orderService.createOrder(order);
-        resp.sendRedirect("/user/orders");
+        Request request = new ApartmentRequestRequestMapper().map(req);
+        request.setUser(user);
+        requestService.createRequest(request);
+        resp.sendRedirect("/user/requests");
     }
 
-    @RequestMapping(value = "/order/delete", method = RequestMethod.POST)
-    public void deleteOrder(HttpServletRequest req, HttpServletResponse resp)
+    @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
+    public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
         if (!isAuthorized(user)) {
@@ -99,14 +100,17 @@ public class UserController {
         }
 
         Long id = Long.parseLong(req.getParameter("id"));
-        orderService.deleteOrder(id);
-        resp.sendRedirect("/user/orders");
+        try {
+            requestService.rejectRequest(id, null);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+        resp.sendRedirect("/user/requests");
     }
 
     private boolean isAuthorized(User user) {
-        return user != null
-                && user.getAuthority() != null
-                && user.getAuthority().getName() != null
-                && user.getAuthority().getName().equalsIgnoreCase("USER");
+        return user != null && user.getAuthority() != null
+                && user.getAuthority().getName() != null &&
+                user.getAuthority().getName().equalsIgnoreCase("USER");
     }
 }

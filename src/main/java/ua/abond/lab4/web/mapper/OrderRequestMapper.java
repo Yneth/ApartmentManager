@@ -10,8 +10,9 @@ public class OrderRequestMapper implements RequestMapper<Order> {
     @Override
     public Order map(HttpServletRequest req) {
         Order order = new Order();
-        order.setDuration(Parse.integer(req.getParameter("duration")));
-        order.setLookup(new ApartmentRequestMapper().map(req));
+        order.setApartment(new ApartmentRequestMapper().map(req));
+        order.setPrice(Parse.bigDecimal(req.getParameter("price")));
+        order.setRequest(new ApartmentRequestRequestMapper().map(req));
         return order;
     }
 }

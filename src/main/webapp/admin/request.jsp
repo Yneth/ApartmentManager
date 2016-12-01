@@ -5,16 +5,16 @@
 <t:admin-page>
     <div class="container">
         <div class="jumbotron">
-            <c:if test="${not empty order}">
-                <form class="form-group" method="post" action="/admin/order/confirm">
-                    <input type="hidden" name="id" value="${order.id}"/>
-                    <t:order-partial order="${order}"/>
+            <c:if test="${not empty request}">
+                <form class="form-group" method="post" action="/admin/request/confirm">
+                    <input type="hidden" name="id" value="${request.id}"/>
+                    <t:request-partial request="${request}"/>
                     <label for="cost-text">Price</label>
                     <input class="form-control" id="cost-text" type="text" name="cost"/>
                     <input class="form-control btn btn-success" type="submit" value="Confirm"/>
                 </form>
             </c:if>
-            <c:if test="${empty order}">
+            <c:if test="${empty request}">
                 <p>No such order.</p>
             </c:if>
         </div>

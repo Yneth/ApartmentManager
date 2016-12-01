@@ -1,90 +1,62 @@
 package ua.abond.lab4.domain;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Order extends Entity<Long> {
-    private User user;
-    private Apartment lookup;
-    private int duration;
+    private Apartment apartment;
+    private Request request;
+    private BigDecimal price;
+    private boolean payed;
 
     public Order() {
     }
 
-    public User getUser() {
-        return user;
+    public Apartment getApartment() {
+        return apartment;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setApartment(Apartment apartment) {
+        this.apartment = apartment;
     }
 
-    public Apartment getLookup() {
-        return lookup;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setLookup(Apartment lookup) {
-        this.lookup = lookup;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
-    public int getDuration() {
-        return duration;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public boolean isPayed() {
+        return payed;
+    }
+
+    public void setPayed(boolean payed) {
+        this.payed = payed;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Order))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
         Order order = (Order) o;
-        return Objects.equals(getUser(), order.getUser()) &&
-                Objects.equals(getLookup(), order.getLookup()) &&
-                Objects.equals(getDuration(), order.getDuration());
+        return isPayed() == order.isPayed() &&
+                Objects.equals(getApartment(), order.getApartment()) &&
+                Objects.equals(getRequest(), order.getRequest()) &&
+                Objects.equals(getPrice(), order.getPrice());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUser(), getLookup(), getDuration());
-    }
-
-    public static class Builder {
-        private int duration;
-        private User user;
-        private Apartment lookup;
-
-        public Builder createUserFromId(Long id) {
-            Objects.requireNonNull(id);
-            this.user = new User();
-            return this;
-        }
-
-        public Builder setApartment(Apartment apartment) {
-            Objects.requireNonNull(apartment);
-            this.lookup = apartment;
-            return this;
-        }
-
-        public Builder setDurationInMinutes(int amount) {
-            if (amount <= 0) {
-                throw new IllegalArgumentException();
-            }
-            this.duration = amount;
-            return this;
-        }
-
-        public Order build() {
-            Objects.requireNonNull(user);
-            Objects.requireNonNull(lookup);
-
-            Order order = new Order();
-            order.setUser(user);
-            order.setLookup(lookup);
-            order.setDuration(duration);
-            return order;
-        }
+        return Objects.hash(getApartment(), getRequest(), getPrice(), isPayed());
     }
 }

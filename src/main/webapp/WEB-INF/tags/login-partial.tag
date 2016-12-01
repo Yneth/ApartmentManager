@@ -14,5 +14,8 @@
                 <a class="btn-right" href="/register">Register</a>
             </form>
         </div>
+        <c:if test="${not empty errorMessage }">
+            <p>${errorMessage}</p>
+        </c:if>
     </div>
 </div>

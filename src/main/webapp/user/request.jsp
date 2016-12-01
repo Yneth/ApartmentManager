@@ -5,14 +5,14 @@
 <t:user-page>
     <div class="container">
         <div class="jumbotron">
-            <c:if test="${not empty order}">
-                <t:order-partial order="${order}"/>
-                <form class="form-group" action="/user/order/delete" method="post">
-                    <input type="hidden" name="id" value="${order.id}"/>
+            <c:if test="${not empty request}">
+                <t:request-partial request="${request}"/>
+                <form class="form-group" action="/user/request/delete" method="post">
+                    <input type="hidden" name="id" value="${request.id}"/>
                     <input class="form-control btn btn-danger" type="submit" value="Delete"/>
                 </form>
             </c:if>
-            <c:if test="${empty order}">
+            <c:if test="${empty request}">
                 <h1>No such order.</h1>
             </c:if>
         </div>

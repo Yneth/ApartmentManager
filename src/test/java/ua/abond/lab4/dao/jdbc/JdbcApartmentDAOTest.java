@@ -6,9 +6,11 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -31,6 +33,8 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     public void create() throws Exception {
         Apartment apartment = new Apartment();
         apartment.setType(apartmentTypeDAO.getByName("vip").get());
+        apartment.setRoomCount(10);
+        apartment.setPrice(new BigDecimal(10));
         apartmentDAO.create(apartment);
 
         assertNotNull(apartment.getId());
@@ -38,6 +42,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         assertNotEquals(Optional.empty(), byId);
         assertEquals(apartment.getId(), byId.get().getId());
         assertEquals(apartment.getRoomCount(), byId.get().getRoomCount());
+        assertTrue(new BigDecimal(10).equals(apartment.getPrice()));
     }
 
     @Test

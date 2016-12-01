@@ -6,6 +6,7 @@ import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
+import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> listMostAppropriate(Pageable pageable, Apartment filter) {
+    public List<Apartment> listMostAppropriate(Pageable pageable, Request filter) {
         return apartmentDAO.list(pageable, filter);
     }
 }

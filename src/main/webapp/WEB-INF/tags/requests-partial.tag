@@ -10,17 +10,23 @@
         <td>Id</td>
         <td>Room count</td>
         <td>Apartment type</td>
+        <td>From date</td>
+        <td>To date</td>
+        <td>Status</td>
         <td>View</td>
     </tr>
     </thead>
     <tbody>
-    <c:forEach items="${orders}" var="order">
+    <c:forEach items="${requests}" var="request">
         <tr>
-            <td>${order.id}</td>
-            <td>${order.lookup.roomCount}</td>
-            <td>${order.lookup.type.name}</td>
+            <td>${request.id}</td>
+            <td>${request.lookup.roomCount}</td>
+            <td>${request.lookup.type.name}</td>
+            <td>${request.from}</td>
+            <td>${request.to}</td>
+            <td>${request.status}</td>
             <td><a class="btn btn-primary"
-                   href="/${fn:toLowerCase(sessionScope.user.authority.name)}/order?id=${order.id}"
+                   href="/${fn:toLowerCase(sessionScope.user.authority.name)}/request?id=${request.id}"
                    role="button">View</a>
             </td>
         </tr>

@@ -3,5 +3,5 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <t:user-page>
-    <t:create-order-partial/>
+    <t:create-request-partial/>
 </t:user-page>

@@ -27,7 +27,8 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO users (id, first_name, last_name, login, password, authority_id) VALUES (DEFAULT, ?, ?, ?, ?, ?);",
+                    "INSERT INTO users (id, first_name, last_name, login, password, authority_id) " +
+                            "VALUES (DEFAULT, ?, ?, ?, ?, ?);",
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, entity.getFirstName());

@@ -28,7 +28,7 @@ public final class Validation<T, E> {
         Objects.requireNonNull(f);
         Objects.requireNonNull(predicate);
         Objects.requireNonNull(message);
-        return validate(f.andThen(predicate::test)::apply, message);
+        return validate(f.andThen(Validation.<V>nonNull().and(predicate)::test)::apply, message);
     }
 
     public boolean isValid() {
@@ -44,5 +44,9 @@ public final class Validation<T, E> {
 
     public static <T, E> Reader<T, Validation<T, E>> reader() {
         return new Reader<T, Validation<T, E>>(Validation::new);
+    }
+
+    public static <T> Predicate<T> nonNull() {
+        return (arg) -> arg != null;
     }
 }

@@ -32,6 +32,8 @@ public class JdbcDAOTest {
         Properties prop = getDatabaseProperties();
         this.tester = getDatabaseTester(prop);
         this.tester.setDataSet(dataSet);
+        this.tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+        this.tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
         this.tester.onSetup();
         this.dataSource = getDataSource(prop);
     }
@@ -48,7 +50,6 @@ public class JdbcDAOTest {
                 prop.getProperty("db.username"),
                 prop.getProperty("db.password")
         );
-        tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
         return tester;
     }
 

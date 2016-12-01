@@ -78,7 +78,7 @@ public class Jdbc {
             result = values;
         } catch (SQLException e) {
             ConnectionUtils.rollback(conn);
-            throw new DataAccessException("", e);
+            throw new DataAccessException("Failed to execute query.", e);
         } finally {
             ConnectionUtils.closeConnection(conn);
         }

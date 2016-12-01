@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface OrderDAO extends DAO<Order> {
     List<Order> list(Pageable pageable);
-    List<Order> getUserOrders(Long id);
 }

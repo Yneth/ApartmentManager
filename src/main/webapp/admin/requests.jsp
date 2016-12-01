@@ -5,8 +5,8 @@
 <t:admin-page>
     <div class="container">
         <div class="jumbotron">
-            <t:orders-partial/>
-            <c:if test="${empty orders}">
+            <t:requests-partial/>
+            <c:if test="${empty requests}">
                 <p>No orders yet.</p>
             </c:if>
         </div>
