@@ -27,7 +27,7 @@ public class BeanAnnotationBeanFactoryPostProcessor implements BeanFactoryPostPr
 
     private BeanDefinition toBeanDefinition(Method method) {
         if (method.getParameterCount() > 0) {
-            throw new BeanInstantiationException("Method should not contain arguments. ");
+            throw new BeanInstantiationException("Method should not contain arguments.");
         }
         return new BeanDefinition(method.getReturnType(), method, method.getDeclaringClass());
     }

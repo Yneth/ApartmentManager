@@ -24,8 +24,8 @@ public class ComponentScanAnnotationBeanFactoryPostProcessor implements BeanFact
                 filter(type -> type.isAnnotationPresent(ComponentScan.class)).
                 map(type -> type.getAnnotation(ComponentScan.class)).
                 map(ComponentScan::value).
-                peek(v -> logger.debug("Scanning '" + v + "' for components.")).
                 flatMap(Arrays::stream).
+                peek(path -> logger.debug(String.format("Scanning '%s' for components.", path))).
                 collect(Collectors.toList());
         String[] pathArray = new String[paths.size()];
         paths.toArray(pathArray);

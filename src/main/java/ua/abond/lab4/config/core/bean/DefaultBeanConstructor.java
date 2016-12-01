@@ -15,17 +15,21 @@ public class DefaultBeanConstructor implements BeanConstructor {
     }
 
     @Override
-    public Object create(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
+    public Object create(ConfigurableBeanFactory context, String beanName, BeanDefinition beanDefinition) {
         if (beanDefinition.isAbstract()) {
-            throw new BeanInstantiationException("Declared bean \"" + bean + "\" of type " + beanDefinition.getType() +
-                    " is abstract so it cannot be created.");
+            throw new BeanInstantiationException(
+                    String.format("Declared bean '%s' of type %s is abstract so it cannot be created.",
+                            beanName, beanDefinition.getType().getSimpleName()
+                    ));
         }
+
         try {
             return beanDefinition.getType().newInstance();
         } catch (InstantiationException e) {
             throw new BeanInstantiationException(
-                    "Declared bean \"" + bean + "\" of type " + beanDefinition.getType() + " has no default constructor",
-                    e
+                    String.format("Declared bean '%s' of type '%s' has no default constructor.",
+                            beanName, beanDefinition.getType().getSimpleName()
+                    ), e
             );
         } catch (IllegalAccessException e) {
             throw new BeanInstantiationException(e);

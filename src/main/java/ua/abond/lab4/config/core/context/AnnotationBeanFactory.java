@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.*;
 import ua.abond.lab4.config.core.bean.*;
 import ua.abond.lab4.config.core.exception.BeanException;
+import ua.abond.lab4.config.core.exception.ImproperlyConfiguredException;
 import ua.abond.lab4.config.core.exception.NoSuchBeanException;
 
 import java.io.IOException;
@@ -220,8 +221,9 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
                 filter(bc -> bc.canCreate(this, simpleName, beanDefinition)).
                 findFirst().
                 map(bc -> bc.create(this, simpleName, beanDefinition)).
-                // TODO change exception
-                        orElseThrow(IllegalStateException::new);
+                orElseThrow(() -> new ImproperlyConfiguredException(
+                        String.format("Could not find bean '%s'", simpleName))
+                );
 
         for (BeanPostProcessor bpp : beanPostProcessors) {
             bean = bpp.postProcessBeforeInitialization(this, bean, simpleName);

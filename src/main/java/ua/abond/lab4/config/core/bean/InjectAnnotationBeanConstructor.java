@@ -33,15 +33,15 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
 
 
     @Override
-    public Object create(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
-        logger.debug("Creating new instance of '" + bean + "'.");
+    public Object create(ConfigurableBeanFactory context, String beanName, BeanDefinition beanDefinition) {
+        logger.debug(String.format("Creating new instance of '%s'.", beanName));
         if (beanDefinition.hasFactoryMethod()) {
             try {
                 Method method = beanDefinition.getFactoryMethod();
                 method.setAccessible(true);
                 return method.invoke(getBean(context, beanDefinition.getDeclaringClass()));
             } catch (IllegalAccessException e) {
-                throw new BeanInstantiationException("Is " + bean + "'s constructor private?", e);
+                throw new BeanInstantiationException(String.format("Is %s's constructor private?", beanName), e);
             } catch (InvocationTargetException e) {
                 throw new BeanInstantiationException("Constructor threw an exception.", e);
             }
@@ -55,9 +55,9 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
         try {
             return constructor.newInstance(args);
         } catch (InstantiationException e) {
-            throw new BeanInstantiationException("Is " + bean + " abstract?", e);
+            throw new BeanInstantiationException("Is " + beanName + " abstract?", e);
         } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException("Is " + bean + "'s constructor private?", e);
+            throw new BeanInstantiationException("Is " + beanName + "'s constructor private?", e);
         } catch (InvocationTargetException e) {
             throw new BeanInstantiationException("Constructor threw an exception.", e);
         }
