@@ -8,11 +8,10 @@
     <thead>
     <tr>
         <td>Id</td>
-        <td>Room count</td>
-        <td>Apartment type</td>
-        <td>From date</td>
-        <td>To date</td>
-        <td>Status</td>
+        <td>Apartment name</td>
+        <td>Request id</td>
+        <td>Price</td>
+        <td>Payed</td>
         <td>View</td>
     </tr>
     </thead>
@@ -20,11 +19,10 @@
     <c:forEach items="${orders}" var="order">
         <tr>
             <td>${order.id}</td>
-            <td>${order.lookup.roomCount}</td>
-            <td>${order.lookup.type.name}</td>
-            <td>${order.from}</td>
-            <td>${order.to}</td>
-            <td>${order.status}</td>
+            <td>${order.apartment.id}</td>
+            <td>${order.request.id}</td>
+            <td>${order.price}</td>
+            <td>${order.payed}</td>
             <td><a class="btn btn-primary"
                    href="/${fn:toLowerCase(sessionScope.user.authority.name)}/order?id=${order.id}"
                    role="button">View</a>

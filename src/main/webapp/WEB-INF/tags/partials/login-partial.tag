@@ -1,6 +1,7 @@
 <%@ tag pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
 <div class="container">
     <div class="jumbotron">
@@ -14,8 +15,6 @@
                 <a class="btn-right" href="/register">Register</a>
             </form>
         </div>
-        <c:if test="${not empty errorMessage }">
-            <p>${errorMessage}</p>
-        </c:if>
+        <p:error-partial/>
     </div>
 </div>
