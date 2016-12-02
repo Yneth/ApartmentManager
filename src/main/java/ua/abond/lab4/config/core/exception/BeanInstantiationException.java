@@ -1,6 +1,7 @@
 package ua.abond.lab4.config.core.exception;
 
-public class BeanInstantiationException extends RuntimeException {
+public class BeanInstantiationException extends BeanFactoryException {
+
     public BeanInstantiationException() {
     }
 

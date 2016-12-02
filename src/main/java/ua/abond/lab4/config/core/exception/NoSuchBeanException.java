@@ -1,9 +1,8 @@
 package ua.abond.lab4.config.core.exception;
 
-public class NoSuchBeanException extends RuntimeException {
+public class NoSuchBeanException extends BeanFactoryException {
 
     public NoSuchBeanException() {
-        super();
     }
 
     public NoSuchBeanException(String message) {

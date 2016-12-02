@@ -1,6 +1,6 @@
 package ua.abond.lab4.config.core.exception;
 
-public class BeanException extends RuntimeException {
+public class BeanException extends BeanFactoryException {
 
     public BeanException() {
         super();
