@@ -90,6 +90,11 @@ public class Jdbc {
         return query(sql, new DefaultPreparedStatementSetter(), rsm);
     }
 
+    public <T> Optional<T> querySingle(String sql, RowMapper<T> rm)
+            throws DataAccessException {
+        return querySingle(sql, new DefaultPreparedStatementSetter(), rm);
+    }
+
     public <T> Optional<T> querySingle(String sql,
                                        PreparedStatementSetter pss,
                                        RowMapper<T> rsm)

@@ -1,5 +1,6 @@
 package ua.abond.lab4.service;
 
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
@@ -13,7 +14,7 @@ public interface ApartmentService {
 
     void deleteApartment(Long id);
 
-    List<Apartment> list(Pageable pageable);
+    Page<Apartment> list(Pageable pageable);
 
-    List<Apartment> listMostAppropriate(Pageable pageable, Request filter);
+    Page<Apartment> listMostAppropriate(Pageable pageable, Request filter);
 }

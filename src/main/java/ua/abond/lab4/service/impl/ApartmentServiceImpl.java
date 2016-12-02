@@ -3,13 +3,12 @@ package ua.abond.lab4.service.impl;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
-
-import java.util.List;
 
 @Component
 public class ApartmentServiceImpl implements ApartmentService {
@@ -38,13 +37,14 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> list(Pageable pageable) {
+    public Page<Apartment> list(Pageable pageable) {
         logger.debug("Getting a list of apartments.");
         return apartmentDAO.list(pageable);
     }
 
     @Override
-    public List<Apartment> listMostAppropriate(Pageable pageable, Request filter) {
+    public Page<Apartment> listMostAppropriate(Pageable pageable, Request filter) {
+        logger.debug("Getting a filtered list");
         return apartmentDAO.list(pageable, filter);
     }
 }

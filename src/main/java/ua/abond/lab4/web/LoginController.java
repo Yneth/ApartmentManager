@@ -19,13 +19,20 @@ import java.util.Optional;
 
 @Controller
 public class LoginController {
+    private static final String LOGIN_VIEW = "/WEB-INF/login.jsp";
+
     @Inject
     private UserService userService;
 
     @RequestMapping("/login")
     public void getLoginPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+        User sessionUser = new UserSessionRequestMapper().map(req);
+        if (sessionUser != null) {
+            resp.sendRedirect("/");
+            return;
+        }
+        req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -54,7 +61,7 @@ public class LoginController {
             resp.sendRedirect("/");
         } else {
             req.setAttribute("errorMessage", "Wrong credentials");
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
+            req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
         }
     }
 }

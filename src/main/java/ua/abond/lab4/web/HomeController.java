@@ -10,10 +10,11 @@ import java.io.IOException;
 
 @Controller
 public class HomeController {
+    private static final String HOME_VIEW = "/WEB-INF/index.jsp";
 
     @RequestMapping("/")
     public void getIndexPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        req.getRequestDispatcher(HOME_VIEW).forward(req, resp);
     }
 }

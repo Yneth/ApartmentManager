@@ -2,11 +2,15 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.DefaultPage;
+import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.*;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -80,21 +84,20 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     }
 
     @Override
-    public List<Request> list(Pageable pageable) {
-        return jdbc.query(
+    public Page<Request> list(Pageable pageable) {
+        List<Request> query = jdbc.query(
                 "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
                         "FROM requests q " +
                         "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
                         "ORDER BY q.id ASC",
-//                " +
-//                "FETCH FIRST 10 ROWS ONLY",
                 new RequestMapper()
         );
+        return new DefaultPage<>(query, count(), pageable);
     }
 
     @Override
-    public List<Request> getUserOrders(Long userId) {
-        return jdbc.query(
+    public Page<Request> getUserOrders(Long userId) {
+        List<Request> query = jdbc.query(
                 "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
                         "FROM requests q " +
                         "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
@@ -102,6 +105,13 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
                 ps -> ps.setLong(1, userId),
                 new RequestMapper()
         );
+        return new DefaultPage<>(query, count(), new DefaultPageable(1, 10, null, null));
+    }
+
+    @Override
+    public long count() {
+        return jdbc.querySingle("SELECT COUNT(*) FROM requests;", rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 
     private static class RequestMapper implements RowMapper<Request> {

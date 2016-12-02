@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 public class PageableRequestMapper implements RequestMapper<DefaultPageable> {
     @Override
     public DefaultPageable map(HttpServletRequest req) {
-        Integer page = Parse.integer(req.getParameter("page"));
+        int page = Parse.integerPrimitive(req.getParameter("page"), 1);
+        int pageSize = Parse.integerPrimitive(req.getParameter("pageSize"), 10);
         String sortBy = req.getParameter("sortBy");
         SortOrder sortOrder = Parse.enumeration(SortOrder.class, req.getParameter("order"), SortOrder.ASC);
-        return new DefaultPageable(page, sortBy, sortOrder);
+        return new DefaultPageable(page, pageSize, sortBy, sortOrder);
     }
 }

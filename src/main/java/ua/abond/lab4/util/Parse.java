@@ -25,6 +25,14 @@ public final class Parse {
         return integer(str, null);
     }
 
+    public static int integerPrimitive(String str) {
+        return integer(str, 0);
+    }
+
+    public static int integerPrimitive(String str, int defaultValue) {
+        return integer(str, defaultValue);
+    }
+
     public static Long longValue(String str) {
         Long result;
         try {

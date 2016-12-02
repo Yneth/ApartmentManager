@@ -2,6 +2,8 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.DefaultPage;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Apartment;
@@ -9,6 +11,7 @@ import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -74,11 +77,19 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     }
 
     @Override
-    public List<Order> list(Pageable pageable) {
-        return jdbc.query("SELECT o.id, o.user_id, o.apartment_id, o.request_id, o.price, o.payed" +
+    public Page<Order> list(Pageable pageable) {
+        List<Order> query = jdbc.query(
+                "SELECT o.id, o.user_id, o.apartment_id, o.request_id, o.price, o.payed" +
                         "FROM orders o ",
                 new OrderMapper()
         );
+        return new DefaultPage<>(query, count(), pageable);
+    }
+
+    @Override
+    public long count() {
+        return jdbc.querySingle("SELECT COUNT(*) FROM orders;", rs -> rs.getLong(1))
+                .orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 
     private static class OrderMapper implements RowMapper<Order> {

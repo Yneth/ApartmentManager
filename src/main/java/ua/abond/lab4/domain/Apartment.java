@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Apartment extends Entity<Long> {
+    // TODO add fields
+    private String name;
+    private String description;
+
     private int roomCount;
     private BigDecimal price;
     private ApartmentType type;

@@ -3,6 +3,7 @@ package ua.abond.lab4.service.impl;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
@@ -15,7 +16,6 @@ import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -61,12 +61,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> list(Pageable pageable) {
-        return null;
+    public Page<Order> list(Pageable pageable) {
+        return orderDAO.list(pageable);
     }
 
     @Override
     public Optional<Order> getById(Long id) {
         return orderDAO.getById(id);
+    }
+
+    @Override
+    public void payOrder(Long id) throws ServiceException {
+        Order order = orderDAO.getById(id).orElse(null);
+        if (order == null) {
+            throw new ServiceException("Could not find such order");
+        }
+        order.setPayed(true);
+        orderDAO.update(order);
     }
 }

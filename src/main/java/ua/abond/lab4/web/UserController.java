@@ -3,6 +3,7 @@ package ua.abond.lab4.web;
 import ua.abond.lab4.config.core.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
@@ -12,6 +13,7 @@ import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.mapper.ApartmentRequestRequestMapper;
 import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
 import ua.abond.lab4.web.validation.RequestValidator;
@@ -39,8 +41,8 @@ public class UserController {
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
 
-        List<Request> userRequests = requestService.getUserRequests(user.getId());
-        req.setAttribute("requests", userRequests);
+        Page<Request> userRequests = requestService.getUserRequests(user.getId());
+        req.setAttribute("requests", userRequests.getContent());
 
         req.getRequestDispatcher("requests.jsp").forward(req, resp);
     }
@@ -100,8 +102,8 @@ public class UserController {
             throws ServletException, IOException {
         User user = new UserSessionRequestMapper().map(req);
 
-        List<Request> userRequests = requestService.getUserRequests(user.getId());
-        req.setAttribute("orders", userRequests);
+        Page<Request> userRequests = requestService.getUserRequests(user.getId());
+        req.setAttribute("orders", userRequests.getContent());
 
         req.getRequestDispatcher("orders.jsp").forward(req, resp);
     }
@@ -109,7 +111,7 @@ public class UserController {
     @RequestMapping("/order")
     public void viewOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
+        Long id = Parse.longValue(req.getParameter("id"));
         orderService.getById(id).ifPresent(order -> {
             req.setAttribute("order", order);
         });
@@ -119,6 +121,14 @@ public class UserController {
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
+        Long id = Parse.longValue(req.getParameter("id"));
+        try {
+            orderService.payOrder(id);
+        } catch (ServiceException e) {
+            req.setAttribute("error", e.getMessage());
+            req.getRequestDispatcher("/order").forward(req, resp);
+            return;
+        }
+        resp.sendRedirect("/orders");
     }
 }

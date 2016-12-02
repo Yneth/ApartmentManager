@@ -3,6 +3,7 @@ package ua.abond.lab4.service.impl;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.Request;
@@ -11,7 +12,6 @@ import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -38,28 +38,28 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> getUserRequests(Long userId) {
+    public Page<Request> getUserRequests(Long userId) {
         return requestDAO.getUserOrders(userId);
     }
 
     @Override
     public void rejectRequest(Long id, String comment) throws ServiceException {
-        requestDAO.getById(id).
-                map(request -> {
-                    request.setStatus(RequestStatus.REJECTED);
-                    request.setStatusComment(comment);
-                    return request;
-                }).
-                orElseThrow(() -> new ServiceException(String.format("Could not find request with such id: %s", id)));
+        Request request = requestDAO.getById(id).orElse(null);
+        if (request == null) {
+            throw new ServiceException(String.format("Could not find request with such id: %s", id));
+        }
+        request.setStatus(RequestStatus.REJECTED);
+        request.setStatusComment(comment);
+        requestDAO.update(request);
     }
 
     @Override
-    public List<Request> list(Pageable pageable) {
+    public Page<Request> list(Pageable pageable) {
         return requestDAO.list(pageable);
     }
 
     @Override
-    public List<Request> listCreated(Pageable pageable) {
+    public Page<Request> listCreated(Pageable pageable) {
         return requestDAO.list(pageable);
     }
 }

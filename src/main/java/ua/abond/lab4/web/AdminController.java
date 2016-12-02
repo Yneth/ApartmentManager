@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.Apartment;
@@ -29,13 +30,18 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     private static final Logger logger = Logger.getLogger(AdminController.class);
+    private static final String REQUEST_VIEW = "/WEB-INF/admin/request.jsp";
+    private static final String REQUESTS_VIEW = "/WEB-INF/admin/requests.jsp";
+    private static final String ORDER_VIEW = "/WEB-INF/admin/order.jsp";
+    private static final String ORDERS_VIEW = "/WEB-INF/admin/orders.jsp";
+    private static final String APARTMENTS_VIEW = "/WEB-INF/admin/apartments.jsp";
 
+    @Inject
+    private OrderService orderService;
     @Inject
     private RequestService requestService;
     @Inject
     private ApartmentService apartmentService;
-    @Inject
-    private OrderService orderService;
 
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -44,16 +50,15 @@ public class AdminController {
         List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
-            req.getRequestDispatcher("request.jsp").forward(req, resp);
+            req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
             return;
         }
 
         try {
             orderService.confirmRequest(dto);
         } catch (ServiceException e) {
-            logger.debug(e);
             req.setAttribute("errorMessage", e.getMessage());
-            req.getRequestDispatcher("request.jsp").forward(req, resp);
+            req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
             return;
         }
         resp.sendRedirect("/admin/requests");
@@ -67,24 +72,23 @@ public class AdminController {
         OptionalConsumer.of(requestService.getById(id)).
                 ifPresent(request -> {
                     req.setAttribute("request", request);
-                    req.setAttribute(
-                            "apartments",
-                            apartmentService.listMostAppropriate(pageable, request)
-                    );
+                    Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
+                    req.setAttribute("apartments", apartmentPage.getContent());
+                    req.setAttribute("pageable", pageable);
                 }).
                 ifNotPresent(() -> {
                     req.setAttribute("errorMessage", "Could not find such order.");
                 });
-        req.getRequestDispatcher("request.jsp").forward(req, resp);
+        req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 
     @RequestMapping("/requests")
     public void getRequests(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
-        List<Request> list = requestService.list(pageable);
+        Page<Request> page = requestService.list(pageable);
 
-        req.setAttribute("requests", list);
+        req.setAttribute("requests", page.getContent());
         req.setAttribute("pageable", pageable);
         req.getRequestDispatcher("requests.jsp").forward(req, resp);
     }
@@ -93,10 +97,11 @@ public class AdminController {
     public void getApartments(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
-        List<Apartment> list = apartmentService.list(pageable);
+        Page<Apartment> page = apartmentService.list(pageable);
 
-        req.setAttribute("apartments", list);
+        req.setAttribute("apartments", page.getContent());
         req.setAttribute("pageable", pageable);
+        req.setAttribute("count", page.getTotalPages());
         req.getRequestDispatcher("apartments.jsp").forward(req, resp);
     }
 
@@ -104,9 +109,9 @@ public class AdminController {
     public void getOrders(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
-        List<Order> list = orderService.list(pageable);
+        Page<Order> page = orderService.list(pageable);
 
-        req.setAttribute("orders", list);
+        req.setAttribute("orders", page.getContent());
         req.setAttribute("pageable", pageable);
         req.getRequestDispatcher("orders.jsp").forward(req, resp);
     }

@@ -2,11 +2,16 @@ package ua.abond.lab4.dao.jdbc;
 
 import org.junit.Before;
 import org.junit.Test;
+import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.config.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
+import ua.abond.lab4.domain.Request;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -79,4 +84,40 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         assertEquals(Optional.empty(), apartmentDAO.getById(0L));
     }
 
+    @Test
+    public void testCount() {
+        assertEquals(2, apartmentDAO.count());
+    }
+
+    @Test
+    public void testListFiltered() {
+        Request request = new Request();
+        Apartment lookup = new Apartment();
+        lookup.setRoomCount(100);
+        lookup.setType(apartmentTypeDAO.getByName("business").get());
+        request.setLookup(lookup);
+        request.setTo(LocalDateTime.now().minusYears(10));
+
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, "id", SortOrder.ASC), request);
+        assertNotNull(page);
+        assertNotNull(page.getContent());
+        assertEquals(2, page.getTotalElements());
+        assertEquals(1, page.getTotalPages());
+    }
+
+    @Test
+    public void testListFilteredByOne() {
+        Request request = new Request();
+        Apartment lookup = new Apartment();
+        lookup.setRoomCount(100);
+        lookup.setType(apartmentTypeDAO.getByName("business").get());
+        request.setLookup(lookup);
+        request.setTo(LocalDateTime.now().minusYears(10));
+
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, "id", SortOrder.ASC), request);
+        assertNotNull(page);
+        assertNotNull(page.getContent());
+        assertEquals(2, page.getTotalElements());
+        assertEquals(2, page.getTotalPages());
+    }
 }
