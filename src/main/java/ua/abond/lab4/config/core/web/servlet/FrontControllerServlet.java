@@ -15,10 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class FrontControllerServlet extends ContextAwareServlet {
+public class FrontControllerServlet extends BeanFactoryAwareServlet {
     private static final Logger logger = Logger.getLogger(FrontControllerServlet.class);
 
-    private final Map<HandlerMethodInfo, HandlerMethod> handlers = new HashMap<>();
+    private Map<HandlerMethodInfo, HandlerMethod> handlers;
 
     @Override
     protected void doDispatch(HttpServletRequest req, HttpServletResponse resp)
@@ -48,6 +48,7 @@ public class FrontControllerServlet extends ContextAwareServlet {
     }
 
     private void initializeHandlers(ConfigurableBeanFactory beanFactory) {
+        this.handlers = new HashMap<>();
         Collection<Object> controllers = beanFactory.getBeansWithAnnotation(Controller.class).values();
 
         for (Object controller : controllers) {
@@ -58,6 +59,7 @@ public class FrontControllerServlet extends ContextAwareServlet {
                     filter(m -> m.isAnnotationPresent(RequestMapping.class)).
                     forEach(m -> addHandler(prefix, controller, m));
         }
+        this.handlers = Collections.unmodifiableMap(this.handlers);
     }
 
     private void addHandler(String prefix, Object declaringClass, Method method) {
@@ -66,6 +68,6 @@ public class FrontControllerServlet extends ContextAwareServlet {
 
         logger.debug("Creating handler for url: " + url + " for " + annotation.method() + " method.");
 
-        handlers.put(new HandlerMethodInfo(url, annotation.method()), new HandlerMethod(declaringClass, method));
+        this.handlers.put(new HandlerMethodInfo(url, annotation.method()), new HandlerMethod(declaringClass, method));
     }
 }
