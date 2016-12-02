@@ -3,6 +3,7 @@ package ua.abond.lab4.service.impl;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ua.abond.lab4.config.core.BeanFactory;
@@ -43,6 +44,11 @@ public class RequestServiceImplIntegrationTest {
         ));
         tester.setTearDownOperation(DatabaseOperation.CLEAN_INSERT);
         tester.onSetup();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        tester.onTearDown();
     }
 
     @Test
