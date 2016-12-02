@@ -3,6 +3,7 @@ package ua.abond.lab4.service.impl;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.Order;
@@ -12,6 +13,10 @@ import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.exception.RequestConfirmException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
+import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -32,12 +37,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmRequest(Order order) throws ServiceException {
-        logger.debug(String.format("Confirming request with id: %s", order.getRequest().getId()));
-        Request request = requestDAO.getById(order.getRequest().getId()).orElse(null);
+    public void confirmRequest(ConfirmRequestDTO requestDTO) throws ServiceException {
+        logger.debug(String.format("Confirming request with id: %s", requestDTO.getRequestId()));
+        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
         if (request == null) {
             throw new RequestConfirmException(String.format("Could not find request with such id: %s",
-                    order.getRequest().getId()));
+                    requestDTO.getRequestId()));
         }
         try {
             request.setStatus(RequestStatus.CONFIRMED);
@@ -47,11 +52,21 @@ public class OrderServiceImpl implements OrderService {
                 request.setStatus(RequestStatus.CREATED);
                 requestDAO.update(request);
             }
-            if (order != null) {
-                requestDAO.deleteById(order.getId());
+            if (requestDTO != null) {
+                requestDAO.deleteById(requestDTO.getRequestId());
             }
             throw new RequestConfirmException(String.format("Failed to confirm request with id: %s",
-                    order.getRequest().getId()));
+                    requestDTO.getRequestId()));
         }
+    }
+
+    @Override
+    public List<Order> list(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<Order> getById(Long id) {
+        return orderDAO.getById(id);
     }
 }

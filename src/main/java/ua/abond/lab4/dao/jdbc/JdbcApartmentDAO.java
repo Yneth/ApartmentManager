@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,11 +89,14 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         return jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
                         "FROM apartments a " +
                         "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
-                        "INNER JOIN orders " +
-                        "WHERE a.room_count = ? AND at.name = ?;",
+                        "LEFT JOIN orders o ON o.apartment_id = a.id " +
+                        "LEFT JOIN requests r ON r.id = o.request_id " +
+                        "WHERE a.room_count = ? AND at.name = ? " +
+                        "AND r.from_date > ?;",
                 ps -> {
                     ps.setInt(1, filter.getLookup().getRoomCount());
                     ps.setString(2, filter.getLookup().getType().getName());
+                    ps.setObject(3, Timestamp.valueOf(filter.getTo()));
                 },
                 new ApartmentMapper()
         );

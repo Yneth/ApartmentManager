@@ -1,23 +1,22 @@
 package ua.abond.lab4.web.dto;
 
-import ua.abond.lab4.domain.Apartment;
-
 import java.math.BigDecimal;
 
 public class ConfirmRequestDTO {
-    private Long orderId;
+    private Long requestId;
+    private Long apartmentId;
+    private Long userId;
     private BigDecimal price;
-    private Apartment apartment;
 
     public ConfirmRequestDTO() {
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getRequestId() {
+        return requestId;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
     }
 
     public BigDecimal getPrice() {
@@ -28,11 +27,19 @@ public class ConfirmRequestDTO {
         this.price = price;
     }
 
-    public Apartment getApartment() {
-        return apartment;
+    public Long getApartmentId() {
+        return apartmentId;
     }
 
-    public void setLookup(Apartment apartment) {
-        this.apartment = apartment;
+    public void setApartmentId(Long apartmentId) {
+        this.apartmentId = apartmentId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

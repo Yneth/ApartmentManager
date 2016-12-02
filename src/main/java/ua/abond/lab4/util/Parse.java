@@ -1,6 +1,9 @@
 package ua.abond.lab4.util;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public final class Parse {
@@ -56,5 +59,22 @@ public final class Parse {
         return Optional.ofNullable(Parse.doubleValue(price)).
                 map(BigDecimal::new).
                 orElse(null);
+    }
+
+    public static LocalDateTime localDateTime(String str, DateTimeFormatter formatter) {
+        LocalDateTime result = null;
+        try {
+            result = LocalDateTime.parse(str, formatter);
+        } catch (DateTimeParseException | NullPointerException e) {
+            result = null;
+        }
+        return result;
+    }
+
+    public static String string(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str;
     }
 }

@@ -15,8 +15,8 @@ public class ApartmentRequestRequestMapper implements RequestMapper<Request> {
         Request request = new Request();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
-        LocalDateTime from = LocalDateTime.parse(req.getParameter("from"), formatter);
-        LocalDateTime to = LocalDateTime.parse(req.getParameter("to"), formatter);
+        LocalDateTime from = Parse.localDateTime(req.getParameter("from"), formatter);
+        LocalDateTime to = Parse.localDateTime(req.getParameter("to"), formatter);
 
         request.setTo(to);
         request.setFrom(from);

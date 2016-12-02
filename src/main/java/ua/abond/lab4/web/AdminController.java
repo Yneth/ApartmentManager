@@ -9,15 +9,15 @@ import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.OptionalConsumer;
-import ua.abond.lab4.web.mapper.OrderRequestMapper;
+import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.mapper.ConfirmRequestDTORequestMapper;
 import ua.abond.lab4.web.mapper.PageableRequestMapper;
-import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
+import ua.abond.lab4.web.validation.ConfirmRequestDTOValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,15 +40,16 @@ public class AdminController {
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = new UserSessionRequestMapper().map(req);
-        if (!isAuthorized(user)) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        ConfirmRequestDTO dto = new ConfirmRequestDTORequestMapper().map(req);
+        List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
+        if (!errors.isEmpty()) {
+            req.setAttribute("errors", errors);
+            req.getRequestDispatcher("request.jsp").forward(req, resp);
             return;
         }
 
-        Order order = new OrderRequestMapper().map(req);
         try {
-            orderService.confirmRequest(order);
+            orderService.confirmRequest(dto);
         } catch (ServiceException e) {
             logger.debug(e);
             req.setAttribute("errorMessage", e.getMessage());
@@ -61,18 +62,13 @@ public class AdminController {
     @RequestMapping("/request")
     public void getRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = new UserSessionRequestMapper().map(req);
-        if (!isAuthorized(user)) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
         Long id = Long.parseLong(req.getParameter("id"));
         Pageable pageable = new PageableRequestMapper().map(req);
         OptionalConsumer.of(requestService.getById(id)).
                 ifPresent(request -> {
-                    req.setAttribute("order", request);
+                    req.setAttribute("request", request);
                     req.setAttribute(
-                            "appropriateApartments",
+                            "apartments",
                             apartmentService.listMostAppropriate(pageable, request)
                     );
                 }).
@@ -85,16 +81,10 @@ public class AdminController {
     @RequestMapping("/requests")
     public void getRequests(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = new UserSessionRequestMapper().map(req);
-        if (!isAuthorized(user)) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
         Pageable pageable = new PageableRequestMapper().map(req);
         List<Request> list = requestService.list(pageable);
 
-        req.setAttribute("orders", list);
+        req.setAttribute("requests", list);
         req.setAttribute("pageable", pageable);
         req.getRequestDispatcher("requests.jsp").forward(req, resp);
     }
@@ -102,12 +92,6 @@ public class AdminController {
     @RequestMapping("/apartments")
     public void getApartments(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = new UserSessionRequestMapper().map(req);
-        if (!isAuthorized(user)) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
         Pageable pageable = new PageableRequestMapper().map(req);
         List<Apartment> list = apartmentService.list(pageable);
 
@@ -116,10 +100,14 @@ public class AdminController {
         req.getRequestDispatcher("apartments.jsp").forward(req, resp);
     }
 
-    private boolean isAuthorized(User user) {
-        return user != null
-                && user.getAuthority() != null
-                && user.getAuthority().getName() != null
-                && user.getAuthority().getName().equalsIgnoreCase("ADMIN");
+    @RequestMapping("/orders")
+    public void getOrders(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        Pageable pageable = new PageableRequestMapper().map(req);
+        List<Order> list = orderService.list(pageable);
+
+        req.setAttribute("orders", list);
+        req.setAttribute("pageable", pageable);
+        req.getRequestDispatcher("orders.jsp").forward(req, resp);
     }
 }

@@ -51,7 +51,6 @@ public class LoginController {
         if (rightCredentials) {
             session = req.getSession();
             session.setAttribute("user", user.get());
-            session.setAttribute("authorities", user.get().getAuthority().getName());
             resp.sendRedirect("/");
         } else {
             req.setAttribute("errorMessage", "Wrong credentials");

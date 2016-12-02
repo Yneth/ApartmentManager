@@ -85,8 +85,9 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
                 "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
                         "FROM requests q " +
                         "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
-                        "ORDER BY q.id ASC " +
-                        "FETCH FIRST 10 ROWS ONLY",
+                        "ORDER BY q.id ASC",
+//                " +
+//                "FETCH FIRST 10 ROWS ONLY",
                 new RequestMapper()
         );
     }
