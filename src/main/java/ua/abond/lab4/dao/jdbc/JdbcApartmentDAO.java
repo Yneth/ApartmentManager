@@ -84,7 +84,6 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
                     ps.setBigDecimal(3, entity.getPrice());
-
                     ps.setLong(4, entity.getId());
                 }
         );

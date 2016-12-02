@@ -18,4 +18,6 @@ public interface OrderService {
     Optional<Order> getById(Long id);
 
     void payOrder(Long id) throws ServiceException;
+
+    Page<Order> getUserOrders(Pageable pageable, Long id);
 }

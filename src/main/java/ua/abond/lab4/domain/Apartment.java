@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Apartment extends Entity<Long> {
-    // TODO add fields
     private String name;
     private String description;
 
@@ -13,6 +12,22 @@ public class Apartment extends Entity<Long> {
     private ApartmentType type;
 
     public Apartment() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getRoomCount() {
@@ -45,12 +60,14 @@ public class Apartment extends Entity<Long> {
         if (!(o instanceof Apartment)) return false;
         Apartment apartment = (Apartment) o;
         return getRoomCount() == apartment.getRoomCount() &&
+                Objects.equals(getName(), apartment.getName()) &&
+                Objects.equals(getDescription(), apartment.getDescription()) &&
                 Objects.equals(getPrice(), apartment.getPrice()) &&
                 Objects.equals(getType(), apartment.getType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getRoomCount(), getPrice(), getType());
+        return Objects.hash(getName(), getDescription(), getRoomCount(), getPrice(), getType());
     }
 }

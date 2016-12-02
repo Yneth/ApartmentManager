@@ -47,14 +47,13 @@ public class OrderServiceImpl implements OrderService {
         try {
             request.setStatus(RequestStatus.CONFIRMED);
             requestDAO.update(request);
+            // TODO createOrder
         } catch (DataAccessException e) {
             if (request.getStatus() == RequestStatus.CONFIRMED) {
                 request.setStatus(RequestStatus.CREATED);
                 requestDAO.update(request);
             }
-            if (requestDTO != null) {
-                requestDAO.deleteById(requestDTO.getRequestId());
-            }
+            // TODO rollback order
             throw new RequestConfirmException(String.format("Failed to confirm request with id: %s",
                     requestDTO.getRequestId()));
         }
@@ -76,7 +75,15 @@ public class OrderServiceImpl implements OrderService {
         if (order == null) {
             throw new ServiceException("Could not find such order");
         }
+        if (order.isPayed()) {
+            throw new ServiceException("Cannot pay already payed order.");
+        }
         order.setPayed(true);
         orderDAO.update(order);
+    }
+
+    @Override
+    public Page<Order> getUserOrders(Pageable pageable, Long id) {
+        return orderDAO.getUserOrders(pageable, id);
     }
 }

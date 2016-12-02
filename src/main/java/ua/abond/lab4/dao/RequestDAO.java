@@ -7,7 +7,7 @@ import ua.abond.lab4.domain.Request;
 public interface RequestDAO extends DAO<Request> {
     Page<Request> list(Pageable pageable);
 
-    Page<Request> getUserOrders(Long id);
+    Page<Request> getUserOrders(Pageable pageable, Long id);
 
     long count();
 }

@@ -5,7 +5,6 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface RequestService {
@@ -13,7 +12,7 @@ public interface RequestService {
 
     void rejectRequest(Long id, String comment) throws ServiceException;
 
-    Page<Request> getUserRequests(Long userId);
+    Page<Request> getUserRequests(Pageable pageable, Long userId);
 
     Optional<Request> getById(Long id);
 

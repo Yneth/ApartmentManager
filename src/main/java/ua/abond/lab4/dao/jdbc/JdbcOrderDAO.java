@@ -78,12 +78,25 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Page<Order> list(Pageable pageable) {
-        List<Order> query = jdbc.query(
-                "SELECT o.id, o.user_id, o.apartment_id, o.request_id, o.price, o.payed" +
-                        "FROM orders o ",
+        List<Order> content = jdbc.query(
+                "SELECT o.id, o.apartment_id, o.request_id, o.price, o.payed, r.user_id " +
+                        "FROM orders o " +
+                        "INNER JOIN requests r ON r.id = o.request_id;",
                 new OrderMapper()
         );
-        return new DefaultPage<>(query, count(), pageable);
+        return new DefaultPage<>(content, count(), pageable);
+    }
+
+    @Override
+    public Page<Order> getUserOrders(Pageable pageable, Long id) {
+        List<Order> content = jdbc.query("SELECT o.id, o.apartment_id, o.request_id, o.price, o.payed " +
+                        "FROM orders o " +
+                        "INNER JOIN requests r ON r.id = o.request_id " +
+                        "WHERE r.user_id = ?;",
+                ps -> ps.setLong(1, id),
+                new OrderMapper()
+        );
+        return new DefaultPage<>(content, count(), pageable);
     }
 
     @Override

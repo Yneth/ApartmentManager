@@ -96,7 +96,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     }
 
     @Override
-    public Page<Request> getUserOrders(Long userId) {
+    public Page<Request> getUserOrders(Pageable pageable, Long userId) {
         List<Request> query = jdbc.query(
                 "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
                         "FROM requests q " +

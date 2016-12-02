@@ -38,8 +38,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Page<Request> getUserRequests(Long userId) {
-        return requestDAO.getUserOrders(userId);
+    public Page<Request> getUserRequests(Pageable pageable, Long userId) {
+        return requestDAO.getUserOrders(pageable, userId);
     }
 
     @Override
@@ -47,6 +47,9 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestDAO.getById(id).orElse(null);
         if (request == null) {
             throw new ServiceException(String.format("Could not find request with such id: %s", id));
+        }
+        if (RequestStatus.CONFIRMED == request.getStatus()) {
+            throw new ServiceException(String.format("Request with id: %s was already confirmed.", id));
         }
         request.setStatus(RequestStatus.REJECTED);
         request.setStatusComment(comment);
