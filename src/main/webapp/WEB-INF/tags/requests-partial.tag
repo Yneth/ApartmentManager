@@ -3,7 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<h1>Orders</h1>
+<h1>Requests</h1>
 <table class="table">
     <thead>
     <tr>

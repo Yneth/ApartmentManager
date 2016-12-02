@@ -12,10 +12,17 @@
                     <label for="cost-text">Price</label>
                     <input class="form-control" id="cost-text" type="text" name="cost"/>
                     <input class="form-control btn btn-success" type="submit" value="Confirm"/>
+                    <c:forEach items="${apartments}" var="apartment">
+                        <div class="radio">
+                            <label><input type="radio" name="apartment" value="${apartment.id}"/>
+                                    ${apartment}
+                            </label>
+                        </div>
+                    </c:forEach>
                 </form>
             </c:if>
             <c:if test="${empty request}">
-                <p>No such order.</p>
+                <p>No such request.</p>
             </c:if>
         </div>
     </div>
