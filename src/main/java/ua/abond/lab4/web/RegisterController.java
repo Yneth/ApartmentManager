@@ -15,12 +15,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
-    private static final String REGISTER_VIEW = "/WEB-INF/register.jsp";
+    private static final String REGISTER_VIEW = "/WEB-INF/pages/register.jsp";
 
     @Inject
     private UserService service;
@@ -49,7 +50,7 @@ public class RegisterController {
         try {
             service.register(user);
         } catch (ServiceException e) {
-            req.setAttribute("error", e.getMessage());
+            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
             req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
             return;
         }

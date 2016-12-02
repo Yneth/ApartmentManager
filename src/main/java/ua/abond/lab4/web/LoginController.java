@@ -15,11 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 @Controller
 public class LoginController {
-    private static final String LOGIN_VIEW = "/WEB-INF/login.jsp";
+    private static final String LOGIN_VIEW = "/WEB-INF/pages/login.jsp";
 
     @Inject
     private UserService userService;
@@ -43,24 +44,26 @@ public class LoginController {
             resp.sendRedirect("/");
             return;
         }
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         LoginDTO loginDTO = new LoginDTORequestMapper().map(req);
 
+        // TODO
         Optional<User> user = userService.findByLogin(loginDTO.getLogin());
         boolean rightCredentials = user.
                 map(User::getPassword).
                 map(pwd -> pwd.equals(loginDTO.getPassword())).
                 orElse(false);
 
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
         if (rightCredentials) {
             session = req.getSession();
             session.setAttribute("user", user.get());
             resp.sendRedirect("/");
         } else {
-            req.setAttribute("errorMessage", "Wrong credentials");
+            req.setAttribute("errors", Collections.singletonList("Wrong credentials"));
             req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
         }
     }

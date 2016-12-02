@@ -30,11 +30,11 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     private static final Logger logger = Logger.getLogger(AdminController.class);
-    private static final String REQUEST_VIEW = "/WEB-INF/admin/request.jsp";
-    private static final String REQUESTS_VIEW = "/WEB-INF/admin/requests.jsp";
-    private static final String ORDER_VIEW = "/WEB-INF/admin/order.jsp";
-    private static final String ORDERS_VIEW = "/WEB-INF/admin/orders.jsp";
-    private static final String APARTMENTS_VIEW = "/WEB-INF/admin/apartments.jsp";
+    private static final String REQUEST_VIEW = "/WEB-INF/pages/admin/request.jsp";
+    private static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
+    private static final String ORDER_VIEW = "/WEB-INF/pages/admin/order.jsp";
+    private static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
+    private static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
 
     @Inject
     private OrderService orderService;
@@ -50,6 +50,7 @@ public class AdminController {
         List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
+            req.setAttribute("confirmRequestDTO", dto);
             req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
             return;
         }
@@ -57,7 +58,8 @@ public class AdminController {
         try {
             orderService.confirmRequest(dto);
         } catch (ServiceException e) {
-            req.setAttribute("errorMessage", e.getMessage());
+            req.setAttribute("errors", errors);
+            req.setAttribute("confirmRequestDTO", dto);
             req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
             return;
         }
@@ -71,14 +73,12 @@ public class AdminController {
         Pageable pageable = new PageableRequestMapper().map(req);
         OptionalConsumer.of(requestService.getById(id)).
                 ifPresent(request -> {
-                    req.setAttribute("request", request);
                     Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
+                    req.setAttribute("request", request);
                     req.setAttribute("apartments", apartmentPage.getContent());
                     req.setAttribute("pageable", pageable);
                 }).
-                ifNotPresent(() -> {
-                    req.setAttribute("errorMessage", "Could not find such order.");
-                });
+                ifNotPresent(() -> req.setAttribute("errorMessage", "Could not find such order."));
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 
@@ -90,7 +90,7 @@ public class AdminController {
 
         req.setAttribute("requests", page.getContent());
         req.setAttribute("pageable", pageable);
-        req.getRequestDispatcher("requests.jsp").forward(req, resp);
+        req.getRequestDispatcher(REQUESTS_VIEW).forward(req, resp);
     }
 
     @RequestMapping("/apartments")
@@ -102,7 +102,7 @@ public class AdminController {
         req.setAttribute("apartments", page.getContent());
         req.setAttribute("pageable", pageable);
         req.setAttribute("count", page.getTotalPages());
-        req.getRequestDispatcher("apartments.jsp").forward(req, resp);
+        req.getRequestDispatcher(APARTMENTS_VIEW).forward(req, resp);
     }
 
     @RequestMapping("/orders")
@@ -113,6 +113,6 @@ public class AdminController {
 
         req.setAttribute("orders", page.getContent());
         req.setAttribute("pageable", pageable);
-        req.getRequestDispatcher("orders.jsp").forward(req, resp);
+        req.getRequestDispatcher(ORDERS_VIEW).forward(req, resp);
     }
 }
