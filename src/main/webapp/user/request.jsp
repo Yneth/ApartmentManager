@@ -7,9 +7,9 @@
         <div class="jumbotron">
             <c:if test="${not empty request}">
                 <t:request-partial request="${request}"/>
-                <form class="form-group" action="/user/request/delete" method="post">
+                <form class="form-group" action="/user/request/reject" method="post">
                     <input type="hidden" name="id" value="${request.id}"/>
-                    <input class="form-control btn btn-danger" type="submit" value="Delete"/>
+                    <input class="form-control btn btn-danger" type="submit" value="Reject"/>
                 </form>
             </c:if>
             <c:if test="${empty request}">

@@ -11,14 +11,14 @@
                     <t:request-partial request="${request}"/>
                     <label for="cost-text">Price</label>
                     <input class="form-control" id="cost-text" type="text" name="cost"/>
-                    <input class="form-control btn btn-success" type="submit" value="Confirm"/>
                     <c:forEach items="${apartments}" var="apartment">
                         <div class="radio">
-                            <label><input type="radio" name="apartment" value="${apartment.id}"/>
-                                    ${apartment}
+                            <label><input type="radio" name="id" value="${apartment.id}"/>
+                                    ${apartment.type.name}
                             </label>
                         </div>
                     </c:forEach>
+                    <input class="form-control btn btn-success" type="submit" value="Confirm"/>
                 </form>
             </c:if>
             <c:if test="${empty request}">

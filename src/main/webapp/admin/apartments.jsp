@@ -20,7 +20,7 @@
                         <tr>
                             <td>${apartment.id}</td>
                             <td>${apartment.roomCount}</td>
-                            <td>${apartment.apartmentType.name}</td>
+                            <td>${apartment.type.name}</td>
                         </tr>
                     </c:forEach>
                 </c:if>
