@@ -1,38 +1,64 @@
 package ua.abond.lab4.config.core.web.support;
 
 public class DefaultPageable implements Pageable {
-    private Integer page;
+    private int count;
+    private int pageSize;
+    private int pageNumber;
     private String sortBy;
     private SortOrder sortOrder;
 
-    public DefaultPageable(Integer page, String sortBy, SortOrder sortOrder) {
-        this.page = page;
+    public DefaultPageable(int pageNumber, int pageSize, String sortBy, SortOrder sortOrder) {
+        this.pageSize = pageSize;
+        this.pageNumber = pageNumber;
         this.sortBy = sortBy;
         this.sortOrder = sortOrder;
     }
 
     @Override
-    public int getCurrentPage() {
-        return page;
+    public int getOffset() {
+        return pageSize * (pageNumber - 1);
+    }
+
+    @Override
+    public int getPageNumber() {
+        return pageNumber;
     }
 
     @Override
     public int getPageSize() {
-        return 0;
+        return pageSize;
     }
 
     @Override
-    public int getCount() {
-        return 0;
-    }
-
-    @Override
-    public SortOrder getOrder() {
+    public SortOrder getSortOrder() {
         return sortOrder;
     }
 
     @Override
-    public String getSortBy() {
+    public String sortBy() {
         return sortBy;
+    }
+
+    @Override
+    public boolean hasPrevious() {
+        return (pageNumber - 1) > 0;
+    }
+
+    @Override
+    public Pageable first() {
+        return new DefaultPageable(1, pageSize, sortBy, sortOrder);
+    }
+
+    @Override
+    public Pageable next() {
+        return new DefaultPageable(pageNumber + 1, pageSize, sortBy, sortOrder);
+    }
+
+    @Override
+    public Pageable previousOrFirst() {
+        if (!hasPrevious()) {
+            return first();
+        }
+        return new DefaultPageable(pageNumber + 1, pageSize, sortBy, sortOrder);
     }
 }

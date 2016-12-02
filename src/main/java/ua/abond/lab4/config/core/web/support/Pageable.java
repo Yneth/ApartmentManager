@@ -1,13 +1,21 @@
 package ua.abond.lab4.config.core.web.support;
 
 public interface Pageable {
-    int getCurrentPage();
+    int getOffset();
+
+    int getPageNumber();
 
     int getPageSize();
 
-    int getCount();
+    SortOrder getSortOrder();
 
-    SortOrder getOrder();
+    String sortBy();
 
-    String getSortBy();
+    boolean hasPrevious();
+
+    Pageable first();
+
+    Pageable next();
+
+    Pageable previousOrFirst();
 }
