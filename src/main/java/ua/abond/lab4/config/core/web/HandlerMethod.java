@@ -9,20 +9,20 @@ import java.util.Objects;
 public class HandlerMethod {
     private static final Logger logger = Logger.getLogger(HandlerMethod.class);
 
-    private final Object declaringClass;
+    private final Object declaringObject;
     private final Method method;
 
-    public HandlerMethod(Object declaringClass, Method method) {
-        Objects.requireNonNull(declaringClass);
+    public HandlerMethod(Object declaringObject, Method method) {
+        Objects.requireNonNull(declaringObject);
         Objects.requireNonNull(method);
-        this.declaringClass = declaringClass;
+        this.declaringObject = declaringObject;
         this.method = method;
     }
 
     public void handle(Object... args)
             throws InvocationTargetException {
         try {
-            method.invoke(declaringClass, args);
+            method.invoke(declaringObject, args);
         } catch (IllegalAccessException e) {
             logger.error("Failed to invoke RequestHandler for " + method.getName());
         } catch (InvocationTargetException e) {
