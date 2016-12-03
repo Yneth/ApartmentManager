@@ -44,6 +44,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         this.beanConstructors.add(new DefaultBeanConstructor());
         this.beanConstructors.add(new InjectAnnotationBeanConstructor());
         this.beanPostProcessors.add(new InjectAnnotationBeanPostProcessor());
+        this.beanPostProcessors.add(new PropAnnotationBeanPostProcessor());
         this.beanFactoryPostProcessors.add(new BeanAnnotationBeanFactoryPostProcessor());
         this.beanFactoryPostProcessors.add(new ComponentScanAnnotationBeanFactoryPostProcessor());
     }
