@@ -1,19 +1,22 @@
 package ua.abond.lab4.config;
 
 import org.postgresql.ds.PGPoolingDataSource;
-import ua.abond.lab4.config.core.annotation.Bean;
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.ComponentScan;
+import ua.abond.lab4.config.core.annotation.*;
 
 import javax.sql.DataSource;
 
 @Component
+@Prop("db.properties")
 @ComponentScan("ua.abond.lab4.dao.jdbc")
 public class DatabaseConfig {
-    private String url = "jdbc:postgresql://localhost:5432/apartments";
-    private String driver = "org.postgresql.Driver";
-    private String username = "postgres";
-    private String password = "123";
+    @Value("db.url")
+    private String url;
+    @Value("db.driver")
+    private String driver;
+    @Value("db.username")
+    private String username;
+    @Value("db.password")
+    private String password;
 
     @Bean
     public DataSource getDataSource() {

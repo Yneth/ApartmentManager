@@ -2,6 +2,8 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.config.core.web.support.DefaultPage;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -21,29 +23,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Prop("sql/apartment.sql.properties")
 public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         implements ApartmentDAO {
 
-    private static final String PAGINATION_FILTER_QUERY = "SELECT\n" +
-            "  a.id,\n" +
-            "  a.room_count,\n" +
-            "  a.apartment_type_id,\n" +
-            "  at.name,\n" +
-            "  a.price\n" +
-            "FROM apartments a\n" +
-            "  INNER JOIN apartment_types at ON at.id = a.apartment_type_id\n" +
-            "WHERE a.room_count = ? AND at.name = ?\n" +
-            "      AND NOT EXISTS(\n" +
-            "    SELECT\n" +
-            "      o.id,\n" +
-            "      o.request_id\n" +
-            "    FROM orders o\n" +
-            "      INNER JOIN requests r ON r.id = o.request_id\n" +
-            "    WHERE r.from_date > ?\n" +
-            ")\n" +
-            "ORDER BY a.id\n" +
-            "OFFSET %s\n" +
-            "LIMIT %s;";
+    @Value("sql.insert")
+    private String insertSql;
+    @Value("sql.update")
+    private String updateSql;
+    @Value("sql.getById")
+    private String getByIdSql;
+    @Value("sql.deleteById")
+    private String deleteByIdSql;
+    @Value("sql.list")
+    private String listSql;
+    @Value("sql.count")
+    private String countSql;
+    @Value("sql.filter")
+    private String filterMostAppropriateSql;
 
     @Inject
     public JdbcApartmentDAO(DataSource dataSource) {
@@ -55,7 +52,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO apartments (id, room_count, apartment_type_id, price) VALUES (DEFAULT, ?, ?, ?)",
+                    insertSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setInt(1, entity.getRoomCount());
@@ -68,10 +65,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Optional<Apartment> getById(Long id) {
-        return jdbc.querySingle("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
-                        "FROM apartments a " +
-                        "INNER JOIN apartment_types at ON at.id = a.apartment_type_id " +
-                        "WHERE a.id = ?;",
+        return jdbc.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new ApartmentMapper()
         );
@@ -79,7 +73,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void update(Apartment entity) {
-        jdbc.execute("UPDATE apartments SET room_count = ?, apartment_type_id = ?, price = ? WHERE id = ?",
+        jdbc.execute(updateSql,
                 ps -> {
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
@@ -91,7 +85,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM apartments WHERE id = ?",
+        jdbc.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
@@ -100,18 +94,14 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable) {
         long count = count();
-        List<Apartment> query = jdbc.query("SELECT a.id, a.room_count, a.apartment_type_id, at.name, a.price " +
-                        "FROM apartments a " +
-                        "INNER JOIN apartment_types at ON at.id = a.apartment_type_id;",
-                new ApartmentMapper()
-        );
+        List<Apartment> query = jdbc.query(listSql, new ApartmentMapper());
         return new DefaultPage<>(query, count, pageable);
     }
 
     @Override
     public Page<Apartment> list(Pageable pageable, Request filter) {
         long count = count();
-        List<Apartment> query = jdbc.query(String.format(PAGINATION_FILTER_QUERY, pageable.getOffset(), pageable.getPageSize()),
+        List<Apartment> query = jdbc.query(String.format(filterMostAppropriateSql, pageable.getOffset(), pageable.getPageSize()),
                 ps -> {
                     ps.setInt(1, filter.getLookup().getRoomCount());
                     ps.setString(2, filter.getLookup().getType().getName());
@@ -124,8 +114,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public long count() {
-        return jdbc.querySingle("SELECT COUNT(*) FROM apartments;", rs -> rs.getLong(1)).
-                orElse(0L);
+        return jdbc.querySingle(countSql, rs -> rs.getLong(1)).orElse(0L);
     }
 
     private static class ApartmentMapper implements RowMapper<Apartment> {

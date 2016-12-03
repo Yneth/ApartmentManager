@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class RequestServiceImplIntegrationTest {
     private static final String DATASET = "orders-dataset.xml";
-    private static final String TEST_PACKAGE = "ua.abond.lab4.service.impl";
+    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     private IDatabaseTester tester;
     private RequestDAO requestDAO;

@@ -1,7 +1,13 @@
 package ua.abond.lab4.dao.jdbc;
 
+import org.dbunit.IDatabaseTester;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ua.abond.lab4.config.core.BeanFactory;
+import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.SortOrder;
@@ -19,19 +25,32 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class JdbcApartmentDAOTest extends JdbcDAOTest {
+public class JdbcApartmentDAOTest {
+    private static final String DATASET = "apartments-dataset.xml";
+    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
+
+    private IDatabaseTester tester;
     private ApartmentDAO apartmentDAO;
     private ApartmentTypeDAO apartmentTypeDAO;
 
-    public JdbcApartmentDAOTest() {
-        super("apartments-dataset.xml");
-    }
-
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        apartmentDAO = new JdbcApartmentDAO(dataSource);
-        apartmentTypeDAO = new JdbcApartmentTypeDAO(dataSource);
+        BeanFactory bf = new AnnotationBeanFactory(TEST_PACKAGE);
+        apartmentDAO = bf.getBean(ApartmentDAO.class);
+        apartmentTypeDAO = bf.getBean(ApartmentTypeDAO.class);
+        tester = bf.getBean(IDatabaseTester.class);
+        tester.setDataSet(new FlatXmlDataSetBuilder().build(
+                Thread.currentThread().getContextClassLoader().
+                        getResourceAsStream(DATASET)
+        ));
+        tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+        tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
+        tester.onSetup();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        tester.onTearDown();
     }
 
     @Test
