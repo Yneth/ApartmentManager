@@ -86,10 +86,9 @@ public class UserController {
         List<String> errors = new RequestValidator().validate(request);
         if (!errors.isEmpty()) {
             List<ApartmentType> list = apartmentTypeDAO.list();
-            req.setAttribute("apartmentTypes", list);
             req.setAttribute("errors", errors);
             req.setAttribute("request", request);
-            req.getRequestDispatcher(REQUEST_CREATE_VIEW).forward(req, resp);
+            getCreateRequestPage(req, resp);
             return;
         }
         request.setUser(user);
@@ -105,9 +104,8 @@ public class UserController {
         try {
             requestService.rejectRequest(id, comment);
         } catch (ServiceException e) {
-            req.setAttribute("request", requestService.getById(id).orElseGet(null));
             req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
+            viewRequest(req, resp);
             return;
         }
         resp.sendRedirect("/user/requests");
@@ -143,9 +141,7 @@ public class UserController {
         try {
             orderService.payOrder(id);
         } catch (ServiceException e) {
-            req.setAttribute("order", orderService.getById(id).orElse(null));
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
+            viewOrder(req, resp);
             return;
         }
         resp.sendRedirect("/orders");

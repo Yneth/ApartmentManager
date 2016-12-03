@@ -64,7 +64,7 @@ public class LoginController {
             resp.sendRedirect("/");
         } else {
             req.setAttribute("errors", Collections.singletonList("Wrong credentials"));
-            req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
+            getLoginPage(req, resp);
         }
     }
 }

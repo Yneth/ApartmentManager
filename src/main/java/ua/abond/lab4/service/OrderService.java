@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface OrderService {
     void deleteOrder(Order order);
 
-    void confirmRequest(ConfirmRequestDTO requestDTO) throws ServiceException;
+    Order createOrder(ConfirmRequestDTO requestDTO) throws ServiceException;
 
     Page<Order> list(Pageable pageable);
 

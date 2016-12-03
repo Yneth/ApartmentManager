@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class JdbcApartmentDAOTest {
-    private static final String DATASET = "apartments-dataset.xml";
+    private static final String DATASET = "orders-dataset.xml";
     private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     private IDatabaseTester tester;
@@ -54,7 +54,7 @@ public class JdbcApartmentDAOTest {
     }
 
     @Test
-    public void create() throws Exception {
+    public void testCreate() throws Exception {
         Apartment apartment = new Apartment();
         apartment.setType(apartmentTypeDAO.getByName("vip").get());
         apartment.setRoomCount(10);
@@ -70,7 +70,7 @@ public class JdbcApartmentDAOTest {
     }
 
     @Test
-    public void getById() throws Exception {
+    public void testGetById() throws Exception {
         Optional<Apartment> byId = apartmentDAO.getById(1L);
         assertNotEquals(Optional.empty(), byId);
         Apartment apartment = byId.get();
@@ -80,12 +80,12 @@ public class JdbcApartmentDAOTest {
     }
 
     @Test
-    public void getByIdNonExisting() throws Exception {
+    public void testGetByIdNonExisting() throws Exception {
         assertEquals(Optional.empty(), apartmentDAO.getById(-100L));
     }
 
     @Test
-    public void update() throws Exception {
+    public void testUpdate() throws Exception {
         Apartment apartment = apartmentDAO.getById(1L).get();
         apartment.setRoomCount(20);
         apartment.setType(apartmentTypeDAO.getById(0L).get());
@@ -97,10 +97,15 @@ public class JdbcApartmentDAOTest {
     }
 
     @Test
-    public void deleteById() throws Exception {
-        assertNotEquals(Optional.empty(), apartmentDAO.getById(0L));
-        apartmentDAO.deleteById(0L);
-        assertEquals(Optional.empty(), apartmentDAO.getById(0L));
+    public void testDeleteById() throws Exception {
+        assertNotEquals(Optional.empty(), apartmentDAO.getById(100L));
+        apartmentDAO.deleteById(100L);
+        assertEquals(Optional.empty(), apartmentDAO.getById(100L));
+    }
+
+    @Test
+    public void testDeleteByIdNonExisting() throws Exception {
+        apartmentDAO.deleteById(-100000L);
     }
 
     @Test
@@ -125,7 +130,7 @@ public class JdbcApartmentDAOTest {
     }
 
     @Test
-    public void testListFilteredByOne() {
+    public void testListFilteredPageByOne() {
         Request request = new Request();
         Apartment lookup = new Apartment();
         lookup.setRoomCount(100);
