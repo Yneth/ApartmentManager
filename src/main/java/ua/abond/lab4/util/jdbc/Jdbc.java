@@ -16,8 +16,15 @@ import java.util.Optional;
 public class Jdbc {
     private final DataSource dataSource;
 
+    private boolean userManaged;
+    private Connection connection;
+
     public Jdbc(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public void setUserManaged(boolean userManaged) {
+        this.userManaged = userManaged;
     }
 
     public int update(PreparedStatementCreator psc, KeyHolder keyHolder) {
@@ -31,11 +38,11 @@ public class Jdbc {
                 keyHolder.setKey(generatedKeys.getLong(1));
             }
 
-            conn.commit();
+            commit(conn);
             return count;
         } catch (SQLException e) {
-            ConnectionUtils.rollback(conn);
-            throw new DataAccessException("", e);
+            rollback(conn);
+            throw new DataAccessException("Failed to execute update.", e);
         } finally {
             ConnectionUtils.closeConnection(conn);
         }
@@ -50,12 +57,12 @@ public class Jdbc {
             setter.set(ps);
 
             ps.execute();
-            conn.commit();
+            commit(conn);
         } catch (SQLException e) {
-            ConnectionUtils.rollback(conn);
-            throw new DataAccessException("", e);
+            rollback(conn);
+            throw new DataAccessException("Failed to execute query.", e);
         } finally {
-            ConnectionUtils.closeConnection(conn);
+            close(conn);
         }
     }
 
@@ -77,10 +84,9 @@ public class Jdbc {
             }
             result = values;
         } catch (SQLException e) {
-            ConnectionUtils.rollback(conn);
             throw new DataAccessException("Failed to execute query.", e);
         } finally {
-            ConnectionUtils.closeConnection(conn);
+            close(conn);
         }
         return result;
     }
@@ -101,6 +107,38 @@ public class Jdbc {
             throws DataAccessException {
         List<T> query = query(sql, pss, rsm);
         return query.stream().findFirst();
+    }
+
+    public void commit() {
+        if (!userManaged || connection == null)
+            return;
+        try {
+            commit(connection);
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to commit transaction.");
+        }
+        close(connection);
+    }
+
+    public void rollback() {
+        if (!userManaged || connection == null)
+            return;
+
+    }
+
+    private void commit(Connection connection) throws SQLException {
+        if (!userManaged)
+            connection.commit();
+    }
+
+    private void rollback(Connection connection) {
+        if (!userManaged)
+            ConnectionUtils.rollback(connection);
+    }
+
+    private void close(Connection connection) {
+        if (!userManaged)
+            ConnectionUtils.closeConnection(connection);
     }
 
     private static class DefaultPreparedStatementSetter implements PreparedStatementSetter {

@@ -31,6 +31,17 @@ public final class ConnectionUtils {
         }
     }
 
+    public static void commit(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.commit();
+        } catch (SQLException e) {
+            logger.error("Failed to invoke commit.", e);
+        }
+    }
+
     public static void rollback(Connection conn) {
         if (conn == null) {
             return;
@@ -38,6 +49,7 @@ public final class ConnectionUtils {
         try {
             conn.rollback();
         } catch (SQLException e) {
+            // TODO
             logger.error("Failed to rollback connection");
         }
     }

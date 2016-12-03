@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -50,24 +51,23 @@ public class AdminController {
         List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
-            req.setAttribute("confirmRequestDTO", dto);
-            req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
+            getRequestPage(req, resp);
             return;
         }
 
         try {
-            orderService.confirmRequest(dto);
+            requestService.confirmRequest(dto);
         } catch (ServiceException e) {
+            errors.add(e.getMessage());
             req.setAttribute("errors", errors);
-            req.setAttribute("confirmRequestDTO", dto);
-            req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
+            getRequestPage(req, resp);
             return;
         }
         resp.sendRedirect("/admin/requests");
     }
 
     @RequestMapping("/request")
-    public void getRequest(HttpServletRequest req, HttpServletResponse resp)
+    public void getRequestPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
         Pageable pageable = new PageableRequestMapper().map(req);
@@ -78,7 +78,9 @@ public class AdminController {
                     req.setAttribute("apartments", apartmentPage.getContent());
                     req.setAttribute("pageable", pageable);
                 }).
-                ifNotPresent(() -> req.setAttribute("errorMessage", "Could not find such order."));
+                ifNotPresent(() ->
+                        req.setAttribute("errors", Collections.singletonList("Could not find such order."))
+                );
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 

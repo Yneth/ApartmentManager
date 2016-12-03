@@ -8,3 +8,7 @@
 <p>Apartment type: ${request.lookup.type.name}</p>
 <p>From date: ${request.from}</p>
 <p>To date: ${request.to}</p>
+<p>Status: ${request.status}</p>
+<c:if test="${not empty request.statusComment}">
+    <p>Status comment: ${request.statusComment}</p>
+</c:if>

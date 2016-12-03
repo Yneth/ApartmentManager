@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public class ReflectionUtil {
+public final class ReflectionUtil {
+
+    private ReflectionUtil() {
+
+    }
 
     public static Class[] getClasses(String packageName)
             throws ClassNotFoundException, IOException {
