@@ -1,7 +1,9 @@
 package ua.abond.lab4.config.core.web.servlet;
 
+import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
+import ua.abond.lab4.config.core.exception.BeanFactoryException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public abstract class BeanFactoryAwareServlet extends HttpServlet {
+    private static final Logger logger = Logger.getLogger(BeanFactoryAwareServlet.class);
     private static final String CONTEXT_CONFIG_LOCATION_ATTRIBUTE_NAME = "contextConfigLocation";
 
     private Class<?> contextClass;
@@ -23,7 +26,12 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         if (beanFactory == null) {
-            beanFactory = new AnnotationBeanFactory(getContextConfigLocation());
+            try {
+                beanFactory = new AnnotationBeanFactory(getContextConfigLocation());
+            } catch (BeanFactoryException e) {
+                logger.error("Failed to create bean factory.", e);
+                throw e;
+            }
             onRefreshed(beanFactory);
         }
     }
