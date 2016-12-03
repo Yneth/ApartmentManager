@@ -3,6 +3,7 @@ package ua.abond.lab4.config.core.bean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 
 public class BeanDefinition implements Comparable<BeanDefinition> {
     private final Class<?> type;
@@ -11,25 +12,24 @@ public class BeanDefinition implements Comparable<BeanDefinition> {
     private Method factoryMethod;
 
     public BeanDefinition(Class<?> type) {
+        Objects.requireNonNull(type);
         this.type = type;
     }
 
-    public BeanDefinition(Class<?> type, Method factoryMethod, Class<?> declaringClass) {
+    public BeanDefinition(Class<?> type, Method factoryMethod) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(factoryMethod);
         this.type = type;
         this.factoryMethod = factoryMethod;
-        this.declaringClass = declaringClass;
+        this.declaringClass = factoryMethod.getDeclaringClass();
     }
 
     public boolean isAbstract() {
         return Modifier.isAbstract(type.getModifiers());
     }
 
-    public boolean isInterface() {
-        return Modifier.isInterface(type.getModifiers());
-    }
-
     public boolean hasOnlyDefaultConstructor() {
-        Constructor<?>[] constructors = type.getConstructors();
+        Constructor<?>[] constructors = type.getDeclaredConstructors();
         if (constructors.length > 1) {
             return false;
         }
