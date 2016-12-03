@@ -2,6 +2,8 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.util.jdbc.KeyHolder;
@@ -15,8 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Prop("sql/apartment-type.sql.properties")
 public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
         implements ApartmentTypeDAO {
+
+    @Value("sql.insert")
+    private String insertSql;
 
     @Inject
     public JdbcApartmentTypeDAO(DataSource dataSource) {

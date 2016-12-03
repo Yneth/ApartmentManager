@@ -2,6 +2,7 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.annotation.Prop;
 import ua.abond.lab4.config.core.web.support.DefaultPage;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.config.core.web.support.Page;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Prop("sql/request.sql.properties")
 public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Inject

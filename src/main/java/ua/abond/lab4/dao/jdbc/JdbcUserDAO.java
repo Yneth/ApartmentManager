@@ -2,6 +2,7 @@ package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.annotation.Prop;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 @Component
+@Prop("sql/user.sql.properties")
 public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Inject
