@@ -1,5 +1,66 @@
 package ua.abond.lab4.config.core.bean;
 
+import org.junit.Test;
+import ua.abond.lab4.config.DatabaseConfig;
+
+import javax.sql.DataSource;
+import java.util.AbstractList;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 public class BeanDefinitionTest {
 
+    @Test
+    public void testIsAbstractIfInterface() {
+        BeanDefinition beanDefinition = new BeanDefinition(DataSource.class);
+        assertTrue(beanDefinition.isAbstract());
+    }
+
+    @Test
+    public void testIsAbstractIfAbstract() {
+        BeanDefinition beanDefinition = new BeanDefinition(AbstractList.class);
+        assertTrue(beanDefinition.isAbstract());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testTypeConstructorTypeNullArg() {
+        new BeanDefinition(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testTypeAndMethodConstructorTypeNullArg() {
+        new BeanDefinition(null, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testTypeAndMethodConstructorMethodNullArg() {
+        new BeanDefinition(DataSource.class, null);
+    }
+
+    @Test
+    public void testHasOnlyDefaultConstructorOnInterface() {
+        assertTrue(new BeanDefinition(DataSource.class).hasOnlyDefaultConstructor());
+    }
+
+    @Test
+    public void testHasOnlyDefaultConstructorOnAbstract() {
+        assertTrue(new BeanDefinition(AbstractList.class).hasOnlyDefaultConstructor());
+    }
+
+    @Test
+    public void testHasNoDefaultConstructor() {
+        assertFalse(new BeanDefinition(BeanDefinition.class).hasOnlyDefaultConstructor());
+    }
+
+    @Test
+    public void testHasFactoryMethod() throws Exception {
+        BeanDefinition beanDefinition = new BeanDefinition(DataSource.class, DatabaseConfig.class.getMethod("getDataSource"));
+        assertTrue(beanDefinition.hasFactoryMethod());
+    }
+
+    @Test
+    public void testHasNoFactoryMethod() throws Exception {
+        assertFalse(new BeanDefinition(String.class).hasFactoryMethod());
+    }
 }
