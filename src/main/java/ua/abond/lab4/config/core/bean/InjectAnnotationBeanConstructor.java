@@ -5,24 +5,38 @@ import ua.abond.lab4.config.core.BeanConstructor;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.exception.BeanInstantiationException;
+import ua.abond.lab4.config.core.exception.ImproperlyConfiguredException;
+import ua.abond.lab4.util.reflection.BeanUtil;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class InjectAnnotationBeanConstructor implements BeanConstructor {
     private static final Logger logger = Logger.getLogger(InjectAnnotationBeanConstructor.class);
 
+    private Set<String> visited = new HashSet<>();
+
     @Override
     public boolean canCreate(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
         List<Constructor<?>> constructors = getInjectableConstructors(beanDefinition);
 
+        if (beanDefinition.hasFactoryMethod()) {
+            return Arrays.stream(beanDefinition.getFactoryMethod().getParameterTypes()).
+                    allMatch(context::containsBeanDefinition);
+        }
         if (constructors.size() > 1) {
-            return false;
+            throw new ImproperlyConfiguredException(
+                    String.format(
+                            "Bean '%s' has more than 1 injectable constructor.",
+                            bean
+                    )
+            );
         }
         if (constructors.isEmpty()) {
             return true;
@@ -35,32 +49,27 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
     @Override
     public Object create(ConfigurableBeanFactory context, String beanName, BeanDefinition beanDefinition) {
         logger.debug(String.format("Creating new instance of '%s'.", beanName));
+        if (visited.contains(beanName)) {
+            throw new ImproperlyConfiguredException("Configuration contains cyclic dependency between");
+        }
+        visited.add(beanName);
         if (beanDefinition.hasFactoryMethod()) {
-            try {
-                Method method = beanDefinition.getFactoryMethod();
-                method.setAccessible(true);
-                return method.invoke(getBean(context, beanDefinition.getDeclaringClass()));
-            } catch (IllegalAccessException e) {
-                throw new BeanInstantiationException(String.format("Is %s's constructor private?", beanName), e);
-            } catch (InvocationTargetException e) {
-                throw new BeanInstantiationException("Constructor threw an exception.", e);
-            }
+            Method method = beanDefinition.getFactoryMethod();
+
+            Object[] args = Arrays.stream(method.getParameterTypes()).
+                    map(cls -> getBean(context, cls)).
+                    toArray(Object[]::new);
+            return BeanUtil.create(beanName, getBean(context, beanDefinition.getDeclaringClass()), method, args);
         }
 
         Constructor<?> constructor = getInjectableConstructorsStream(beanDefinition).
-                findFirst().orElseThrow(() -> new BeanInstantiationException("No constructor available."));
+                findFirst().orElseThrow(() ->
+                new BeanInstantiationException(String.format("No constructor available for '%s' bean.", beanName))
+        );
         Object[] args = Arrays.stream(constructor.getParameterTypes()).
                 map(cls -> getBean(context, cls)).
-                collect(Collectors.toList()).toArray();
-        try {
-            return constructor.newInstance(args);
-        } catch (InstantiationException e) {
-            throw new BeanInstantiationException("Is " + beanName + " abstract?", e);
-        } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException("Is " + beanName + "'s constructor private?", e);
-        } catch (InvocationTargetException e) {
-            throw new BeanInstantiationException("Constructor threw an exception.", e);
-        }
+                toArray(Object[]::new);
+        return BeanUtil.create(beanName, constructor, args);
     }
 
     private Object getBean(ConfigurableBeanFactory factory, Class<?> type) {
@@ -77,7 +86,7 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
     }
 
     private Stream<? extends Constructor<?>> getInjectableConstructorsStream(BeanDefinition beanDefinition) {
-        return Arrays.stream(beanDefinition.getType().getConstructors()).
+        return Arrays.stream(beanDefinition.getType().getDeclaredConstructors()).
                 filter(c -> c.isAnnotationPresent(Inject.class));
     }
 }
