@@ -8,8 +8,7 @@ import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class BeanAnnotationBeanFactoryPostProcessorTest {
 

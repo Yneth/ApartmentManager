@@ -9,8 +9,7 @@ import ua.abond.lab4.config.core.context.test.A;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class ConfigurableBeanFactoryTest {
     private static final String TEST_PACKAGE = "ua.abond.lab4.config.core.context.test";

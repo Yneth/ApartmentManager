@@ -7,8 +7,7 @@ import ua.abond.lab4.config.core.exception.BeanInstantiationException;
 import javax.sql.DataSource;
 import java.util.AbstractList;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class DefaultBeanConstructorTest {
 

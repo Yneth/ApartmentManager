@@ -5,7 +5,7 @@ import ua.abond.lab4.config.core.annotation.ComponentScan;
 import ua.abond.lab4.config.core.bean.componentscan.TestClass;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class ComponentScanAnnotationBeanFactoryPostProcessorTest {
 
