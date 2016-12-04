@@ -3,6 +3,7 @@ package ua.abond.lab4.dao.jdbc;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.config.core.web.support.DefaultPage;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -24,6 +25,20 @@ import java.util.Optional;
 @Component
 @Prop("sql/order.sql.properties")
 public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
+    @Value("sql.create")
+    private String createSql;
+    @Value("sql.update")
+    private String updateSql;
+    @Value("sql.deleteById")
+    private String deleteByIdSql;
+    @Value("sql.getById")
+    private String getByIdSql;
+    @Value("sql.list")
+    private String listSql;
+    @Value("sql.count")
+    private String countSql;
+    @Value("sql.user.orders")
+    private String userOrdersSql;
 
     @Inject
     public JdbcOrderDAO(DataSource dataSource) {
@@ -35,8 +50,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO orders (id, apartment_id, request_id, price, payed) " +
-                            "VALUES (DEFAULT, ?, ?, ?, ?);",
+                    createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setLong(1, entity.getApartment().getId());
@@ -50,9 +64,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Optional<Order> getById(Long id) {
-        return jdbc.querySingle("SELECT o.id, o.apartment_id, o.request_id, o.price, o.payed " +
-                        "FROM orders o " +
-                        "WHERE o.id = ?;",
+        return jdbc.querySingle(
+                getByIdSql,
                 ps -> ps.setLong(1, id),
                 new OrderMapper()
         );
@@ -60,7 +73,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void update(Order entity) {
-        jdbc.execute("UPDATE orders SET apartment_id = ?, request_id = ?, price = ?, payed = ? WHERE id = ?;",
+        jdbc.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getApartment().getId());
                     ps.setLong(2, entity.getRequest().getId());
@@ -73,7 +86,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM orders WHERE id = ?;",
+        jdbc.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
@@ -81,9 +94,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     @Override
     public Page<Order> list(Pageable pageable) {
         List<Order> content = jdbc.query(
-                "SELECT o.id, o.apartment_id, o.request_id, o.price, o.payed, r.user_id " +
-                        "FROM orders o " +
-                        "INNER JOIN requests r ON r.id = o.request_id;",
+                String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new OrderMapper()
         );
         return new DefaultPage<>(content, count(), pageable);
@@ -91,10 +102,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Page<Order> getUserOrders(Pageable pageable, Long id) {
-        List<Order> content = jdbc.query("SELECT o.id, o.apartment_id, o.request_id, o.price, o.payed " +
-                        "FROM orders o " +
-                        "INNER JOIN requests r ON r.id = o.request_id " +
-                        "WHERE r.user_id = ?;",
+        List<Order> content = jdbc.query(
+                String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> ps.setLong(1, id),
                 new OrderMapper()
         );
@@ -103,7 +112,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public long count() {
-        return jdbc.querySingle("SELECT COUNT(*) FROM orders;", rs -> rs.getLong(1))
+        return jdbc.querySingle(countSql, rs -> rs.getLong(1))
                 .orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 
