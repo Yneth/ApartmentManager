@@ -15,6 +15,11 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
 
     @Override
     public Object postProcessBeforeInitialization(ConfigurableBeanFactory factory, Object bean, String beanName) {
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(ConfigurableBeanFactory factory, Object bean, String simpleName) {
         Arrays.stream(bean.getClass().getDeclaredFields()).
                 filter(f -> f.isAnnotationPresent(Inject.class)).
                 forEach(f -> inject(factory, bean, f));
@@ -25,20 +30,20 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         logger.debug("Trying to inject " + f.getName() + " of type " + f.getType()
                 + " to '" + bean.getClass().getSimpleName() + "'");
 
-        if (!f.isAccessible()) {
-            f.setAccessible(true);
-        }
-        Object injectable;
+        Object inject;
         if (!factory.containsBean(f.getType())) {
             BeanDefinition bd = factory.getBeanDefinition(f.getType());
-            injectable = factory.createBean(bd.getType().getSimpleName(), bd);
+            inject = factory.createBean(bd.getType().getSimpleName(), bd);
         } else {
-            injectable = factory.getBean(f.getType());
+            inject = factory.getBean(f.getType());
         }
         try {
-            f.set(bean, injectable);
+            if (!f.isAccessible()) {
+                f.setAccessible(true);
+            }
+            f.set(bean, inject);
         } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException("Failed to inject " + injectable + " to " + bean);
+            throw new BeanInstantiationException("Failed to inject " + inject + " to " + bean);
         }
     }
 

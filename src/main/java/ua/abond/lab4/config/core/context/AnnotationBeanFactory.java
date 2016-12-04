@@ -40,6 +40,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     private void initDefault() {
+        beans.put(this.getClass().getSimpleName(), this);
         this.scanner = new ClassPathBeanDefinitionScanner(this);
         this.beanConstructors.add(new DefaultBeanConstructor());
         this.beanConstructors.add(new InjectAnnotationBeanConstructor());
@@ -108,8 +109,6 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     @Override
     public final void prepare() {
         // TODO: clear beans or somewhat
-        beans.put(this.getClass().getSimpleName(), this);
-
         registerBeanFactoryPostProcessors();
         invokeBeanFactoryPostProcessors();
         registerBeanPostProcessors();
@@ -232,6 +231,10 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
         if (putToMap) {
             beans.put(simpleName, bean);
+        }
+
+        for (BeanPostProcessor bpp : beanPostProcessors) {
+            bean = bpp.postProcessAfterInitialization(this, bean, simpleName);
         }
         return bean;
     }
