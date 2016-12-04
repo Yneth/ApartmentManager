@@ -2,6 +2,7 @@ package ua.abond.lab4.config.core.bean;
 
 import org.junit.Test;
 import ua.abond.lab4.config.DatabaseConfig;
+import ua.abond.lab4.config.core.annotation.Bean;
 
 import javax.sql.DataSource;
 import java.util.AbstractList;
@@ -39,6 +40,17 @@ public class BeanDefinitionTest {
     }
 
     @Test
+    public void testHasFactoryMethod() throws Exception {
+        BeanDefinition beanDefinition = new BeanDefinition(DataSource.class, DatabaseConfig.class.getMethod("getDataSource"));
+        assertTrue(beanDefinition.hasFactoryMethod());
+    }
+
+    @Test
+    public void testHasNoFactoryMethod() throws Exception {
+        assertFalse(new BeanDefinition(String.class).hasFactoryMethod());
+    }
+
+    @Test
     public void testHasOnlyDefaultConstructorOnInterface() {
         assertTrue(new BeanDefinition(DataSource.class).hasOnlyDefaultConstructor());
     }
@@ -49,18 +61,62 @@ public class BeanDefinitionTest {
     }
 
     @Test
+    public void testHasDefaultConstructor() {
+        assertTrue(new BeanDefinition(ClassWithDefaultConstructor.class).hasOnlyDefaultConstructor());
+    }
+
+    @Test
+    public void testHasDefinedDefaultConstructor() {
+        assertTrue(new BeanDefinition(ClassWithDefinedDefaultConstructor.class).hasOnlyDefaultConstructor());
+    }
+
+    @Test
     public void testHasNoDefaultConstructor() {
-        assertFalse(new BeanDefinition(BeanDefinition.class).hasOnlyDefaultConstructor());
+        assertFalse(new BeanDefinition(ClassWithParametrizedConstructor.class).hasOnlyDefaultConstructor());
     }
 
     @Test
-    public void testHasFactoryMethod() throws Exception {
-        BeanDefinition beanDefinition = new BeanDefinition(DataSource.class, DatabaseConfig.class.getMethod("getDataSource"));
-        assertTrue(beanDefinition.hasFactoryMethod());
+    public void testHasMultipleConstructors() {
+        assertFalse(new BeanDefinition(ClassWithDefaultAndParameterConstructor.class).hasOnlyDefaultConstructor());
     }
 
     @Test
-    public void testHasNoFactoryMethod() throws Exception {
-        assertFalse(new BeanDefinition(String.class).hasFactoryMethod());
+    public void testClassWithDefaultConstructorAndPublicMethod() {
+        ClassWithDefaultConstructorAndPublicMethod a = new ClassWithDefaultConstructorAndPublicMethod();
+        assertTrue(new BeanDefinition(ClassWithDefaultConstructorAndPublicMethod.class).hasOnlyDefaultConstructor());
+    }
+
+    private static class ClassWithDefaultConstructor {
+
+    }
+
+    private static class ClassWithDefaultConstructorAndPublicMethod {
+
+        @Bean
+        public String method() {
+            return "";
+        }
+    }
+
+    private static class ClassWithDefinedDefaultConstructor {
+        public ClassWithDefinedDefaultConstructor() {
+
+        }
+    }
+
+    private static class ClassWithParametrizedConstructor {
+        public ClassWithParametrizedConstructor(int a) {
+
+        }
+    }
+
+    private static class ClassWithDefaultAndParameterConstructor {
+        public ClassWithDefaultAndParameterConstructor() {
+
+        }
+
+        public ClassWithDefaultAndParameterConstructor(int i) {
+
+        }
     }
 }

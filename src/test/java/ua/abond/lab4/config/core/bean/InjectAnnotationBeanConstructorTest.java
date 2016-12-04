@@ -1,30 +1,110 @@
 package ua.abond.lab4.config.core.bean;
 
+import org.junit.Before;
 import org.junit.Test;
+import ua.abond.lab4.config.core.annotation.Bean;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.config.core.exception.BeanInstantiationException;
 import ua.abond.lab4.config.core.exception.ImproperlyConfiguredException;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class InjectAnnotationBeanConstructorTest {
+    private AnnotationBeanFactory bf;
+
+    @Before
+    public void setUp() {
+        bf = new AnnotationBeanFactory();
+    }
+
+    @Test(expected = BeanInstantiationException.class)
+    public void testCreateAbstract() {
+        BeanDefinition bd = new BeanDefinition(Abstract.class);
+        bf.register(bd);
+        new InjectAnnotationBeanConstructor().create(bf, "", bd);
+    }
+
+    @Test
+    public void testCanNotCreateInnerClass() {
+        BeanDefinition bd = new BeanDefinition(InnerClass.class);
+        bf.register(bd);
+        assertFalse(new InjectAnnotationBeanConstructor().canCreate(bf, "", bd));
+    }
+
+    @Test
+    public void testCanCreateNoInjectableConstructor() {
+        BeanDefinition bd = new BeanDefinition(NoInjectableConstructor.class);
+        bf.register(bd);
+        assertFalse(new InjectAnnotationBeanConstructor().canCreate(bf, "", bd));
+    }
+
+    @Test(expected = BeanInstantiationException.class)
+    public void testCreateNoInjectableConstructor() {
+        BeanDefinition bd = new BeanDefinition(NoInjectableConstructor.class);
+        bf.register(bd);
+        new InjectAnnotationBeanConstructor().create(bf, "", bd);
+    }
+
+    @Test(expected = ImproperlyConfiguredException.class)
+    public void testHasMoreThanOneInjectableConstructor() {
+        BeanDefinition bd = new BeanDefinition(TwoInjectConstructors.class);
+        bf.register(bd);
+        new InjectAnnotationBeanConstructor().canCreate(bf, "", bd);
+    }
+
+    @Test
+    public void testCanCreateFactoryMethodBeanWithArgs() {
+        BeanDefinition bd = new BeanDefinition(FactoryMethodBeanWithArgs.class);
+        BeanDefinition nacBd = new BeanDefinition(NoArgConstructor.class);
+        bf.register(bd);
+        bf.register(nacBd);
+        new BeanAnnotationBeanFactoryPostProcessor().postProcess(bf);
+
+        BeanDefinition stringBd = bf.getBeanDefinition(String.class);
+        assertTrue(new InjectAnnotationBeanConstructor().canCreate(bf, "", stringBd));
+    }
+
+    @Test
+    public void testCanNotCreateFactoryMethodBeanWithArgs() {
+        BeanDefinition bd = new BeanDefinition(FactoryMethodBeanWithArgs.class);
+        BeanDefinition nacBd = new BeanDefinition(NoInjectableConstructor.class);
+        bf.register(bd);
+        bf.register(nacBd);
+        new BeanAnnotationBeanFactoryPostProcessor().postProcess(bf);
+
+        BeanDefinition stringBd = bf.getBeanDefinition(String.class);
+        assertFalse(new InjectAnnotationBeanConstructor().canCreate(bf, "", stringBd));
+    }
+
+    @Test
+    public void testCreateFactoryMethodBeanWithArgs() {
+        BeanDefinition bd = new BeanDefinition(FactoryMethodBeanWithArgs.class);
+        BeanDefinition nacBd = new BeanDefinition(NoArgConstructor.class);
+        bf.register(bd);
+        bf.register(nacBd);
+        new BeanAnnotationBeanFactoryPostProcessor().postProcess(bf);
+
+        String o = (String) new InjectAnnotationBeanConstructor().create(bf, "String", bf.getBeanDefinition(String.class));
+        assertNotNull(o);
+        assertEquals(new FactoryMethodBeanWithArgs().getString(new NoArgConstructor()), o);
+    }
 
     @Test(expected = BeanInstantiationException.class)
     public void testNoAvailableConstructor() {
-        AnnotationBeanFactory bf = new AnnotationBeanFactory();
-        bf.register(new BeanDefinition(String.class));
-        new InjectAnnotationBeanConstructor().create(bf, "", new BeanDefinition(String.class));
+        BeanDefinition bd = new BeanDefinition(String.class);
+        bf.register(bd);
+        new InjectAnnotationBeanConstructor().create(bf, "", bd);
     }
 
     @Test
     public void testPrivateInject() {
-        AnnotationBeanFactory bf = new AnnotationBeanFactory();
-        bf.register(new BeanDefinition(NoArgConstructor.class));
-        bf.register(new BeanDefinition(TestPrivateInject.class));
+        BeanDefinition noArgBean = new BeanDefinition(NoArgConstructor.class);
+        bf.register(noArgBean);
+        BeanDefinition privateInjectBean = new BeanDefinition(TestPrivateInject.class);
+        bf.register(privateInjectBean);
         TestPrivateInject o = (TestPrivateInject) new InjectAnnotationBeanConstructor().
-                create(bf, "TestPrivateInject", new BeanDefinition(TestPrivateInject.class));
+                create(bf, "TestPrivateInject", privateInjectBean);
         assertNotNull(o);
         assertNotNull(o.obj);
         assertTrue(o.obj.equals(bf.getBean(NoArgConstructor.class)));
@@ -32,13 +112,47 @@ public class InjectAnnotationBeanConstructorTest {
 
     @Test(expected = ImproperlyConfiguredException.class)
     public void testCyclicDependency() {
-        AnnotationBeanFactory bf = new AnnotationBeanFactory();
-        bf.register(new BeanDefinition(A.class));
+        BeanDefinition aBd = new BeanDefinition(A.class);
+        bf.register(aBd);
         bf.register(new BeanDefinition(B.class));
-        new InjectAnnotationBeanConstructor().create(bf, "", new BeanDefinition(A.class));
+        new InjectAnnotationBeanConstructor().create(bf, "A", aBd);
+    }
+
+    private class InnerClass {
+
+        @Inject
+        public InnerClass() {
+
+        }
+    }
+
+    private static abstract class Abstract {
+
+        @Inject
+        public Abstract() {
+
+        }
+    }
+
+    private static class NoInjectableConstructor {
+
+    }
+
+    private static class FactoryMethodBeanWithArgs {
+
+        @Inject
+        public FactoryMethodBeanWithArgs() {
+
+        }
+
+        @Bean
+        public String getString(NoArgConstructor nac) {
+            return nac.getClass().getSimpleName();
+        }
     }
 
     private static class NoArgConstructor {
+
         @Inject
         public NoArgConstructor() {
 
@@ -51,6 +165,19 @@ public class InjectAnnotationBeanConstructorTest {
         @Inject
         private TestPrivateInject(NoArgConstructor a) {
             obj = a;
+        }
+    }
+
+    private static class TwoInjectConstructors {
+
+        @Inject
+        private TwoInjectConstructors(NoArgConstructor a) {
+
+        }
+
+        @Inject
+        private TwoInjectConstructors(String s) {
+
         }
     }
 

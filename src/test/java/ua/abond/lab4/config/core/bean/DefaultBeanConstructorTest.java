@@ -13,6 +13,11 @@ import static org.junit.Assert.assertNotNull;
 public class DefaultBeanConstructorTest {
 
     @Test
+    public void testCanCreateNestedClassWithDefault() {
+        assertTrue(canCreateIgnoreFactoryAndName(new BeanDefinition(TestNestedClassWithDefaultConstructor.class)));
+    }
+
+    @Test
     public void testCanCreateClassWithPrivateConstructor() {
         assertTrue(canCreateIgnoreFactoryAndName(new BeanDefinition(TestClassWithPrivateConstructor.class)));
     }
@@ -58,6 +63,10 @@ public class DefaultBeanConstructorTest {
 
     private Object createBeanIgnoreFactoryAndName(BeanDefinition bd) {
         return new DefaultBeanConstructor().create(new AnnotationBeanFactory(), "", bd);
+    }
+
+    private static class TestNestedClassWithDefaultConstructor {
+
     }
 
     private static class TestClassWithPrivateConstructor {
