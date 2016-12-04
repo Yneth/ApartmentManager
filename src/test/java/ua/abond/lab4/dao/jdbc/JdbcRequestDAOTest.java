@@ -2,6 +2,9 @@ package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
+import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.config.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.dao.RequestDAO;
@@ -77,5 +80,36 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
     public void deleteById() throws Exception {
         requestDAO.deleteById(0L);
         assertTrue(Optional.empty().equals(requestDAO.getById(0L)));
+    }
+
+    @Test
+    public void testList() throws Exception {
+        Page<Request> list = requestDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
+        assertNotNull(list);
+        assertNotNull(list.getContent());
+        assertEquals(1, list.getSize());
+        assertEquals(2, list.getTotalPages());
+    }
+
+    @Test
+    public void testEmptyList() throws Exception {
+        tester.onTearDown();
+        tester.setDataSet(loadDataSet("empty.xml"));
+        tester.onSetup();
+
+        Page<Request> page = requestDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
+        assertNotNull(page);
+        assertNotNull(page.getContent());
+        assertFalse(page.hasContent());
+    }
+
+    @Test
+    public void testGetUserRequests() throws Exception {
+        Page<Request> page = requestDAO.getUserOrders(new DefaultPageable(1, 1, SortOrder.ASC), 1L);
+        assertNotNull(page);
+        assertTrue(page.hasContent());
+        assertNotNull(page.getContent());
+        assertEquals(1, page.getSize());
+        assertEquals(1, page.getTotalPages());
     }
 }

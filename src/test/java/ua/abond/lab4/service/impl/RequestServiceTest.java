@@ -169,7 +169,7 @@ public class RequestServiceTest {
             requestService.confirmRequest(requestDTO);
         } catch (ServiceException e) {
         }
-        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null, null)).getSize());
+        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null)).getSize());
     }
 
     @Test

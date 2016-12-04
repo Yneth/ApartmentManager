@@ -86,7 +86,7 @@ public class JdbcOrderDAOTest extends JdbcDAOTest {
 
     @Test
     public void testList() throws Exception {
-        Page<Order> list = orderDAO.list(new DefaultPageable(1, 1, "", SortOrder.ASC));
+        Page<Order> list = orderDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
         assertNotNull(list);
         assertNotNull(list.getContent());
         assertEquals(1, list.getSize());
@@ -99,7 +99,7 @@ public class JdbcOrderDAOTest extends JdbcDAOTest {
         tester.setDataSet(loadDataSet("empty.xml"));
         tester.onSetup();
 
-        Page<Order> page = orderDAO.list(new DefaultPageable(1, 1, "", SortOrder.ASC));
+        Page<Order> page = orderDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
         assertNotNull(page);
         assertNotNull(page.getContent());
         assertFalse(page.hasContent());
@@ -107,7 +107,7 @@ public class JdbcOrderDAOTest extends JdbcDAOTest {
 
     @Test
     public void testGetUserOrders() throws Exception {
-        Page<Order> page = orderDAO.getUserOrders(new DefaultPageable(1, 1, "", SortOrder.ASC), 1L);
+        Page<Order> page = orderDAO.getUserOrders(new DefaultPageable(1, 1, SortOrder.ASC), 1L);
         assertNotNull(page);
         assertTrue(page.hasContent());
         assertNotNull(page.getContent());
