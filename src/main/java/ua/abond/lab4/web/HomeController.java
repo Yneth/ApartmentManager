@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Controller
 public class HomeController {
-    private static final String HOME_VIEW = "/WEB-INF/pages/index.jsp";
+    public static final String HOME_VIEW = "/WEB-INF/pages/index.jsp";
 
     @RequestMapping("/")
     public void getIndexPage(HttpServletRequest req, HttpServletResponse resp)

@@ -21,10 +21,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
-    private static final String REGISTER_VIEW = "/WEB-INF/pages/register.jsp";
+    public static final String REGISTER_VIEW = "/WEB-INF/pages/register.jsp";
+
+    private final UserService service;
 
     @Inject
-    private UserService service;
+    public RegisterController(UserService service) {
+        this.service = service;
+    }
 
     @RequestMapping
     public void getRegisterPage(HttpServletRequest req, HttpServletResponse resp)
@@ -40,6 +44,12 @@ public class RegisterController {
     @RequestMapping(method = RequestMethod.POST)
     public void register(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        User sessionUser = new UserSessionRequestMapper().map(req);
+        if (sessionUser != null) {
+            resp.sendRedirect("/");
+            return;
+        }
+
         User user = new UserRequestMapper().map(req);
         List<String> errors = new UserValidator().validate(user);
         if (!errors.isEmpty()) {
