@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
 <t:site-page>
     <div class="container">
@@ -21,6 +22,7 @@
 
                     <input class="btn btn-primary form-control" type="submit" value="Register"/>
                 </form>
+                <p:error-partial/>
             </div>
         </div>
     </div>
