@@ -24,6 +24,12 @@
                     <p><a class="btn btn-primary" href="/user/requests" role="button">View requests »</a></p>
                     <p><a class="btn btn-primary" href="/user/request/new" role="button">Make a new request »</a></p>
                 </c:if>
+                <c:if test="${sessionScope.user.authority.name == 'SUPERSU'}">
+                    <h1>Hi, ${sessionScope.user.login}.</h1>
+                    <p>Here you can make new admin users.</p>
+                    <p><a class="btn btn-primary" href="/supersu/admin/new" role="button">Create admin »</a></p>
+                    <p><a class="btn btn-primary" href="/supersu/admins?page=1&size=10" role="button">View admins »</a></p>
+                </c:if>
             </div>
         </div>
     </c:if>
