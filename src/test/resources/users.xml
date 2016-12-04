@@ -3,5 +3,5 @@
     <authorities id="0" name="ADMIN"/>
     <authorities id="1" name="USER"/>
     <users id="0" login="admin" password="admin" authority_id="0"/>
-    <users id="1" second_name="Taras" last_name="Bulba" login="Taras" password="Bulba" authority_id="1"/>
+    <users id="1" first_name="Taras" last_name="Bulba" login="Taras" password="Bulba" authority_id="1"/>
 </dataset>

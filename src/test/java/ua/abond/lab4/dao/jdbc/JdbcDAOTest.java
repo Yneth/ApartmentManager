@@ -1,8 +1,9 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.IDatabaseTester;
+import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatDtdWriter;
+import org.dbunit.dataset.xml.FlatDtdDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
 import org.junit.Before;
@@ -10,8 +11,6 @@ import ua.abond.lab4.config.core.BeanFactory;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 
 public class JdbcDAOTest {
     private static final String TEST_PACKAGE = "ua.abond.lab4.db";
@@ -27,11 +26,8 @@ public class JdbcDAOTest {
         this.tester = beanFactory.getBean(IDatabaseTester.class);
         onBeforeSetup();
 
-        Writer out = new OutputStreamWriter(new FileOutputStream(
-                DB_UNIT_DTD_PATH
-        ));
-        FlatDtdWriter datasetWriter = new FlatDtdWriter(out);
-        datasetWriter.write(dataSet);
+        IDatabaseConnection connection = tester.getConnection();
+        FlatDtdDataSet.write(connection.createDataSet(), new FileOutputStream(DB_UNIT_DTD_PATH));
         this.tester.setDataSet(dataSet);
         this.tester.onSetup();
     }

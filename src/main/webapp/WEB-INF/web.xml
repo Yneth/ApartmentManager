@@ -32,6 +32,20 @@
     </servlet-mapping>
 
     <filter>
+        <filter-name>SuperUserFilter</filter-name>
+        <filter-class>ua.abond.lab4.web.filter.AuthorityFilter</filter-class>
+        <init-param>
+            <param-name>authority</param-name>
+            <param-value>supersu</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>SuperUserFilter</filter-name>
+        <url-pattern>/supersu/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>AdminFilter</filter-name>
         <filter-class>ua.abond.lab4.web.filter.AuthorityFilter</filter-class>
         <init-param>

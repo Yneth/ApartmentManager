@@ -3,6 +3,10 @@ package ua.abond.lab4.dao.jdbc;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
+import ua.abond.lab4.config.core.web.support.DefaultPage;
+import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
@@ -13,11 +17,26 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 @Prop("sql/user.sql.properties")
 public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
+    @Value("sql.create")
+    private String createSql;
+    @Value("sql.update")
+    private String updateSql;
+    @Value("sql.deleteById")
+    private String deleteByIdSql;
+    @Value("sql.getById")
+    private String getByIdSql;
+    @Value("sql.getByLogin")
+    private String getByLoginSql;
+    @Value("sql.list")
+    private String listSql;
+    @Value("sql.count")
+    private String countSql;
 
     @Inject
     public JdbcUserDAO(DataSource dataSource) {
@@ -29,8 +48,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO users (id, first_name, last_name, login, password, authority_id) " +
-                            "VALUES (DEFAULT, ?, ?, ?, ?, ?);",
+                    createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, entity.getFirstName());
@@ -45,10 +63,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Optional<User> getById(Long id) {
-        return jdbc.querySingle("SELECT u.id, u.first_name, u.last_name, u.login, u.password, u.authority_id, a.name " +
-                        "FROM users u " +
-                        "INNER JOIN authorities a ON a.id = u.authority_id " +
-                        "WHERE u.id = ?;",
+        return jdbc.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new UserMapper()
         );
@@ -56,7 +71,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void update(User entity) {
-        jdbc.execute("UPDATE users SET first_name = ?, last_name = ?, password = ? WHERE id = ?;",
+        jdbc.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getFirstName());
                     ps.setString(2, entity.getLastName());
@@ -68,20 +83,29 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM users WHERE id = ?;",
+        jdbc.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<User> getByLogin(String login) {
-        return jdbc.querySingle("SELECT u.id, u.first_name, u.last_name, u.login, u.password, u.authority_id, a.name " +
-                        "FROM users u " +
-                        "INNER JOIN authorities a ON a.id = u.authority_id " +
-                        "WHERE u.login = ?;",
+        return jdbc.querySingle(getByLoginSql,
                 ps -> ps.setString(1, login),
                 new UserMapper()
         );
+    }
+
+    @Override
+    public Page<User> list(Pageable pageable, Long authId) {
+        long count = jdbc.querySingle(countSql, ps -> ps.setLong(1, authId), rs -> rs.getLong(1)).
+                orElse(0L);
+        List<User> query = jdbc.query(
+                String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
+                ps -> ps.setLong(1, authId),
+                new UserMapper()
+        );
+        return new DefaultPage<>(query, count, pageable);
     }
 
     private static class UserMapper implements RowMapper<User> {
