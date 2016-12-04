@@ -101,7 +101,8 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable, Request filter) {
         long count = count();
-        List<Apartment> query = jdbc.query(String.format(filterMostAppropriateSql, pageable.getOffset(), pageable.getPageSize()),
+        List<Apartment> query = jdbc.query(
+                String.format(filterMostAppropriateSql, pageable.getOffset(), pageable.getPageSize()),
                 ps -> {
                     ps.setInt(1, filter.getLookup().getRoomCount());
                     ps.setString(2, filter.getLookup().getType().getName());
@@ -130,6 +131,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
             type.setName(rs.getString(4));
             apartment.setPrice(rs.getBigDecimal(5));
             apartment.setType(type);
+            apartment.setName(rs.getString(6));
             return apartment;
         }
     }
