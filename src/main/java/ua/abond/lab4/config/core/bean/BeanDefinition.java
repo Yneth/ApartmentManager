@@ -3,6 +3,7 @@ package ua.abond.lab4.config.core.bean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class BeanDefinition implements Comparable<BeanDefinition> {
@@ -28,14 +29,28 @@ public class BeanDefinition implements Comparable<BeanDefinition> {
         return Modifier.isAbstract(type.getModifiers());
     }
 
+    public boolean isNestedClass() {
+        return Modifier.isStatic(type.getModifiers()) && type.getEnclosingClass() != null;
+    }
+
+    public boolean isInnerClass() {
+        return !Modifier.isStatic(type.getModifiers()) && type.getEnclosingClass() != null;
+    }
+
     public boolean hasOnlyDefaultConstructor() {
-        Constructor<?>[] constructors = type.getDeclaredConstructors();
-        if (constructors.length > 1) {
-            return false;
+        if (hasFactoryMethod() && factoryMethod.getParameterCount() == 0) {
+            return true;
         }
-        return constructors.length == 0
-                || constructors[0].getParameterCount() == 0
-                || (hasFactoryMethod() && factoryMethod.getParameterCount() == 0);
+        Constructor<?>[] constructors = type.getDeclaredConstructors();
+        if (isNestedClass() && constructors.length == 2) {
+            Class<?> cls = type.getEnclosingClass();
+            return Arrays.stream(constructors).
+                    map(Constructor::getParameterTypes).
+                    flatMap(Arrays::stream).
+                    allMatch(Class::isSynthetic);
+        }
+        return constructors.length <= 1
+                && (constructors.length == 0 || constructors[0].getParameterCount() == 0);
     }
 
     public boolean hasFactoryMethod() {
