@@ -1,13 +1,14 @@
 package ua.abond.lab4.web;
 
-import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
+import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
+import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
@@ -16,6 +17,7 @@ import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.OptionalConsumer;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.mapper.ApartmentRequestMapper;
 import ua.abond.lab4.web.mapper.ConfirmRequestDTORequestMapper;
 import ua.abond.lab4.web.mapper.PageableRequestMapper;
 import ua.abond.lab4.web.validation.ConfirmRequestDTOValidator;
@@ -30,12 +32,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private static final Logger logger = Logger.getLogger(AdminController.class);
     private static final String REQUEST_VIEW = "/WEB-INF/pages/admin/request.jsp";
     private static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
-    private static final String ORDER_VIEW = "/WEB-INF/pages/admin/order.jsp";
     private static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
     private static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
+    private static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
+    private static final String APARTMENT_TYPES_VIEW = "/WEB-INF/pages/admin/apartment-types.jsp";
+    private static final String APARTMENT_TYPE_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment-type.jsp";
 
     @Inject
     private OrderService orderService;
@@ -43,6 +46,9 @@ public class AdminController {
     private RequestService requestService;
     @Inject
     private ApartmentService apartmentService;
+    @Inject
+    private ApartmentTypeDAO apartmentTypeDAO;
+
 
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -105,6 +111,42 @@ public class AdminController {
         req.setAttribute("pageable", pageable);
         req.setAttribute("count", page.getTotalPages());
         req.getRequestDispatcher(APARTMENTS_VIEW).forward(req, resp);
+    }
+
+    @RequestMapping("/apartment/new")
+    public void getApartmentCreatePage(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
+        req.getRequestDispatcher(APARTMENT_CREATE_VIEW).forward(req, resp);
+    }
+
+    @RequestMapping(value = "/apartment/new", method = RequestMethod.POST)
+    public void createApartment(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        Apartment apartment = new ApartmentRequestMapper().map(req);
+        // TODO add validation
+        apartmentService.createApartment(apartment);
+
+        resp.sendRedirect("/admin/apartments");
+    }
+
+    @RequestMapping("/apartment/types")
+    public void getApartmentTypesPage(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        List<ApartmentType> list = apartmentTypeDAO.list();
+        req.setAttribute("apartmentTypes", list);
+
+        req.getRequestDispatcher(APARTMENT_TYPES_VIEW).forward(req, resp);
+    }
+
+    @RequestMapping(value = "/apartment/type/new", method = RequestMethod.POST)
+    public void createApartmentType(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String name = req.getParameter("name");
+        ApartmentType apartmentType = new ApartmentType();
+        apartmentType.setName(name);
+        apartmentTypeDAO.create(apartmentType);
+        resp.sendRedirect("/apartment/types");
     }
 
     @RequestMapping("/orders")
