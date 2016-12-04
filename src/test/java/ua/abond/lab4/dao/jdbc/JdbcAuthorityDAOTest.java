@@ -1,31 +1,24 @@
 package ua.abond.lab4.dao.jdbc;
 
-import org.junit.Before;
 import org.junit.Test;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
 
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class JdbcAuthorityDAOTest extends JdbcDAOTest {
     private AuthorityDAO authorityDAO;
 
-    public JdbcAuthorityDAOTest() throws Exception {
-        super("authorities-dataset.xml");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        authorityDAO = new JdbcAuthorityDAO(dataSource);
+    @Override
+    protected void onBeforeSetup() throws Exception {
+        dataSet = loadDataSet("authorities.xml");
+        authorityDAO = beanFactory.getBean(AuthorityDAO.class);
     }
 
     @Test
-    public void create() throws Exception {
+    public void testCreate() throws Exception {
         Authority authority = new Authority();
         authority.setName("TEST");
         authorityDAO.create(authority);
@@ -34,33 +27,33 @@ public class JdbcAuthorityDAOTest extends JdbcDAOTest {
     }
 
     @Test
-    public void getById() throws Exception {
+    public void testGetById() throws Exception {
         Optional<Authority> byId = authorityDAO.getById(1L);
         assertNotEquals(Optional.empty(), byId);
         assertEquals("USER", byId.get().getName());
     }
 
     @Test
-    public void getByName() throws Exception {
+    public void testGetByName() throws Exception {
         Optional<Authority> byId = authorityDAO.getByName("USER");
         assertNotEquals(Optional.empty(), byId);
         assertEquals("USER", byId.get().getName());
     }
 
     @Test
-    public void getByIdNonExisting() throws Exception {
+    public void testGetByIdNonExisting() throws Exception {
         Optional<Authority> byId = authorityDAO.getById(100L);
         assertEquals(Optional.empty(), byId);
     }
 
     @Test
-    public void getByNameNonExisting() throws Exception {
+    public void testGetByNameNonExisting() throws Exception {
         Optional<Authority> byId = authorityDAO.getByName("da");
         assertEquals(Optional.empty(), byId);
     }
 
     @Test
-    public void update() throws Exception {
+    public void testUpdate() throws Exception {
         Authority authority = authorityDAO.getById(0L).get();
         authority.setName("Test1");
         authorityDAO.update(authority);
@@ -69,7 +62,7 @@ public class JdbcAuthorityDAOTest extends JdbcDAOTest {
     }
 
     @Test
-    public void deleteById() throws Exception {
+    public void testDeleteById() throws Exception {
         Authority authority = new Authority();
         authority.setName("TEST");
         authorityDAO.create(authority);

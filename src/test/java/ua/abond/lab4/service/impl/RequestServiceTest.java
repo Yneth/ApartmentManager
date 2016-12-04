@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 public class RequestServiceTest {
-    private static final String DATASET = "orders-dataset.xml";
+    private static final String DATASET = "orders.xml";
     private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     @Rule

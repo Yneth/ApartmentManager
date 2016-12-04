@@ -1,7 +1,8 @@
 package ua.abond.lab4.db;
 
+import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.IDatabaseTester;
-import org.dbunit.JdbcDatabaseTester;
+import org.dbunit.operation.DatabaseOperation;
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.config.core.annotation.*;
 
@@ -30,12 +31,11 @@ public class DatabaseTestConfig {
     }
 
     @Bean
-    public IDatabaseTester databaseTester() throws ClassNotFoundException {
-        return new JdbcDatabaseTester(
-                driver,
-                url,
-                username,
-                password
-        );
+    public IDatabaseTester databaseTester(DataSource ds)
+            throws Exception {
+        IDatabaseTester tester = new DataSourceDatabaseTester(ds);
+        tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+        tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
+        return tester;
     }
 }

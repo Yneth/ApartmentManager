@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +36,12 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
         final String sql = "INSERT INTO apartment_types(id, name) VALUES (DEFAULT, ?);";
         jdbc.update(
                 conn -> {
-                    PreparedStatement ps = conn.prepareStatement(sql);
+                    PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                     ps.setString(1, entity.getName());
                     return ps;
                 }, keyHolder
         );
+        entity.setId(keyHolder.getKey().longValue());
     }
 
     @Override
@@ -52,8 +54,11 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public void update(ApartmentType entity) {
-        jdbc.execute("UPDATE apartment_types SET name = ?",
-                ps -> ps.setString(1, entity.getName())
+        jdbc.execute("UPDATE apartment_types SET name = ? WHERE id = ?",
+                ps -> {
+                    ps.setString(1, entity.getName());
+                    ps.setLong(2, entity.getId());
+                }
         );
     }
 

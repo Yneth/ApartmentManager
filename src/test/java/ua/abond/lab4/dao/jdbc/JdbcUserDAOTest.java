@@ -1,19 +1,15 @@
 package ua.abond.lab4.dao.jdbc;
 
-import org.junit.Before;
 import org.junit.Test;
 import ua.abond.lab4.dao.UserDAO;
 
 public class JdbcUserDAOTest extends JdbcDAOTest {
     private UserDAO userDAO;
 
-    public JdbcUserDAOTest() {
-        super("users-dataset.xml");
-    }
-
-    @Before
-    public void setUp() {
-        userDAO = new JdbcUserDAO(dataSource);
+    @Override
+    protected void onBeforeSetup() throws Exception {
+        dataSet = loadDataSet("users.xml");
+        userDAO = beanFactory.getBean(UserDAO.class);
     }
 
     @Test

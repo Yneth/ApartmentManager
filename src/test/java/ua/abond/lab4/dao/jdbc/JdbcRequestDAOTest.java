@@ -1,7 +1,6 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.dataset.ITable;
-import org.junit.Before;
 import org.junit.Test;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
@@ -13,7 +12,6 @@ import ua.abond.lab4.domain.Request;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
 
 public class JdbcRequestDAOTest extends JdbcDAOTest {
@@ -22,17 +20,13 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
     private ApartmentDAO apartmentDAO;
     private ApartmentTypeDAO apartmentTypeDAO;
 
-    public JdbcRequestDAOTest() {
-        super("requests-dataset.xml");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        userDAO = new JdbcUserDAO(dataSource);
-        requestDAO = new JdbcRequestDAO(dataSource);
-        apartmentDAO = new JdbcApartmentDAO(dataSource);
-        apartmentTypeDAO = new JdbcApartmentTypeDAO(dataSource);
+    @Override
+    protected void onBeforeSetup() throws Exception {
+        dataSet = loadDataSet("requests.xml");
+        userDAO = beanFactory.getBean(UserDAO.class);
+        requestDAO = beanFactory.getBean(RequestDAO.class);
+        apartmentDAO = beanFactory.getBean(ApartmentDAO.class);
+        apartmentTypeDAO = beanFactory.getBean(ApartmentTypeDAO.class);
     }
 
     @Test

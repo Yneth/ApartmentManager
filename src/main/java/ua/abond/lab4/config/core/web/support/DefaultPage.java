@@ -28,7 +28,7 @@ public class DefaultPage<T> implements Page<T> {
 
     @Override
     public boolean hasContent() {
-        return content != null;
+        return content != null && !content.isEmpty();
     }
 
     @Override
