@@ -16,6 +16,8 @@
                     <p><a class="btn btn-primary" href="/admin/orders" role="button">View orders »</a></p>
                     <p><a class="btn btn-primary" href="/admin/requests" role="button">View requests »</a></p>
                     <p><a class="btn btn-primary" href="/admin/apartments" role="button">View apartments »</a></p>
+                    <p><a class="btn btn-primary" href="/admin/apartment/new" role="button">Create a new apartment »</a>
+                    </p>
                 </c:if>
                 <c:if test="${sessionScope.user.authority.name == 'USER'}">
                     <h1>Hi, ${sessionScope.user.login}.</h1>
@@ -28,7 +30,8 @@
                     <h1>Hi, ${sessionScope.user.login}.</h1>
                     <p>Here you can make new admin users.</p>
                     <p><a class="btn btn-primary" href="/supersu/admin/new" role="button">Create admin »</a></p>
-                    <p><a class="btn btn-primary" href="/supersu/admins?page=1&size=10" role="button">View admins »</a></p>
+                    <p><a class="btn btn-primary" href="/supersu/admins?page=1&size=10" role="button">View admins »</a>
+                    </p>
                 </c:if>
             </div>
         </div>

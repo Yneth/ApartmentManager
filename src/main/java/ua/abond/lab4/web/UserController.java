@@ -144,6 +144,6 @@ public class UserController {
             viewOrder(req, resp);
             return;
         }
-        resp.sendRedirect("/orders");
+        resp.sendRedirect("/user/orders");
     }
 }
