@@ -8,7 +8,6 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
-import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
@@ -16,10 +15,12 @@ import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.OptionalConsumer;
+import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 import ua.abond.lab4.web.mapper.ApartmentRequestMapper;
 import ua.abond.lab4.web.mapper.ConfirmRequestDTORequestMapper;
 import ua.abond.lab4.web.mapper.PageableRequestMapper;
+import ua.abond.lab4.web.validation.ApartmentValidator;
 import ua.abond.lab4.web.validation.ConfirmRequestDTOValidator;
 
 import javax.servlet.ServletException;
@@ -36,9 +37,8 @@ public class AdminController {
     private static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
     private static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
     private static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
+    private static final String APARTMENT_VIEW = "/WEB-INF/pages/admin/apartment.jsp";
     private static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
-    private static final String APARTMENT_TYPES_VIEW = "/WEB-INF/pages/admin/apartment-types.jsp";
-    private static final String APARTMENT_TYPE_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment-type.jsp";
 
     @Inject
     private OrderService orderService;
@@ -49,7 +49,6 @@ public class AdminController {
     @Inject
     private ApartmentTypeDAO apartmentTypeDAO;
 
-
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -57,7 +56,7 @@ public class AdminController {
         List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
-            getRequestPage(req, resp);
+            viewRequest(req, resp);
             return;
         }
 
@@ -66,14 +65,14 @@ public class AdminController {
         } catch (ServiceException e) {
             errors.add(e.getMessage());
             req.setAttribute("errors", errors);
-            getRequestPage(req, resp);
+            viewRequest(req, resp);
             return;
         }
         resp.sendRedirect("/admin/requests");
     }
 
     @RequestMapping("/request")
-    public void getRequestPage(HttpServletRequest req, HttpServletResponse resp)
+    public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
         Pageable pageable = new PageableRequestMapper().map(req);
@@ -91,7 +90,7 @@ public class AdminController {
     }
 
     @RequestMapping("/requests")
-    public void getRequests(HttpServletRequest req, HttpServletResponse resp)
+    public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
         Page<Request> page = requestService.list(pageable);
@@ -102,7 +101,7 @@ public class AdminController {
     }
 
     @RequestMapping("/apartments")
-    public void getApartments(HttpServletRequest req, HttpServletResponse resp)
+    public void viewApartments(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
         Page<Apartment> page = apartmentService.list(pageable);
@@ -124,29 +123,51 @@ public class AdminController {
     public void createApartment(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Apartment apartment = new ApartmentRequestMapper().map(req);
-        // TODO add validation
+        List<String> errors = new ApartmentValidator().validate(apartment);
+        if (!errors.isEmpty()) {
+            req.setAttribute("errors", errors);
+            getApartmentCreatePage(req, resp);
+            return;
+        }
+
         apartmentService.createApartment(apartment);
 
         resp.sendRedirect("/admin/apartments");
     }
 
-    @RequestMapping("/apartment/types")
-    public void getApartmentTypesPage(HttpServletRequest req, HttpServletResponse resp)
+    @RequestMapping("/apartment")
+    public void viewApartment(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<ApartmentType> list = apartmentTypeDAO.list();
-        req.setAttribute("apartmentTypes", list);
-
-        req.getRequestDispatcher(APARTMENT_TYPES_VIEW).forward(req, resp);
+        Long id = Parse.longValue(req.getParameter("id"));
+        try {
+            req.setAttribute("apartment", apartmentService.getById(id));
+            req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
+        } catch (ServiceException e) {
+            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
+        }
+        req.getRequestDispatcher(APARTMENT_VIEW).forward(req, resp);
     }
 
-    @RequestMapping(value = "/apartment/type/new", method = RequestMethod.POST)
-    public void createApartmentType(HttpServletRequest req, HttpServletResponse resp)
+    @RequestMapping(value = "/apartment/update", method = RequestMethod.POST)
+    public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String name = req.getParameter("name");
-        ApartmentType apartmentType = new ApartmentType();
-        apartmentType.setName(name);
-        apartmentTypeDAO.create(apartmentType);
-        resp.sendRedirect("/apartment/types");
+        Apartment apartment = new ApartmentRequestMapper().map(req);
+        List<String> errors = new ApartmentValidator().validate(apartment);
+        if (!errors.isEmpty()) {
+            req.setAttribute("errors", errors);
+            viewApartment(req, resp);
+            return;
+        }
+
+        try {
+            apartmentService.updateApartment(apartment);
+        } catch (ServiceException e) {
+            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
+            viewApartment(req, resp);
+            return;
+        }
+
+        resp.sendRedirect("/admin/apartments");
     }
 
     @RequestMapping("/orders")

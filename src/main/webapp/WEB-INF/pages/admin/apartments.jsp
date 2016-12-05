@@ -10,8 +10,11 @@
                 <thead>
                 <tr>
                     <td>Id</td>
+                    <td>Name</td>
                     <td>Room count</td>
                     <td>Apartment type</td>
+                    <td>Price</td>
+                    <td>Edit</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -19,8 +22,13 @@
                     <c:forEach items="${apartments}" var="apartment">
                         <tr>
                             <td>${apartment.id}</td>
+                            <td>${apartment.name}</td>
                             <td>${apartment.roomCount}</td>
                             <td>${apartment.type.name}</td>
+                            <td>${apartment.price}</td>
+                            <td>
+                                <a class="btn btn-primary" href="/admin/apartment?id=${apartment.id}">View</a>
+                            </td>
                         </tr>
                     </c:forEach>
                 </c:if>

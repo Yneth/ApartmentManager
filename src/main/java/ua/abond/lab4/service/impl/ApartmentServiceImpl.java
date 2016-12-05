@@ -9,6 +9,9 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
+import ua.abond.lab4.service.exception.ServiceException;
+
+import java.util.Objects;
 
 @Component
 public class ApartmentServiceImpl implements ApartmentService {
@@ -27,7 +30,15 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public void updateApartment(Apartment apartment) {
+    public void updateApartment(Apartment apartment) throws ServiceException {
+        Objects.requireNonNull(apartment.getId());
+
+        Apartment toUpdate = apartmentDAO.getById(apartment.getId()).
+                orElseThrow(() -> new ServiceException("Could not update as there is no such apartment."));
+        toUpdate.setName(apartment.getName());
+        toUpdate.setPrice(apartment.getPrice());
+        toUpdate.setType(apartment.getType());
+
         apartmentDAO.update(apartment);
     }
 
@@ -46,5 +57,11 @@ public class ApartmentServiceImpl implements ApartmentService {
     public Page<Apartment> listMostAppropriate(Pageable pageable, Request filter) {
         logger.debug("Getting a filtered list");
         return apartmentDAO.list(pageable, filter);
+    }
+
+    @Override
+    public Apartment getById(Long id) throws ServiceException {
+        return apartmentDAO.getById(id).
+                orElseThrow(() -> new ServiceException("No such apartment."));
     }
 }
