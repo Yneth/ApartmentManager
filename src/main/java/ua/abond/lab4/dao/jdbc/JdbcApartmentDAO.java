@@ -58,6 +58,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
             ps.setInt(1, entity.getRoomCount());
             ps.setLong(2, entity.getType().getId());
             ps.setBigDecimal(3, entity.getPrice());
+            ps.setString(4, entity.getName());
             return ps;
         }, holder);
         entity.setId(holder.getKey().longValue());
@@ -78,7 +79,8 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
                     ps.setBigDecimal(3, entity.getPrice());
-                    ps.setLong(4, entity.getId());
+                    ps.setString(4, entity.getName());
+                    ps.setLong(5, entity.getId());
                 }
         );
     }
@@ -94,7 +96,10 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable) {
         long count = count();
-        List<Apartment> query = jdbc.query(listSql, new ApartmentMapper());
+        List<Apartment> query = jdbc.query(
+                String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
+                new ApartmentMapper()
+        );
         return new DefaultPage<>(query, count, pageable);
     }
 
@@ -102,7 +107,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     public Page<Apartment> list(Pageable pageable, Request filter) {
         long count = count();
         List<Apartment> query = jdbc.query(
-                String.format(filterMostAppropriateSql, pageable.getOffset(), pageable.getPageSize()),
+                String.format(filterMostAppropriateSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> {
                     ps.setInt(1, filter.getLookup().getRoomCount());
                     ps.setString(2, filter.getLookup().getType().getName());
