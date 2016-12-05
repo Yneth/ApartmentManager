@@ -36,7 +36,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         Objects.requireNonNull(path);
         initDefault();
         scan(path);
-        prepare();
+        refresh();
     }
 
     private void initDefault() {
@@ -107,8 +107,13 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     @Override
-    public final void prepare() {
-        // TODO: clear beans or somewhat
+    public final void refresh() {
+        beans.clear();
+        beanConstructors.clear();
+        beanPostProcessors.clear();
+        beanFactoryPostProcessors.clear();
+
+        initDefault();
         registerBeanFactoryPostProcessors();
         invokeBeanFactoryPostProcessors();
         registerBeanPostProcessors();

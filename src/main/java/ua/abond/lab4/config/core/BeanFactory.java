@@ -15,5 +15,5 @@ public interface BeanFactory {
 
     <T> Map<String, T> getBeansOfType(Class<T> type);
 
-    void prepare();
+    void refresh();
 }
