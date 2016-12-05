@@ -11,6 +11,7 @@ import ua.abond.lab4.domain.Request;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -86,6 +87,18 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     @Test
     public void testCount() {
         assertEquals(3, apartmentDAO.count());
+    }
+
+    @Test
+    public void testListOrderedById() {
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC));
+        List<Apartment> content = page.getContent();
+
+        for (int i = 0; i < content.size() - 1; i++) {
+            Apartment current = content.get(i);
+            Apartment next = content.get(i + 1);
+            assertTrue(current.getId() < next.getId());
+        }
     }
 
     @Test
