@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ServiceException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +17,7 @@ import javax.servlet.http.HttpSession;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterControllerTest {
@@ -56,14 +56,43 @@ public class RegisterControllerTest {
     @Test
     public void testRegisterIfLoggedIn() throws Exception {
         mockUserToSession(create("test", "test"));
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
         registerController.register(request, response);
         verify(response).sendRedirect(anyString());
     }
 
     @Test
-    public void testUnsuccessfulRegister() throws Exception {
+    public void testUnsuccessfulRegisterFailedOnValidation() throws Exception {
+        User user = create("user", "user");
+        when(request.getParameter("login")).thenReturn(user.getLogin());
+        when(request.getParameter("password")).thenReturn(user.getPassword());
+        registerController.register(request, response);
+        verify(request).setAttribute(eq("errors"), anyList());
+        verify(userService, never()).register(user);
+    }
 
+    @Test
+    public void testUnsuccessfulRegisterAlreadyExists() throws Exception {
+        User user = create("testtest", "testtest");
+        when(request.getParameter("login")).thenReturn(user.getLogin());
+        when(request.getParameter("password")).thenReturn(user.getPassword());
+        doThrow(new ServiceException()).when(userService).register(user);
+
+        registerController.register(request, response);
+
+        verify(userService).register(user);
+        verify(request).setAttribute(eq("errors"), anyList());
+    }
+
+    @Test
+    public void testSuccessfulRegister() throws Exception {
+        User user = create("testtest", "testtest");
+        when(request.getParameter("login")).thenReturn(user.getLogin());
+        when(request.getParameter("password")).thenReturn(user.getPassword());
+
+        registerController.register(request, response);
+
+        verify(userService).register(user);
+        verify(response).sendRedirect(anyString());
     }
 
     private void mockUserToSession(User user) {
