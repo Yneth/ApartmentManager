@@ -7,7 +7,7 @@ import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 
 import static org.junit.Assert.*;
 
-public class ComponentScanAnnotationBeanFactoryPostProcessorTest {
+public class ComponentScanAnnotationPostProcessorTest {
 
     @Test
     public void test() {

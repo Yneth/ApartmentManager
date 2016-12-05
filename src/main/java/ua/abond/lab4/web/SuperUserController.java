@@ -43,6 +43,7 @@ public class SuperUserController {
             Page<User> page = userService.listAdmins(pageable);
             req.setAttribute("admins", page.getContent());
             req.setAttribute("pageable", pageable);
+            req.setAttribute("pageCount", page.getTotalPages());
         } catch (ServiceException e) {
             req.setAttribute("errors", Collections.singletonList(e.getMessage()));
         }

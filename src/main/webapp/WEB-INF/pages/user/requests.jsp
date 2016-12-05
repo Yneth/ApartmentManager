@@ -8,6 +8,7 @@
         <div class="jumbotron">
             <div class="row">
                 <p:requests-partial/>
+                <p:pagination-partial uri="/user/requests"/>
                 <c:if test="${empty requests}">
                     <p>No requests yet, but you can make one <a href="/user/request/new">here</a>.</p>
                 </c:if>

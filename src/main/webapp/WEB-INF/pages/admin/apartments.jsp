@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
 <t:admin-page>
     <div class="container">
@@ -34,9 +35,11 @@
                 </c:if>
                 </tbody>
             </table>
-            <c:if test="${empty apartments}">
+            <c:if test="${page.totalElements == 0}">
                 <p>No apartments yet.</p>
             </c:if>
+            <p:pagination-partial uri="/admin/apartments"/>
         </div>
     </div>
+
 </t:admin-page>

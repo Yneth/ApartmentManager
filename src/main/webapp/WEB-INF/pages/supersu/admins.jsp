@@ -38,6 +38,7 @@
                 <p>No admins yet.</p>
             </c:if>
             <p:error-partial/>
+            <p:pagination-partial uri="/supersu/admins"/>
         </div>
     </div>
 </t:supersu-page>

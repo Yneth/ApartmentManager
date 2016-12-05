@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
-public class BeanAnnotationBeanFactoryPostProcessorTest {
+public class BeanAnnotationPostProcessorTest {
 
     @Test
     public void testSuccessfulBeanAnnotationPostProcessor() throws Exception {
