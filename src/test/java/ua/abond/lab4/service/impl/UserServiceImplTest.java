@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class UserServiceImplTest extends JdbcDAOTest {
-    private static final String DATA_SET = "users.xml";
+    private static final String DATA_SET = "orders.xml";
 
     private UserDAO userDAO;
     private AuthorityDAO authorityDAO;
@@ -23,10 +23,10 @@ public class UserServiceImplTest extends JdbcDAOTest {
 
     @Override
     public void onBeforeSetup() throws Exception {
+        dataSet = loadDataSet(DATA_SET);
         userDAO = beanFactory.getBean(UserDAO.class);
         authorityDAO = beanFactory.getBean(AuthorityDAO.class);
         userService = beanFactory.getBean(UserService.class);
-        dataSet = loadDataSet(DATA_SET);
     }
 
     @Test
