@@ -1,6 +1,7 @@
 <%@ tag pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
 <div class="container">
     <div class="jumbotron">
@@ -19,10 +20,6 @@
             <input class="form-control" id="to-datetime-input" type="datetime-local" name="to"/>
             <input class="form-control btn btn-primary" type="submit" name="Make order"/>
         </form>
-        <c:if test="${not empty errors}">
-            <c:forEach items="${errors}" var="error">
-                <p>${error}</p>
-            </c:forEach>
-        </c:if>
+        <p:error-partial/>
     </div>
 </div>
