@@ -1,6 +1,5 @@
 package ua.abond.lab4.web;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -9,10 +8,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -21,31 +16,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LoginControllerTest {
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpServletResponse response;
-    @Mock
-    private HttpSession httpSession;
-    @Mock
-    private RequestDispatcher requestDispatcher;
+public class LoginControllerTest extends ControllerTest {
     @Mock
     private UserService userService;
     @InjectMocks
     private LoginController loginController;
-
-    @Before
-    public void setUp() {
-        when(request.getRequestDispatcher(LoginController.LOGIN_VIEW)).thenReturn(requestDispatcher);
-    }
 
     @Test
     public void testGetLoginPage() throws Exception {
         loginController.getLoginPage(request, response);
 
         verify(request).getRequestDispatcher(LoginController.LOGIN_VIEW);
-        verify(requestDispatcher).forward(request, response);
+        verifyForward();
     }
 
     @Test
@@ -91,18 +73,6 @@ public class LoginControllerTest {
 
         verify(request).setAttribute("errors", Collections.singletonList("Wrong credentials."));
         verify(request).getRequestDispatcher(LoginController.LOGIN_VIEW);
-        verify(requestDispatcher).forward(request, response);
-    }
-
-    private void mockUserToSession(User user) {
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
-        when(httpSession.getAttribute("user")).thenReturn(user);
-    }
-
-    private User create(String login, String password) {
-        User user = new User();
-        user.setLogin(login);
-        user.setPassword(password);
-        return user;
+        verifyForward();
     }
 }

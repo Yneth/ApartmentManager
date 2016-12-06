@@ -2,24 +2,45 @@ package ua.abond.lab4.web;
 
 import org.junit.Test;
 
-public class AdminControllerTest {
+public class AdminControllerTest extends ControllerTest {
+
     @Test
     public void confirmRequest() throws Exception {
 
     }
 
     @Test
-    public void getRequestPage() throws Exception {
+    public void viewRequest() throws Exception {
 
     }
 
     @Test
-    public void getRequests() throws Exception {
+    public void viewRequests() throws Exception {
 
     }
 
     @Test
-    public void getApartments() throws Exception {
+    public void viewApartments() throws Exception {
+
+    }
+
+    @Test
+    public void getApartmentCreatePage() throws Exception {
+
+    }
+
+    @Test
+    public void createApartment() throws Exception {
+
+    }
+
+    @Test
+    public void viewApartment() throws Exception {
+
+    }
+
+    @Test
+    public void updateApartment() throws Exception {
 
     }
 
@@ -27,5 +48,4 @@ public class AdminControllerTest {
     public void getOrders() throws Exception {
 
     }
-
 }

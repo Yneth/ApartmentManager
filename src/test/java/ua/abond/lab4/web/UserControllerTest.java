@@ -12,23 +12,17 @@ import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyList;
@@ -36,15 +30,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.isNull;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserControllerTest {
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpServletResponse response;
-    @Mock
-    private HttpSession httpSession;
-    @Mock
-    private RequestDispatcher requestDispatcher;
+public class UserControllerTest extends ControllerTest {
     @Mock
     private UserService userService;
     @Mock
@@ -188,21 +174,5 @@ public class UserControllerTest {
         verify(request).setAttribute(anyString(), or(isNull(), anyList()));
         verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
         verifyForward();
-    }
-
-    private void mockUserToSession(User user) {
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
-        when(httpSession.getAttribute("user")).thenReturn(user);
-    }
-
-    private void verifyForward() throws Exception {
-        verify(requestDispatcher).forward(request, response);
-    }
-
-    private User create(String login, String password) {
-        User user = new User();
-        user.setLogin(login);
-        user.setPassword(password);
-        return user;
     }
 }
