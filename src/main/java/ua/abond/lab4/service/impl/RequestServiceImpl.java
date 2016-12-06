@@ -33,6 +33,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void createRequest(Request request) {
+        request.setStatus(RequestStatus.CREATED);
         requestDAO.create(request);
     }
 
