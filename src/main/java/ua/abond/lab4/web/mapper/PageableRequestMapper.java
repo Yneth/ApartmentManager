@@ -11,7 +11,9 @@ public class PageableRequestMapper implements RequestMapper<DefaultPageable> {
     public DefaultPageable map(HttpServletRequest req) {
         int page = Parse.integerPrimitive(req.getParameter("page"), 1);
         int pageSize = Parse.integerPrimitive(req.getParameter("pageSize"), 10);
-        SortOrder sortOrder = Parse.enumeration(SortOrder.class, req.getParameter("order"), SortOrder.ASC);
+        SortOrder sortOrder = Parse.enumeration(
+                SortOrder.class, req.getParameter("order"), SortOrder.ASC
+        );
         return new DefaultPageable(page, pageSize, sortOrder);
     }
 }

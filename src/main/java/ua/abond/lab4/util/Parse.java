@@ -46,7 +46,7 @@ public final class Parse {
     public static <T extends Enum<T>> T enumeration(Class<T> type, String str, T defaultValue) {
         T result;
         try {
-            result = Enum.valueOf(type, str);
+            result = Enum.valueOf(type, str.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
             result = defaultValue;
         }

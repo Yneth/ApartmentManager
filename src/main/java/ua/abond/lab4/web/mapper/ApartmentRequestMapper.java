@@ -13,7 +13,7 @@ public class ApartmentRequestMapper implements RequestMapper<Apartment> {
     public Apartment map(HttpServletRequest req) {
         Apartment apartment = new Apartment();
         apartment.setId(Parse.longValue(req.getParameter("id")));
-        apartment.setName(Parse.string(req.getParameter("name")));
+        apartment.setName(req.getParameter("name"));
         apartment.setRoomCount(Parse.integer(req.getParameter("roomCount"), 0));
         apartment.setType(new ApartmentTypeRequestMapper().map(req));
         apartment.setPrice(

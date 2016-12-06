@@ -1,18 +1,31 @@
 package ua.abond.lab4.web.validation;
 
-import ua.abond.lab4.util.validation.Validation;
 import ua.abond.lab4.util.validation.Validator;
 import ua.abond.lab4.web.dto.LoginDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LoginDTOValidator implements Validator<LoginDTO> {
 
     @Override
     public List<String> validate(LoginDTO object) {
-        return Validation.<LoginDTO, String>reader().map(v ->
-                v.validate(LoginDTO::getLogin, login -> login.length() > 6, "Login should contain more than 6 characters.").
-                        validate(LoginDTO::getPassword, pwd -> pwd.length() > 6, "Password should contain more than 6 characters.")
-        ).run(object).getExceptions();
+        List<String> errors = new ArrayList<>();
+        String login = object.getLogin();
+        if (Objects.isNull(login)) {
+            errors.add("Login required.");
+        }
+        if (!Objects.isNull(login) && login.length() < 6) {
+            errors.add("Login should contain more than 6 characters long.");
+        }
+        String password = object.getPassword();
+        if (Objects.isNull(password)) {
+            errors.add("Password required.");
+        }
+        if (!Objects.isNull(password) && password.length() < 6) {
+            errors.add("Login should contain more than 6 characters long.");
+        }
+        return errors;
     }
 }

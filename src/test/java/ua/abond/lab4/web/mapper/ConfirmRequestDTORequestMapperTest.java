@@ -32,7 +32,7 @@ public class ConfirmRequestDTORequestMapperTest {
     }
 
     @Test
-    public void testMapNulls() {
+    public void testMapEmptyRequest() {
         ConfirmRequestDTO map = new ConfirmRequestDTORequestMapper().map(request);
         assertEquals(null, map.getRequestId());
         assertEquals(null, map.getPrice());

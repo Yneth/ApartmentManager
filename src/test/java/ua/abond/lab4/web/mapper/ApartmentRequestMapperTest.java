@@ -9,6 +9,7 @@ import ua.abond.lab4.domain.Apartment;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,10 +33,10 @@ public class ApartmentRequestMapperTest {
     }
 
     @Test
-    public void testMapOnNullValues() {
+    public void testMapEmptyRequest() {
         Apartment map = new ApartmentRequestMapper().map(request);
-        assertEquals(null, map.getId());
-        assertEquals("", map.getName());
+        assertNull(map.getId());
+        assertNull(map.getName());
         assertEquals(0, map.getRoomCount());
     }
 }

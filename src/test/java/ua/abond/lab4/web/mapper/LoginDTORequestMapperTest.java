@@ -9,6 +9,7 @@ import ua.abond.lab4.web.dto.LoginDTO;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,9 +29,9 @@ public class LoginDTORequestMapperTest {
     }
 
     @Test
-    public void testMapNulls() {
+    public void testMapEmptyRequest() {
         LoginDTO map = new LoginDTORequestMapper().map(request);
-        assertEquals("", map.getLogin());
-        assertEquals("", map.getPassword());
+        assertNull(map.getLogin());
+        assertNull(map.getPassword());
     }
 }
