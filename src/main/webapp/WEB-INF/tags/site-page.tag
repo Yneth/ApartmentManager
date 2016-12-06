@@ -1,10 +1,11 @@
 <%@ tag description="Apartment order page template" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <t:base-page>
     <jsp:attribute name="head">
-        <title>OrderApartment</title>
+        <title>ApartmentManager</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/main.css"/>
