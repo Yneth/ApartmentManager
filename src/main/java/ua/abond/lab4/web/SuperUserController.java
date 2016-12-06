@@ -24,8 +24,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/supersu")
 public class SuperUserController {
-    private static final String ADMINS_VIEW = "/WEB-INF/pages/supersu/admins.jsp";
-    private static final String CREATE_ADMIN_VIEW = "/WEB-INF/pages/supersu/create-admin.jsp";
+    public static final String ADMINS_VIEW = "/WEB-INF/pages/supersu/admins.jsp";
+    public static final String CREATE_ADMIN_VIEW = "/WEB-INF/pages/supersu/create-admin.jsp";
 
     private final UserService userService;
 
@@ -35,7 +35,7 @@ public class SuperUserController {
     }
 
     @RequestMapping("/admins")
-    public void getAdminsPage(HttpServletRequest req, HttpServletResponse resp)
+    public void viewAdmins(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
 
@@ -86,7 +86,8 @@ public class SuperUserController {
             userService.deleteAdminById(id);
         } catch (ServiceException e) {
             req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            getAdminsPage(req, resp);
+            viewAdmins(req, resp);
+            return;
         }
         resp.sendRedirect("/supersu/admins");
     }

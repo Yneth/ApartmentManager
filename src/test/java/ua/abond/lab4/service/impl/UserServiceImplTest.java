@@ -69,7 +69,14 @@ public class UserServiceImplTest extends JdbcDAOTest {
 
     @Test(expected = ServiceException.class)
     public void testRegisterAlreadyExisting() throws Exception {
+        userService.register(createUser("test"));
+        userService.register(createUser("test"));
+    }
 
+    @Test(expected = ServiceException.class)
+    public void testCreateAdminAlreadyExisting() throws Exception {
+        userService.createAdmin(createUser("admin"));
+        userService.createAdmin(createUser("admin"));
     }
 
     @Test(expected = ServiceException.class)
@@ -93,7 +100,7 @@ public class UserServiceImplTest extends JdbcDAOTest {
 
     @Test
     public void updateAccount() throws Exception {
-
+        // TODO
     }
 
     private User createUser(String login) {

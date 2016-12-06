@@ -33,12 +33,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private static final String REQUEST_VIEW = "/WEB-INF/pages/admin/request.jsp";
-    private static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
-    private static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
-    private static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
-    private static final String APARTMENT_VIEW = "/WEB-INF/pages/admin/apartment.jsp";
-    private static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
+    public static final String REQUEST_VIEW = "/WEB-INF/pages/admin/request.jsp";
+    public static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
+    public static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
+    public static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
+    public static final String APARTMENT_VIEW = "/WEB-INF/pages/admin/apartment.jsp";
+    public static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
 
     @Inject
     private OrderService orderService;
@@ -73,7 +73,7 @@ public class AdminController {
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
+        Long id = Parse.longValue(req.getParameter("id"));
         Pageable pageable = new PageableRequestMapper().map(req);
         OptionalConsumer.of(requestService.getById(id)).
                 ifPresent(request -> {
@@ -171,7 +171,7 @@ public class AdminController {
     }
 
     @RequestMapping("/orders")
-    public void getOrders(HttpServletRequest req, HttpServletResponse resp)
+    public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pageable pageable = new PageableRequestMapper().map(req);
         Page<Order> page = orderService.list(pageable);

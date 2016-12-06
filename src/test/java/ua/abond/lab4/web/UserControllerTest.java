@@ -81,7 +81,7 @@ public class UserControllerTest extends ControllerTest {
     }
 
     @Test
-    public void getCreateRequestPage() throws Exception {
+    public void testGetCreateRequestPage() throws Exception {
         List<ApartmentType> list = Collections.singletonList(new ApartmentType());
         when(apartmentTypeDAO.list()).thenReturn(list);
         userController.getCreateRequestPage(request, response);
