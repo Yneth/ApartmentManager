@@ -5,24 +5,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import ua.abond.lab4.config.core.web.support.*;
+import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.dao.ApartmentTypeDAO;
+import ua.abond.lab4.domain.ApartmentType;
+import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ServiceException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
@@ -38,64 +49,145 @@ public class UserControllerTest {
     private UserService userService;
     @Mock
     private RequestService requestService;
+    @Mock
+    private ApartmentTypeDAO apartmentTypeDAO;
+    @Mock
+    private OrderService orderService;
     @InjectMocks
     private UserController userController;
-    @Spy
-    private Page<Request> page = new DefaultPage<>(new ArrayList<>(), 0, null);
-    private Pageable pageable = new DefaultPageable(1, 10, SortOrder.ASC);
 
     @Before
     public void setUp() {
-        page = new DefaultPage<>(new ArrayList<>(), 0, null);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }
 
     @Test
     public void testViewRequests() throws Exception {
-        User user = create("login", "password");
-        user.setId(1L);
-        mockUserToSession(user);
-        mockPageableToRequest();
-        when(requestService.getUserRequests(any(Pageable.class), anyLong())).
+        mockUserToSession(create("login", "password"));
+        when(requestService.getUserRequests(or(isNull(), any(Pageable.class)), isNull())).
                 thenReturn(mock(Page.class));
         userController.viewRequests(request, response);
-
-        verify(requestService).getUserRequests(any(Pageable.class), any(Long.class));
+        verify(request).getRequestDispatcher(UserController.REQUESTS_VIEW);
+        verifyForward();
     }
 
     @Test
-    public void viewRequest() throws Exception {
+    public void testViewRequest() throws Exception {
+        when(request.getParameter("id")).thenReturn("1");
+        Request req = new Request();
+        when(requestService.getById(anyLong())).thenReturn(Optional.of(req));
 
+        userController.viewRequest(request, response);
+
+        verify(request).getRequestDispatcher(UserController.REQUEST_VIEW);
+        verify(request).setAttribute("request", req);
+        verifyForward();
+    }
+
+    @Test
+    public void testViewRequestWhenNoRequest() throws Exception {
+        userController.viewRequest(request, response);
+
+        verify(request, never()).setAttribute(anyString(), isNull());
+
+        verify(request).getRequestDispatcher(UserController.REQUEST_VIEW);
+        verifyForward();
     }
 
     @Test
     public void getCreateRequestPage() throws Exception {
+        List<ApartmentType> list = Collections.singletonList(new ApartmentType());
+        when(apartmentTypeDAO.list()).thenReturn(list);
+        userController.getCreateRequestPage(request, response);
 
+        verify(request).setAttribute("apartmentTypes", list);
+        verify(request).getRequestDispatcher(UserController.REQUEST_CREATE_VIEW);
+        verifyForward();
     }
 
     @Test
-    public void createRequest() throws Exception {
-
+    public void testCreateRequestValidationError() throws Exception {
+        userController.getCreateRequestPage(request, response);
+        verify(request).setAttribute(anyString(), anyList());
+        verify(request).getRequestDispatcher(UserController.REQUEST_CREATE_VIEW);
+        verifyForward();
     }
 
     @Test
-    public void rejectRequest() throws Exception {
-
+    public void testCreateRequest() throws Exception {
+        when(request.getParameter("from")).thenReturn("2014-10-20T12:00");
+        when(request.getParameter("to")).thenReturn("2015-10-20T12:00");
+        when(request.getParameter("status")).thenReturn("0");
+        when(request.getParameter("roomCount")).thenReturn("2");
+        userController.createRequest(request, response);
+        verify(response).sendRedirect(anyString());
     }
 
     @Test
-    public void viewOrders() throws Exception {
-
+    public void testRejectRequestWithServiceException() throws Exception {
+        doThrow(new ServiceException()).when(requestService).
+                rejectRequest(or(any(Long.class), isNull()), or(isNull(), anyString()));
+        userController.rejectRequest(request, response);
+        verify(request).setAttribute(anyString(), anyList());
+        verify(request).getRequestDispatcher(UserController.REQUEST_VIEW);
+        verifyForward();
     }
 
     @Test
-    public void viewOrder() throws Exception {
-
+    public void testReject() throws Exception {
+        userController.rejectRequest(request, response);
+        verify(response).sendRedirect(anyString());
     }
 
     @Test
-    public void payOrder() throws Exception {
+    public void testViewOrders() throws Exception {
+        mockUserToSession(create("login", "password"));
+        when(orderService.getUserOrders(or(isNull(), any(Pageable.class)), or(any(Long.class), isNull()))).
+                thenReturn(mock(Page.class));
 
+        userController.viewOrders(request, response);
+        verify(request).setAttribute(anyString(), or(anyList(), isNull()));
+        verify(request).getRequestDispatcher(UserController.ORDERS_VIEW);
+        verifyForward();
+    }
+
+    @Test
+    public void testViewOrder() throws Exception {
+        when(request.getParameter("id")).thenReturn("1");
+        Order order = new Order();
+        when(orderService.getById(anyLong())).thenReturn(Optional.of(order));
+
+        userController.viewOrder(request, response);
+
+        verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
+        verify(request).setAttribute("order", order);
+        verifyForward();
+    }
+
+    @Test
+    public void testViewOrderWhenNoOrder() throws Exception {
+        userController.viewOrder(request, response);
+
+        verify(request, never()).setAttribute(anyString(), isNull());
+
+        verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
+        verifyForward();
+    }
+
+    @Test
+    public void testPayOrder() throws Exception {
+        userController.payOrder(request, response);
+        verify(response).sendRedirect(anyString());
+    }
+
+    @Test
+    public void testPayOrderWithException() throws Exception {
+        doThrow(new ServiceException()).when(orderService).
+                payOrder(or(isNull(), any(Long.class)));
+        userController.payOrder(request, response);
+        verify(request).setAttribute(anyString(), or(isNull(), anyList()));
+        verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
+        verifyForward();
     }
 
     private void mockUserToSession(User user) {
@@ -103,10 +195,8 @@ public class UserControllerTest {
         when(httpSession.getAttribute("user")).thenReturn(user);
     }
 
-    private void mockPageableToRequest() {
-        when(request.getParameter("page")).thenReturn(pageable.getPageNumber() + "");
-        when(request.getParameter("pageSize")).thenReturn(pageable.getPageSize() + "");
-        when(request.getParameter("order")).thenReturn(pageable.getSortOrder().toString());
+    private void verifyForward() throws Exception {
+        verify(requestDispatcher).forward(request, response);
     }
 
     private User create(String login, String password) {
