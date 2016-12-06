@@ -31,11 +31,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private static final String ORDER_VIEW = "/WEB-INF/pages/user/order.jsp";
-    private static final String ORDERS_VIEW = "/WEB-INF/pages/user/orders.jsp";
-    private static final String REQUEST_VIEW = "/WEB-INF/pages/user/request.jsp";
-    private static final String REQUESTS_VIEW = "/WEB-INF/pages/user/requests.jsp";
-    private static final String REQUEST_CREATE_VIEW = "/WEB-INF/pages/user/create-request.jsp";
+    public static final String ORDER_VIEW = "/WEB-INF/pages/user/order.jsp";
+    public static final String ORDERS_VIEW = "/WEB-INF/pages/user/orders.jsp";
+    public static final String REQUEST_VIEW = "/WEB-INF/pages/user/request.jsp";
+    public static final String REQUESTS_VIEW = "/WEB-INF/pages/user/requests.jsp";
+    public static final String REQUEST_CREATE_VIEW = "/WEB-INF/pages/user/create-request.jsp";
 
     @Inject
     private UserService userService;
@@ -62,7 +62,7 @@ public class UserController {
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
+        Long id = Parse.longValue(req.getParameter("id"));
         requestService.getById(id).ifPresent(request -> {
             req.setAttribute("request", request);
         });
@@ -85,9 +85,7 @@ public class UserController {
         Request request = new ApartmentRequestRequestMapper().map(req);
         List<String> errors = new RequestValidator().validate(request);
         if (!errors.isEmpty()) {
-            List<ApartmentType> list = apartmentTypeDAO.list();
             req.setAttribute("errors", errors);
-            req.setAttribute("request", request);
             getCreateRequestPage(req, resp);
             return;
         }
@@ -99,7 +97,7 @@ public class UserController {
     @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
     public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
+        Long id = Parse.longValue(req.getParameter("id"));
         String comment = req.getParameter("comment");
         try {
             requestService.rejectRequest(id, comment);
@@ -141,6 +139,7 @@ public class UserController {
         try {
             orderService.payOrder(id);
         } catch (ServiceException e) {
+            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
             viewOrder(req, resp);
             return;
         }
