@@ -63,8 +63,7 @@ public class AdminController {
         try {
             requestService.confirmRequest(dto);
         } catch (ServiceException e) {
-            errors.add(e.getMessage());
-            req.setAttribute("errors", errors);
+            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
             viewRequest(req, resp);
             return;
         }
