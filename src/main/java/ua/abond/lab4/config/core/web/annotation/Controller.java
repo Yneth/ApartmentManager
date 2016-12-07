@@ -1,4 +1,6 @@
-package ua.abond.lab4.config.core.annotation;
+package ua.abond.lab4.config.core.web.annotation;
+
+import ua.abond.lab4.config.core.annotation.Component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

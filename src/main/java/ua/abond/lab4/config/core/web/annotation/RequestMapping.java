@@ -1,4 +1,4 @@
-package ua.abond.lab4.config.core.annotation;
+package ua.abond.lab4.config.core.web.annotation;
 
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 

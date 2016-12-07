@@ -1,8 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
@@ -14,6 +14,7 @@ import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ResourceAlreadyExistsException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.mapper.ApartmentRequestRequestMapper;
@@ -48,7 +49,7 @@ public class UserController {
 
     @RequestMapping("/requests")
     public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         User user = new UserSessionRequestMapper().map(req);
         Pageable pageable = new PageableRequestMapper().map(req);
 
@@ -111,7 +112,7 @@ public class UserController {
 
     @RequestMapping("/orders")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ResourceAlreadyExistsException {
         User user = new UserSessionRequestMapper().map(req);
         Pageable pageable = new PageableRequestMapper().map(req);
 

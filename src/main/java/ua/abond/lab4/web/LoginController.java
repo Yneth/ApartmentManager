@@ -1,8 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
