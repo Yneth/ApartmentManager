@@ -7,7 +7,7 @@
 <c:if test="${pageCount > 0}">
     <ul class="pagination">
         <c:forEach begin="1" end="${pageCount}" var="index">
-            <li class="${(param.page == index) || (param.page == null && index == 1) ? 'active' : ''}">
+            <li class="${(param.page == index) || (empty param.page && index == 1) ? 'active' : ''}">
                 <a href="${uri}?page=${index}">${index}</a>
             </li>
         </c:forEach>
