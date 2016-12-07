@@ -5,7 +5,7 @@
 <%@ attribute name="header" fragment="true" %>
 <%@ attribute name="footer" fragment="true" %>
 
-<fmt:setLocale value="ua"/>
+<fmt:setLocale value="${empty lang ? cookie.lang.value : lang}"/>
 <fmt:setBundle basename="locale" var="locale" scope="application"/>
 
 <!DOCTYPE html>

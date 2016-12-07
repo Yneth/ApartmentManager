@@ -5,7 +5,7 @@
 
 <t:base-page>
     <jsp:attribute name="head">
-        <title>ApartmentManager</title>
+        <title><fmt:message key="project.name" bundle="${locale}"/></title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/main.css"/>
@@ -19,7 +19,7 @@
     </jsp:attribute>
 
     <jsp:attribute name="footer">
-        <div class="copyright">Copyright @ Anton 2016</div>
+        <div class="copyright">Copyright © Anton 2016</div>
     </jsp:attribute>
 
     <jsp:body>

@@ -1,6 +1,7 @@
 <%@ tag pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
@@ -17,7 +18,9 @@
             </label>
             <select class="form-control" id="apartment-type-select" name="apartmentTypeId">
                 <c:forEach items="${apartmentTypes}" var="apartmentType">
-                    <option value="${apartmentType.id}">${apartmentType.name}</option>
+                    <option value="${apartmentType.id}">
+                        <fmt:message key="apartment.type.${fn:toLowerCase(apartmentType.name)}" bundle="${locale}"/>
+                    </option>
                 </c:forEach>
             </select>
             <label for="from-datetime-input">
@@ -29,7 +32,9 @@
                 <fmt:message key="request.to" bundle="${locale}"/>:
             </label>
             <input class="form-control" id="to-datetime-input" type="datetime-local" name="to"/>
-            <input class="form-control btn btn-primary" type="submit" name="Make order"/>
+            <br>
+            <input class="form-control btn btn-primary" type="submit"
+                   value="<fmt:message key="create" bundle="${locale}"/> "/>
         </form>
         <p:error-partial/>
     </div>

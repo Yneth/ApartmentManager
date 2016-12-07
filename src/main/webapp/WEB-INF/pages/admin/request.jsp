@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
@@ -18,7 +19,7 @@
                             <p>No appropriate apartments.</p>
                         </c:if>
                         <c:if test="${not empty apartments}">
-                            <label for="cost-text">Price</label>
+                            <label for="cost-text"><fmt:message key="order.price" bundle="${locale}"/></label>
                             <input class="form-control" id="cost-text" type="text" name="price"/>
 
                             <c:forEach items="${apartments}" var="apartment">
@@ -28,7 +29,9 @@
                                     </label>
                                 </div>
                             </c:forEach>
-                            <input class="form-control btn btn-success" type="submit" value="Confirm"/>
+                            <br>
+                            <input class="form-control btn btn-success" type="submit"
+                                   value="<fmt:message key="request.confirm" bundle="${locale}"/>"/>
                         </c:if>
                     </c:if>
                 </form>

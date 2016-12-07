@@ -29,7 +29,8 @@
                     </label>
                     <input class="form-control" id="last-name-input" type="text" name="lastName"/>
 
-                    <input class="btn btn-primary form-control" type="submit" value="Register"/>
+                    <input class="btn btn-primary form-control" type="submit"
+                           value="<fmt:message key="register" bundle="${locale}"/>"/>
                 </form>
                 <p:error-partial/>
             </div>
