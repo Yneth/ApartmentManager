@@ -11,4 +11,21 @@ public abstract class JdbcDAO<T> implements DAO<T> {
     public JdbcDAO(DataSource dataSource) {
         this.jdbc = new Jdbc(dataSource);
     }
+
+    public void rollback() {
+        jdbc.rollback();
+    }
+
+    public void commit() {
+        jdbc.commit();
+    }
+
+    public void beginTransaction() {
+        jdbc.beginTransaction();
+    }
+
+    public void endTransaction() {
+        jdbc.endTransaction();
+    }
+
 }

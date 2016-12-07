@@ -23,12 +23,8 @@ public class Jdbc {
         this.dataSource = dataSource;
     }
 
-    public void setUserManaged(boolean userManaged) {
-        this.userManaged = userManaged;
-    }
-
     public int update(PreparedStatementCreator psc, KeyHolder keyHolder) {
-        Connection conn = ConnectionUtils.getConnection(dataSource);
+        Connection conn = getConnection();
         try (PreparedStatement ps = psc.create(conn)) {
             int count = ps.executeUpdate();
 
@@ -52,7 +48,7 @@ public class Jdbc {
             throws DataAccessException {
         Objects.requireNonNull(sql, "Sql should not be null");
 
-        Connection conn = ConnectionUtils.getConnection(dataSource);
+        Connection conn = getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             setter.set(ps);
 
@@ -73,7 +69,7 @@ public class Jdbc {
         Objects.requireNonNull(sql, "Sql should not be null");
 
         List<T> result = null;
-        Connection conn = ConnectionUtils.getConnection(dataSource);
+        Connection conn = getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             pss.set(ps);
 
@@ -109,6 +105,14 @@ public class Jdbc {
         return query.stream().findFirst();
     }
 
+    public void beginTransaction() {
+        userManaged = true;
+    }
+
+    public void endTransaction() {
+        userManaged = false;
+    }
+
     public void commit() {
         if (!userManaged || connection == null)
             return;
@@ -123,7 +127,13 @@ public class Jdbc {
     public void rollback() {
         if (!userManaged || connection == null)
             return;
+    }
 
+    private Connection getConnection() {
+        if (connection != null) {
+            return connection;
+        }
+        return ConnectionUtils.getConnection(dataSource);
     }
 
     private void commit(Connection connection) throws SQLException {
