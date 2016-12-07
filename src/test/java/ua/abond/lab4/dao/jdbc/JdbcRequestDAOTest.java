@@ -11,6 +11,7 @@ import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
+import ua.abond.lab4.domain.RequestStatus;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
         request.setUser(userDAO.getById(0L).get());
         request.setFrom(LocalDateTime.now().minusDays(10));
         request.setTo(LocalDateTime.now());
+        request.setStatus(RequestStatus.CREATED);
         requestDAO.create(request);
 
         assertNotNull(request.getId());

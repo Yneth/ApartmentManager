@@ -40,7 +40,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void confirmRequest(ConfirmRequestDTO requestDTO) throws ServiceException {
         logger.debug(String.format("Confirming request with id: %s", requestDTO.getRequestId()));
-
         Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
         if (request == null) {
             throw new RequestConfirmException(String.format("Could not find request with such id: %s",
