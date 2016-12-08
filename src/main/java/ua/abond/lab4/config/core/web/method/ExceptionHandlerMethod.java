@@ -1,4 +1,4 @@
-package ua.abond.lab4.config.core.web;
+package ua.abond.lab4.config.core.web.method;
 
 import org.apache.log4j.Logger;
 
@@ -16,14 +16,15 @@ public class ExceptionHandlerMethod<E extends Throwable> {
         this.declaringObject = declaringObject;
     }
 
-    public void invoke(ExceptionHandlerData data)
+    public Object invoke(ExceptionHandlerData data)
             throws InvocationTargetException {
         try {
-            method.invoke(declaringObject, data);
+            return method.invoke(declaringObject, data);
         } catch (IllegalAccessException e) {
             logger.error(String.format("Failed to invoke ExceptionHandler for %s.%s",
                     declaringObject.getClass().getSimpleName(), method.getName()
             ));
         }
+        return null;
     }
 }

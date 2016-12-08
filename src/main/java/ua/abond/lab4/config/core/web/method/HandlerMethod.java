@@ -1,4 +1,4 @@
-package ua.abond.lab4.config.core.web;
+package ua.abond.lab4.config.core.web.method;
 
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.web.exception.RequestMappingHandlerException;

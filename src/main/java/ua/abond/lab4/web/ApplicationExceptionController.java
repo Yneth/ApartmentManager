@@ -1,8 +1,11 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.ExceptionHandlerData;
+import ua.abond.lab4.config.core.web.annotation.ExceptionController;
 import ua.abond.lab4.config.core.web.annotation.ExceptionHandler;
 import ua.abond.lab4.config.core.web.annotation.OnException;
+import ua.abond.lab4.config.core.web.method.ExceptionHandlerData;
+import ua.abond.lab4.config.core.web.method.HandlerMethodInfo;
+import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.service.exception.*;
 
 import javax.servlet.ServletException;
@@ -11,10 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
-@ua.abond.lab4.config.core.web.annotation.ExceptionController
-public class ExceptionController {
+@ExceptionController
+public class ApplicationExceptionController {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public void handleResourceNotFoundException(ExceptionHandlerData data)
@@ -23,56 +27,64 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(RequestConfirmException.class)
-    public void handleRequestConfirmException(ExceptionHandlerData data)
+    public HandlerMethodInfo handleRequestConfirmException(ExceptionHandlerData data)
             throws IOException, ServletException {
         localizedHandle("request.error.confirm", data);
+        return getForward(data);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public void handleResourceAlreadyExistsException(ExceptionHandlerData data)
+    public HandlerMethodInfo handleResourceAlreadyExistsException(ExceptionHandlerData data)
             throws IOException, ServletException {
-        localizedHandle("order.error.payed", data);
+        localizedHandle("error.already.exists", data);
+        return getForward(data);
+    }
+
+    @ExceptionHandler(LoginIsAlreadyTakenException.class)
+    public HandlerMethodInfo handleLoginIsAlreadyTakenException(ExceptionHandlerData data)
+            throws IOException, ServletException {
+        localizedHandle("login.error.login.taken", data);
+        return getForward(data);
     }
 
     @ExceptionHandler(OrderAlreadyPayedException.class)
-    public void handleOrderAlreadyPayedException(ExceptionHandlerData data)
+    public HandlerMethodInfo handleOrderAlreadyPayedException(ExceptionHandlerData data)
             throws IOException, ServletException {
         localizedHandle("order.error.payed", data);
+        return getForward(data);
     }
 
     @ExceptionHandler(RejectRequestException.class)
-    public void handRejectRequestException(ExceptionHandlerData data)
+    public HandlerMethodInfo handleRejectRequestException(ExceptionHandlerData data)
             throws ServletException, IOException {
         localizedHandle("request.error.reject", data);
+        return getForward(data);
     }
 
     private void localizedHandle(String errorKey, ExceptionHandlerData data)
             throws IOException, ServletException {
-        String forward = getForward(data);
-        HttpServletResponse resp = data.getResponse();
+        HandlerMethodInfo forward = getForward(data);
         if (forward != null) {
             HttpServletRequest req = data.getRequest();
             setLocalizedError(req, errorKey);
-            req.getRequestDispatcher(forward).forward(req, resp);
-        } else {
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-    private String getForward(ExceptionHandlerData data) {
+    private HandlerMethodInfo getForward(ExceptionHandlerData data) {
         Method handler = data.getHandler();
         if (handler.isAnnotationPresent(OnException.class)) {
             OnException annotation = handler.getAnnotation(OnException.class);
-            String forward = annotation.forward();
+            String forward = annotation.value();
+            RequestMethod method = annotation.method();
             if (!"".equals(forward)) {
-                return forward;
+                return new HandlerMethodInfo(forward, method);
             }
         }
         return null;
     }
 
     private void setLocalizedError(HttpServletRequest req, String key) {
-        String lang = req.getParameter("lang");
+        String lang = (String) req.getAttribute("lang");
         setError(req, getBundle(lang).getString(key));
     }
 
@@ -81,6 +93,6 @@ public class ExceptionController {
     }
 
     private ResourceBundle getBundle(String lang) {
-        return ResourceBundle.getBundle(lang);
+        return ResourceBundle.getBundle("locale", new Locale(lang));
     }
 }

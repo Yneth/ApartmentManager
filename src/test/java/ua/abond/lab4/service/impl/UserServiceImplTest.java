@@ -9,10 +9,10 @@ import ua.abond.lab4.dao.jdbc.JdbcDAOTest;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class UserServiceImplTest extends JdbcDAOTest {
     private static final String DATA_SET = "orders.xml";
@@ -99,8 +99,27 @@ public class UserServiceImplTest extends JdbcDAOTest {
     }
 
     @Test
-    public void updateAccount() throws Exception {
-        // TODO
+    public void testUpdateAccount() throws Exception {
+        User byId = userService.getById(0L);
+        byId.setFirstName("First Name");
+        byId.setLastName("Last name");
+        byId.setLogin("Login");
+        byId.setPassword("Password");
+        byId.setAuthority(authorityDAO.getById(1L).orElse(null));
+        userService.updateAccount(byId);
+        User actual = userService.getById(byId.getId());
+        assertEquals(byId.getFirstName(), actual.getFirstName());
+        assertEquals(byId.getLastName(), actual.getLastName());
+        assertNotEquals(byId.getLogin(), actual.getLogin());
+        assertNotEquals(byId.getPassword(), actual.getPassword());
+        assertNotEquals(byId.getAuthority(), actual.getAuthority());
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void testUpdateNonExistingAccount() throws Exception {
+        User test = createUser("test");
+        test.setId(-100L);
+        userService.updateAccount(test);
     }
 
     private User createUser(String login) {

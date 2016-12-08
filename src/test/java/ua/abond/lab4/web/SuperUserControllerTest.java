@@ -32,14 +32,11 @@ public class SuperUserControllerTest extends ControllerTest {
         verify(request).getRequestDispatcher(SuperUserController.ADMINS_VIEW);
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testViewAdminsWithServiceException() throws Exception {
         when(userService.listAdmins(any(Pageable.class))).
                 thenThrow(new ServiceException());
         superUserController.viewAdmins(request, response);
-        verifyForward();
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(SuperUserController.ADMINS_VIEW);
     }
 
     @Test
@@ -66,15 +63,12 @@ public class SuperUserControllerTest extends ControllerTest {
         verify(request, times(1)).setAttribute(eq("errors"), anyList());
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testCreateAdminWithServiceException() throws Exception {
         when(request.getParameter("login")).thenReturn("12345678");
         when(request.getParameter("password")).thenReturn("12345678");
         doThrow(new ServiceException()).when(userService).createAdmin(any(User.class));
         superUserController.createAdmin(request, response);
-        verifyForward();
-        verify(request).getRequestDispatcher(SuperUserController.CREATE_ADMIN_VIEW);
-        verify(request, times(1)).setAttribute(eq("errors"), anyList());
     }
 
     @Test
@@ -84,17 +78,11 @@ public class SuperUserControllerTest extends ControllerTest {
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testDeleteAdminWithServiceException() throws Exception {
-        when(userService.listAdmins(any(Pageable.class))).
-                thenReturn(mock(Page.class));
         doThrow(new ServiceException()).when(userService).
                 deleteAdminById(or(any(Long.class), isNull()));
 
         superUserController.deleteAdmin(request, response);
-        verify(userService).deleteAdminById(or(any(Long.class), isNull()));
-
-        verifyForward();
-        verify(request).getRequestDispatcher(SuperUserController.ADMINS_VIEW);
     }
 }

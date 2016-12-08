@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -18,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -34,19 +34,16 @@ public class SuperUserController {
         this.userService = userService;
     }
 
+    @OnException("/supersu/admins")
     @RequestMapping("/admins")
     public void viewAdmins(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Pageable pageable = new PageableRequestMapper().map(req);
 
-        try {
-            Page<User> page = userService.listAdmins(pageable);
-            req.setAttribute("admins", page.getContent());
-            req.setAttribute("pageable", pageable);
-            req.setAttribute("pageCount", page.getTotalPages());
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-        }
+        Page<User> page = userService.listAdmins(pageable);
+        req.setAttribute("admins", page.getContent());
+        req.setAttribute("pageable", pageable);
+        req.setAttribute("pageCount", page.getTotalPages());
         req.getRequestDispatcher(ADMINS_VIEW).forward(req, resp);
     }
 
@@ -56,9 +53,10 @@ public class SuperUserController {
         req.getRequestDispatcher(CREATE_ADMIN_VIEW).forward(req, resp);
     }
 
+    @OnException("/supersu/admin/new")
     @RequestMapping(value = "/admin/new", method = RequestMethod.POST)
     public void createAdmin(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         User user = new UserRequestMapper().map(req);
         List<String> errors = new UserValidator().validate(user);
         if (!errors.isEmpty()) {
@@ -66,29 +64,16 @@ public class SuperUserController {
             getCreateAdminPage(req, resp);
             return;
         }
-
-        try {
-            userService.createAdmin(user);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            getCreateAdminPage(req, resp);
-            return;
-        }
+        userService.createAdmin(user);
         resp.sendRedirect("/");
     }
 
+    @OnException("/supersu/admins")
     @RequestMapping(value = "/admin/delete", method = RequestMethod.POST)
     public void deleteAdmin(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
-
-        try {
-            userService.deleteAdminById(id);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            viewAdmins(req, resp);
-            return;
-        }
+        userService.deleteAdminById(id);
         resp.sendRedirect("/supersu/admins");
     }
 }

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.config.core.exception.BeanFactoryException;
+import ua.abond.lab4.config.core.web.exception.ApplicationException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,9 +14,11 @@ import java.io.IOException;
 
 public abstract class BeanFactoryAwareServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(BeanFactoryAwareServlet.class);
-    private static final String CONTEXT_CONFIG_LOCATION_ATTRIBUTE_NAME = "contextConfigLocation";
+    private static final String CONTEXT_CLASS_ATTR = "contextClass";
+    private static final String CONTEXT_CONFIG_LOCATION_ATTR = "contextConfigLocation";
+    private static final Class<?> DEFAULT_CONTEXT_CLASS = AnnotationBeanFactory.class;
 
-    private Class<?> contextClass;
+    private Class<?> contextClass = DEFAULT_CONTEXT_CLASS;
     private String contextConfigLocation;
 
     private ConfigurableBeanFactory beanFactory;
@@ -25,14 +28,43 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        loadContextClass();
         if (beanFactory == null) {
             try {
-                beanFactory = new AnnotationBeanFactory(getContextConfigLocation());
+                beanFactory = createBeanFactory();
+                if (beanFactory instanceof AnnotationBeanFactory) {
+                    ((AnnotationBeanFactory) beanFactory).scan(getContextConfigLocation());
+                }
             } catch (BeanFactoryException e) {
                 logger.error("Failed to create bean factory.", e);
                 throw e;
             }
+            beanFactory.refresh();
             onRefreshed(beanFactory);
+        }
+    }
+
+    private void loadContextClass() {
+        String className = getInitParameter(CONTEXT_CLASS_ATTR);
+        try {
+            if (className != null) {
+                contextClass = Class.forName(className);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new ApplicationException("Failed to find class with name '" + className + "'.", e);
+        }
+    }
+
+    private ConfigurableBeanFactory createBeanFactory() {
+        if (!ConfigurableBeanFactory.class.isAssignableFrom(contextClass)) {
+            throw new ApplicationException("Given contextClass does not inherit BeanFactory interface");
+        }
+        try {
+            return (ConfigurableBeanFactory) contextClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new ApplicationException("Given contextClass is abstract.");
+        } catch (IllegalAccessException e) {
+            throw new ApplicationException("Given contextClass has non public constructor.");
         }
     }
 
@@ -69,7 +101,8 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
 
     }
 
-    protected abstract void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    protected abstract void doDispatch(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException;
 
     public Class<?> getContextClass() {
         return contextClass;
@@ -81,7 +114,7 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
 
     public String getContextConfigLocation() {
         if (contextConfigLocation == null) {
-            contextConfigLocation = getInitParameter(CONTEXT_CONFIG_LOCATION_ATTRIBUTE_NAME);
+            contextConfigLocation = getInitParameter(CONTEXT_CONFIG_LOCATION_ATTR);
         }
         return contextConfigLocation;
     }

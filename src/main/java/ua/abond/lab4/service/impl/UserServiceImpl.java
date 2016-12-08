@@ -9,8 +9,10 @@ import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.service.exception.ResourceAlreadyExistsException;
+import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.web.dto.LoginDTO;
 
 import java.util.Optional;
 
@@ -26,8 +28,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getById(Long id) throws ServiceException {
+        return userDAO.getById(id).
+                orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
     public Optional<User> findByLogin(String name) {
         return userDAO.getByLogin(name);
+    }
+
+    @Override
+    public boolean isAuthorized(LoginDTO login) {
+        return false;
     }
 
     @Override
@@ -36,8 +49,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateAccount(User user) {
-        userDAO.update(user);
+    public void updateAccount(User user) throws ServiceException {
+        User userToUpdate = getById(user.getId());
+        userToUpdate.setFirstName(user.getFirstName());
+        userToUpdate.setLastName(user.getLastName());
+        userDAO.update(userToUpdate);
     }
 
     @Override
@@ -61,14 +77,14 @@ public class UserServiceImpl implements UserService {
                 map(user -> {
                     userDAO.deleteById(id);
                     return user;
-                }).orElseThrow(() -> new ServiceException("Failed to delete admin."));
+                }).orElseThrow(ResourceNotFoundException::new);
     }
 
     private void createUserWithAuth(User user, String authName)
             throws ServiceException {
         User existing = userDAO.getByLogin(user.getLogin()).orElse(null);
         if (existing != null) {
-            throw new ResourceAlreadyExistsException();
+            throw new LoginIsAlreadyTakenException();
         }
         authorityDAO.getByName(authName).
                 map(auth -> {
