@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
@@ -15,7 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -41,9 +41,10 @@ public class RegisterController {
         req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
     }
 
+    @OnException(value = "/register")
     @RequestMapping(method = RequestMethod.POST)
     public void register(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         User sessionUser = new UserSessionRequestMapper().map(req);
         if (sessionUser != null) {
             resp.sendRedirect("/");
@@ -57,14 +58,8 @@ public class RegisterController {
             req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
             return;
         }
-        try {
-            service.register(user);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
-            return;
-        }
 
+        service.register(user);
         resp.sendRedirect("/");
     }
 }

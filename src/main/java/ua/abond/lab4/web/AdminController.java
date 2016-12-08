@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -14,7 +15,6 @@ import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
-import ua.abond.lab4.util.OptionalConsumer;
 import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 import ua.abond.lab4.web.mapper.ApartmentRequestMapper;
@@ -27,7 +27,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -49,9 +48,10 @@ public class AdminController {
     @Inject
     private ApartmentTypeDAO apartmentTypeDAO;
 
+    @OnException(value = "/admin/request")
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         ConfirmRequestDTO dto = new ConfirmRequestDTORequestMapper().map(req);
         List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
         if (!errors.isEmpty()) {
@@ -60,31 +60,22 @@ public class AdminController {
             return;
         }
 
-        try {
-            requestService.confirmRequest(dto);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            viewRequest(req, resp);
-            return;
-        }
+        requestService.confirmRequest(dto);
         resp.sendRedirect("/admin/requests");
     }
 
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
         Pageable pageable = new PageableRequestMapper().map(req);
-        OptionalConsumer.of(requestService.getById(id)).
-                ifPresent(request -> {
-                    Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
-                    req.setAttribute("request", request);
-                    req.setAttribute("apartments", apartmentPage.getContent());
-                    req.setAttribute("pageable", pageable);
-                }).
-                ifNotPresent(() ->
-                        req.setAttribute("errors", Collections.singletonList("Could not find such order."))
-                );
+
+        Request request = requestService.getById(id);
+        Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
+        req.setAttribute("request", request);
+        req.setAttribute("apartments", apartmentPage.getContent());
+        req.setAttribute("pageable", pageable);
+
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 
@@ -119,9 +110,10 @@ public class AdminController {
         req.getRequestDispatcher(APARTMENT_CREATE_VIEW).forward(req, resp);
     }
 
+    @OnException("/admin/apartment/new")
     @RequestMapping(value = "/apartment/new", method = RequestMethod.POST)
     public void createApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Apartment apartment = new ApartmentRequestMapper().map(req);
         List<String> errors = new ApartmentValidator().validate(apartment);
         if (!errors.isEmpty()) {
@@ -129,28 +121,23 @@ public class AdminController {
             getApartmentCreatePage(req, resp);
             return;
         }
-
         apartmentService.createApartment(apartment);
-
         resp.sendRedirect("/admin/apartments");
     }
 
     @RequestMapping("/apartment")
     public void viewApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
-        try {
-            req.setAttribute("apartment", apartmentService.getById(id));
-            req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-        }
+        req.setAttribute("apartment", apartmentService.getById(id));
+        req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
         req.getRequestDispatcher(APARTMENT_VIEW).forward(req, resp);
     }
 
+    @OnException(value = "/admin/apartment/order")
     @RequestMapping(value = "/apartment/update", method = RequestMethod.POST)
     public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Apartment apartment = new ApartmentRequestMapper().map(req);
         List<String> errors = new ApartmentValidator().validate(apartment);
         if (!errors.isEmpty()) {
@@ -158,15 +145,7 @@ public class AdminController {
             viewApartment(req, resp);
             return;
         }
-
-        try {
-            apartmentService.updateApartment(apartment);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            viewApartment(req, resp);
-            return;
-        }
-
+        apartmentService.updateApartment(apartment);
         resp.sendRedirect("/admin/apartments");
     }
 

@@ -9,6 +9,7 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 
 import java.util.Objects;
@@ -34,7 +35,7 @@ public class ApartmentServiceImpl implements ApartmentService {
         Objects.requireNonNull(apartment.getId());
 
         Apartment toUpdate = apartmentDAO.getById(apartment.getId()).
-                orElseThrow(() -> new ServiceException("Could not update as there is no such apartment."));
+                orElseThrow(ResourceNotFoundException::new);
         toUpdate.setName(apartment.getName());
         toUpdate.setPrice(apartment.getPrice());
         toUpdate.setType(apartment.getType());
@@ -62,6 +63,6 @@ public class ApartmentServiceImpl implements ApartmentService {
     @Override
     public Apartment getById(Long id) throws ServiceException {
         return apartmentDAO.getById(id).
-                orElseThrow(() -> new ServiceException("No such apartment."));
+                orElseThrow(ResourceNotFoundException::new);
     }
 }

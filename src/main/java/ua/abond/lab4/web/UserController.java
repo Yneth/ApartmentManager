@@ -2,6 +2,7 @@ package ua.abond.lab4.web;
 
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -26,7 +27,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -62,11 +62,10 @@ public class UserController {
 
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
-        requestService.getById(id).ifPresent(request -> {
-            req.setAttribute("request", request);
-        });
+        Request request = requestService.getById(id);
+        req.setAttribute("request", request);
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 
@@ -78,9 +77,10 @@ public class UserController {
         req.getRequestDispatcher(REQUEST_CREATE_VIEW).forward(req, resp);
     }
 
+    @OnException("/user/request/new")
     @RequestMapping(value = "/request/new", method = RequestMethod.POST)
     public void createRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         User user = new UserSessionRequestMapper().map(req);
 
         Request request = new ApartmentRequestRequestMapper().map(req);
@@ -95,18 +95,13 @@ public class UserController {
         resp.sendRedirect("/user/requests");
     }
 
+    @OnException(value = "/user/request")
     @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
     public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
         String comment = req.getParameter("comment");
-        try {
-            requestService.rejectRequest(id, comment);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            viewRequest(req, resp);
-            return;
-        }
+        requestService.rejectRequest(id, comment);
         resp.sendRedirect("/user/requests");
     }
 
@@ -125,25 +120,19 @@ public class UserController {
 
     @RequestMapping("/order")
     public void viewOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
-        orderService.getById(id).ifPresent(order -> {
-            req.setAttribute("order", order);
-        });
+        Order order = orderService.getById(id);
+        req.setAttribute("order", order);
         req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
     }
 
+    @OnException(value = "/user/order")
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ServiceException {
         Long id = Parse.longValue(req.getParameter("id"));
-        try {
-            orderService.payOrder(id);
-        } catch (ServiceException e) {
-            req.setAttribute("errors", Collections.singletonList(e.getMessage()));
-            viewOrder(req, resp);
-            return;
-        }
+        orderService.payOrder(id);
         resp.sendRedirect("/user/orders");
     }
 }

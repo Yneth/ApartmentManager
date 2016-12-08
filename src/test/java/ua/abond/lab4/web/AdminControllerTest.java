@@ -18,7 +18,6 @@ import ua.abond.lab4.service.exception.ServiceException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -26,8 +25,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdminControllerTest extends ControllerTest {
@@ -42,12 +41,11 @@ public class AdminControllerTest extends ControllerTest {
     @InjectMocks
     private AdminController adminController;
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testConfirmRequestWithNullIdAndValidationError() throws Exception {
+        when(requestService.getById(or(any(Long.class), isNull()))).
+                thenThrow(new ServiceException());
         adminController.confirmRequest(request, response);
-        verify(request, times(2)).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(AdminController.REQUEST_VIEW);
-        verifyForward();
     }
 
     @Test
@@ -56,7 +54,7 @@ public class AdminControllerTest extends ControllerTest {
         when(request.getParameter("userId")).thenReturn("1");
         when(request.getParameter("apartmentId")).thenReturn("1");
         Request request = new Request();
-        when(requestService.getById(anyLong())).thenReturn(Optional.of(request));
+        when(requestService.getById(anyLong())).thenReturn(request);
         when(apartmentService.listMostAppropriate(any(Pageable.class), eq(request))).
                 thenReturn(mock(Page.class));
         adminController.confirmRequest(this.request, response);
@@ -75,19 +73,18 @@ public class AdminControllerTest extends ControllerTest {
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testViewRequestNotFound() throws Exception {
+        when(requestService.getById(or(any(Long.class), isNull()))).
+                thenThrow(new ServiceException());
         adminController.viewRequest(request, response);
-        verifyForward();
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(AdminController.REQUEST_VIEW);
     }
 
     @Test
     public void testViewRequest() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
         Request req = new Request();
-        when(requestService.getById(anyLong())).thenReturn(Optional.of(req));
+        when(requestService.getById(anyLong())).thenReturn(req);
         when(apartmentService.listMostAppropriate(any(Pageable.class), eq(req))).
                 thenReturn(mock(Page.class));
         adminController.viewRequest(request, response);
@@ -159,7 +156,7 @@ public class AdminControllerTest extends ControllerTest {
         verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testViewNoApartment() throws Exception {
         when(apartmentService.getById(or(any(Long.class), isNull()))).
                 thenThrow(new ServiceException());
@@ -169,14 +166,11 @@ public class AdminControllerTest extends ControllerTest {
         verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testUpdateApartmentWithValidationErrorAndNoId() throws Exception {
         when(apartmentService.getById(or(any(Long.class), isNull()))).
                 thenThrow(new ServiceException());
         adminController.updateApartment(request, response);
-        verify(request, times(2)).setAttribute(eq("errors"), anyList());
-        verifyForward();
-        verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
     }
 
     @Test
@@ -188,7 +182,7 @@ public class AdminControllerTest extends ControllerTest {
         verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testUpdateApartmentWithServiceException() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("long name");
@@ -198,9 +192,6 @@ public class AdminControllerTest extends ControllerTest {
         doThrow(new ServiceException()).when(apartmentService).
                 updateApartment(any(Apartment.class));
         adminController.updateApartment(request, response);
-        verify(request, times(1)).setAttribute(eq("errors"), anyList());
-        verifyForward();
-        verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
     }
 
     @Test

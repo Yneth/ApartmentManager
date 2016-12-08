@@ -19,7 +19,6 @@ import ua.abond.lab4.service.exception.ServiceException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +60,7 @@ public class UserControllerTest extends ControllerTest {
     public void testViewRequest() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
         Request req = new Request();
-        when(requestService.getById(anyLong())).thenReturn(Optional.of(req));
+        when(requestService.getById(anyLong())).thenReturn(req);
 
         userController.viewRequest(request, response);
 
@@ -70,14 +69,11 @@ public class UserControllerTest extends ControllerTest {
         verifyForward();
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testViewRequestWhenNoRequest() throws Exception {
+        when(requestService.getById(or(any(Long.class), isNull()))).
+                thenThrow(new ServiceException());
         userController.viewRequest(request, response);
-
-        verify(request, never()).setAttribute(anyString(), isNull());
-
-        verify(request).getRequestDispatcher(UserController.REQUEST_VIEW);
-        verifyForward();
     }
 
     @Test
@@ -109,7 +105,7 @@ public class UserControllerTest extends ControllerTest {
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testRejectRequestWithServiceException() throws Exception {
         doThrow(new ServiceException()).when(requestService).
                 rejectRequest(or(any(Long.class), isNull()), or(isNull(), anyString()));
@@ -141,7 +137,7 @@ public class UserControllerTest extends ControllerTest {
     public void testViewOrder() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
         Order order = new Order();
-        when(orderService.getById(anyLong())).thenReturn(Optional.of(order));
+        when(orderService.getById(anyLong())).thenReturn(order);
 
         userController.viewOrder(request, response);
 
@@ -150,14 +146,11 @@ public class UserControllerTest extends ControllerTest {
         verifyForward();
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testViewOrderWhenNoOrder() throws Exception {
+        when(orderService.getById(or(any(Long.class), isNull()))).
+                thenThrow(new ServiceException());
         userController.viewOrder(request, response);
-
-        verify(request, never()).setAttribute(anyString(), isNull());
-
-        verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
-        verifyForward();
     }
 
     @Test
@@ -166,13 +159,10 @@ public class UserControllerTest extends ControllerTest {
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ServiceException.class)
     public void testPayOrderWithException() throws Exception {
         doThrow(new ServiceException()).when(orderService).
                 payOrder(or(isNull(), any(Long.class)));
         userController.payOrder(request, response);
-        verify(request).setAttribute(anyString(), or(isNull(), anyList()));
-        verify(request).getRequestDispatcher(UserController.ORDER_VIEW);
-        verifyForward();
     }
 }
