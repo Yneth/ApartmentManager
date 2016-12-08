@@ -37,7 +37,7 @@ public class PropAnnotationBeanPostProcessor implements BeanPostProcessor {
 
             if (collect.isEmpty()) {
                 logger.warn(String.format(
-                        "You have annotated bean '%s' wih @Prop annotation but there is no fields to inject values to.",
+                        "You have annotated bean '%s' wih @Prop annotation but there is no fields to inject value to.",
                         beanName
                 ));
             }

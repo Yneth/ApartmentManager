@@ -7,7 +7,9 @@ import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.exception.ServiceException;
 
 public interface ApartmentService {
-    void createApartment(Apartment apartment);
+    Apartment getById(Long id) throws ServiceException;
+
+    void createApartment(Apartment apartment) throws ServiceException;
 
     void updateApartment(Apartment apartment) throws ServiceException;
 
@@ -16,6 +18,4 @@ public interface ApartmentService {
     Page<Apartment> list(Pageable pageable);
 
     Page<Apartment> listMostAppropriate(Pageable pageable, Request filter);
-
-    Apartment getById(Long id) throws ServiceException;
 }

@@ -1,6 +1,7 @@
-package ua.abond.lab4.config.core.web;
+package ua.abond.lab4.config.core.web.method;
 
 import org.apache.log4j.Logger;
+import ua.abond.lab4.config.core.web.exception.RequestMappingHandlerException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,14 +20,21 @@ public class HandlerMethod {
         this.method = method;
     }
 
-    public void handle(Object... args)
-            throws InvocationTargetException {
+    public void handle(Object... args) throws RequestMappingHandlerException {
         try {
             method.invoke(declaringObject, args);
         } catch (IllegalAccessException e) {
             logger.error("Failed to invoke RequestHandler for " + method.getName());
         } catch (InvocationTargetException e) {
-            throw e;
+            throw new RequestMappingHandlerException(e.getTargetException());
         }
+    }
+
+    public Object getDeclaringObject() {
+        return declaringObject;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }

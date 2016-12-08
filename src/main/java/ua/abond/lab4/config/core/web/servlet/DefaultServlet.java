@@ -11,7 +11,8 @@ public class DefaultServlet extends HttpServlet {
     private static final String DEFAULT_SERVLET_NAME = "default";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         RequestDispatcher rd = getServletContext().getNamedDispatcher(DEFAULT_SERVLET_NAME);
         if (rd == null) {
             throw new IllegalStateException("A RequestDispatcher could not be located for the default servlet '" +

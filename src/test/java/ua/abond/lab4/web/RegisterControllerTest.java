@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -54,20 +54,14 @@ public class RegisterControllerTest extends ControllerTest {
         verifyForward();
     }
 
-    @Test
+    @Test(expected = LoginIsAlreadyTakenException.class)
     public void testUnsuccessfulRegisterAlreadyExists() throws Exception {
         User user = create("testtest", "testtest");
         when(request.getParameter("login")).thenReturn(user.getLogin());
         when(request.getParameter("password")).thenReturn(user.getPassword());
-        doThrow(new ServiceException()).when(userService).register(user);
+        doThrow(new LoginIsAlreadyTakenException()).when(userService).register(user);
 
         registerController.register(request, response);
-
-        verify(userService).register(user);
-
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(RegisterController.REGISTER_VIEW);
-        verifyForward();
     }
 
     @Test

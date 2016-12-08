@@ -131,7 +131,7 @@ public class RequestServiceTest {
     @Test
     public void testSuccessfulRequestRejection() throws Exception {
         requestService.rejectRequest(0L, "Changed date.");
-        Request request = requestService.getById(0L).orElse(null);
+        Request request = requestService.getById(0L);
         assertNotNull(request);
         assertTrue(RequestStatus.REJECTED == request.getStatus());
     }

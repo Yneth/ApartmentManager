@@ -97,6 +97,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     public final void scan(String... paths) {
+        Objects.requireNonNull(paths);
         try {
             scanner.scan(paths);
         } catch (IOException e) {
