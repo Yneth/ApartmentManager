@@ -1,41 +1,39 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.IDatabaseTester;
-import org.dbunit.JdbcDatabaseTester;
+import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatDtdDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
-import org.postgresql.ds.PGPoolingDataSource;
+import ua.abond.lab4.config.core.BeanFactory;
+import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 
-import javax.sql.DataSource;
-import java.util.Properties;
+import java.io.FileOutputStream;
 
 public class JdbcDAOTest {
-    private final String dataSetPath;
+    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
+    private static final String DB_UNIT_DTD_PATH = "dbunit.dtd";
 
     protected IDataSet dataSet;
     protected IDatabaseTester tester;
-    protected DataSource dataSource;
-
-    public JdbcDAOTest(String dataSetPath) {
-        this.dataSetPath = dataSetPath;
-    }
+    protected BeanFactory beanFactory;
 
     @Before
     public void setUp() throws Exception {
-        this.dataSet = new FlatXmlDataSetBuilder().build(
-                Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream(dataSetPath)
-        );
-        Properties prop = getDatabaseProperties();
-        this.tester = getDatabaseTester(prop);
-        this.tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-        this.tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
+        beanFactory = new AnnotationBeanFactory(TEST_PACKAGE);
+        this.tester = beanFactory.getBean(IDatabaseTester.class);
+        onBeforeSetup();
+
+        IDatabaseConnection connection = tester.getConnection();
+        FlatDtdDataSet.write(connection.createDataSet(), new FileOutputStream(DB_UNIT_DTD_PATH));
         this.tester.setDataSet(dataSet);
         this.tester.onSetup();
-        this.dataSource = getDataSource(prop);
+    }
+
+    protected void onBeforeSetup() throws Exception {
+
     }
 
     @After
@@ -43,33 +41,10 @@ public class JdbcDAOTest {
         this.tester.onTearDown();
     }
 
-    protected IDatabaseTester getDatabaseTester(Properties prop) throws Exception {
-        IDatabaseTester tester = new JdbcDatabaseTester(
-                prop.getProperty("db.driver"),
-                prop.getProperty("db.url"),
-                prop.getProperty("db.username"),
-                prop.getProperty("db.password")
+    public static IDataSet loadDataSet(String path) throws Exception {
+        return new FlatXmlDataSetBuilder().build(
+                Thread.currentThread().getContextClassLoader().
+                        getResourceAsStream(path)
         );
-        return tester;
-    }
-
-    protected DataSource getDataSource(Properties prop) {
-        PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        dataSource.setUser(prop.getProperty("db.username"));
-        dataSource.setUrl(prop.getProperty("db.url"));
-        dataSource.setPassword(prop.getProperty("db.password"));
-        return dataSource;
-    }
-
-    protected Properties getDatabaseProperties() {
-        Properties prop = new Properties();
-        try {
-            prop.load(Thread.currentThread().
-                    getContextClassLoader().getResourceAsStream("db.properties")
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return prop;
     }
 }

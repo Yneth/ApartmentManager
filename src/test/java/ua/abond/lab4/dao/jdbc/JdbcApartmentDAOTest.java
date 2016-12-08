@@ -1,13 +1,6 @@
 package ua.abond.lab4.dao.jdbc;
 
-import org.dbunit.IDatabaseTester;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.SortOrder;
@@ -18,39 +11,22 @@ import ua.abond.lab4.domain.Request;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
-public class JdbcApartmentDAOTest {
-    private static final String DATASET = "orders-dataset.xml";
-    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
+public class JdbcApartmentDAOTest extends JdbcDAOTest {
+    private static final String DATA_SET = "apartments.xml";
 
-    private IDatabaseTester tester;
     private ApartmentDAO apartmentDAO;
     private ApartmentTypeDAO apartmentTypeDAO;
 
-    @Before
-    public void setUp() throws Exception {
-        BeanFactory bf = new AnnotationBeanFactory(TEST_PACKAGE);
-        apartmentDAO = bf.getBean(ApartmentDAO.class);
-        apartmentTypeDAO = bf.getBean(ApartmentTypeDAO.class);
-        tester = bf.getBean(IDatabaseTester.class);
-        tester.setDataSet(new FlatXmlDataSetBuilder().build(
-                Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream(DATASET)
-        ));
-        tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-        tester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
-        tester.onSetup();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        tester.onTearDown();
+    @Override
+    public void onBeforeSetup() throws Exception {
+        apartmentDAO = beanFactory.getBean(ApartmentDAO.class);
+        apartmentTypeDAO = beanFactory.getBean(ApartmentTypeDAO.class);
+        dataSet = loadDataSet(DATA_SET);
     }
 
     @Test
@@ -110,7 +86,19 @@ public class JdbcApartmentDAOTest {
 
     @Test
     public void testCount() {
-        assertEquals(2, apartmentDAO.count());
+        assertEquals(3, apartmentDAO.count());
+    }
+
+    @Test
+    public void testListOrderedById() {
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC));
+        List<Apartment> content = page.getContent();
+
+        for (int i = 0; i < content.size() - 1; i++) {
+            Apartment current = content.get(i);
+            Apartment next = content.get(i + 1);
+            assertTrue(current.getId() < next.getId());
+        }
     }
 
     @Test
@@ -122,10 +110,10 @@ public class JdbcApartmentDAOTest {
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
 
-        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, "id", SortOrder.ASC), request);
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(2, page.getTotalElements());
+        assertEquals(3, page.getTotalElements());
         assertEquals(1, page.getTotalPages());
     }
 
@@ -138,10 +126,10 @@ public class JdbcApartmentDAOTest {
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
 
-        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, "id", SortOrder.ASC), request);
+        Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(2, page.getTotalElements());
-        assertEquals(2, page.getTotalPages());
+        assertEquals(3, page.getTotalElements());
+        assertEquals(3, page.getTotalPages());
     }
 }

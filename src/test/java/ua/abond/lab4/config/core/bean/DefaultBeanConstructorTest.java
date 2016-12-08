@@ -7,10 +7,14 @@ import ua.abond.lab4.config.core.exception.BeanInstantiationException;
 import javax.sql.DataSource;
 import java.util.AbstractList;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class DefaultBeanConstructorTest {
+
+    @Test
+    public void testCanCreateNestedClassWithDefault() {
+        assertTrue(canCreateIgnoreFactoryAndName(new BeanDefinition(TestNestedClassWithDefaultConstructor.class)));
+    }
 
     @Test
     public void testCanCreateClassWithPrivateConstructor() {
@@ -58,6 +62,10 @@ public class DefaultBeanConstructorTest {
 
     private Object createBeanIgnoreFactoryAndName(BeanDefinition bd) {
         return new DefaultBeanConstructor().create(new AnnotationBeanFactory(), "", bd);
+    }
+
+    private static class TestNestedClassWithDefaultConstructor {
+
     }
 
     private static class TestClassWithPrivateConstructor {

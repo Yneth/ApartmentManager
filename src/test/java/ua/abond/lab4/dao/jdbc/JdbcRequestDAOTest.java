@@ -1,19 +1,21 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.dataset.ITable;
-import org.junit.Before;
 import org.junit.Test;
+import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.config.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
+import ua.abond.lab4.domain.RequestStatus;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
 
 public class JdbcRequestDAOTest extends JdbcDAOTest {
@@ -22,17 +24,13 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
     private ApartmentDAO apartmentDAO;
     private ApartmentTypeDAO apartmentTypeDAO;
 
-    public JdbcRequestDAOTest() {
-        super("requests-dataset.xml");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        userDAO = new JdbcUserDAO(dataSource);
-        requestDAO = new JdbcRequestDAO(dataSource);
-        apartmentDAO = new JdbcApartmentDAO(dataSource);
-        apartmentTypeDAO = new JdbcApartmentTypeDAO(dataSource);
+    @Override
+    protected void onBeforeSetup() throws Exception {
+        dataSet = loadDataSet("requests.xml");
+        userDAO = beanFactory.getBean(UserDAO.class);
+        requestDAO = beanFactory.getBean(RequestDAO.class);
+        apartmentDAO = beanFactory.getBean(ApartmentDAO.class);
+        apartmentTypeDAO = beanFactory.getBean(ApartmentTypeDAO.class);
     }
 
     @Test
@@ -46,6 +44,7 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
         request.setUser(userDAO.getById(0L).get());
         request.setFrom(LocalDateTime.now().minusDays(10));
         request.setTo(LocalDateTime.now());
+        request.setStatus(RequestStatus.CREATED);
         requestDAO.create(request);
 
         assertNotNull(request.getId());
@@ -83,5 +82,36 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
     public void deleteById() throws Exception {
         requestDAO.deleteById(0L);
         assertTrue(Optional.empty().equals(requestDAO.getById(0L)));
+    }
+
+    @Test
+    public void testList() throws Exception {
+        Page<Request> list = requestDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
+        assertNotNull(list);
+        assertNotNull(list.getContent());
+        assertEquals(1, list.getSize());
+        assertEquals(2, list.getTotalPages());
+    }
+
+    @Test
+    public void testEmptyList() throws Exception {
+        tester.onTearDown();
+        tester.setDataSet(loadDataSet("empty.xml"));
+        tester.onSetup();
+
+        Page<Request> page = requestDAO.list(new DefaultPageable(1, 1, SortOrder.ASC));
+        assertNotNull(page);
+        assertNotNull(page.getContent());
+        assertFalse(page.hasContent());
+    }
+
+    @Test
+    public void testGetUserRequests() throws Exception {
+        Page<Request> page = requestDAO.getUserOrders(new DefaultPageable(1, 1, SortOrder.ASC), 1L);
+        assertNotNull(page);
+        assertTrue(page.hasContent());
+        assertNotNull(page.getContent());
+        assertEquals(1, page.getSize());
+        assertEquals(1, page.getTotalPages());
     }
 }

@@ -13,10 +13,10 @@ import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class OrderServiceTest {
-    private static final String DATASET = "orders-dataset.xml";
+    private static final String DATASET = "orders.xml";
     private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     private IDatabaseTester tester;

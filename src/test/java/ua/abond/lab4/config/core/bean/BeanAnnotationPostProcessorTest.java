@@ -7,12 +7,10 @@ import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public class BeanAnnotationBeanFactoryPostProcessorTest {
+public class BeanAnnotationPostProcessorTest {
 
     @Test
     public void testSuccessfulBeanAnnotationPostProcessor() throws Exception {
@@ -26,11 +24,9 @@ public class BeanAnnotationBeanFactoryPostProcessorTest {
         assertTrue(cbf.containsBeanDefinition(TestBeanAnnotation.class));
         assertTrue(cbf.containsBeanDefinition(String.class));
 
-        TestBeanAnnotation testBeanAnnotation = new TestBeanAnnotation();
-        Method method = testBeanAnnotation.getClass().getMethod("getString");
         String actual = (String)
-                cbf.createBean("String", new BeanDefinition(String.class, method));
-        assertEquals(testBeanAnnotation.getString(), actual);
+                cbf.createBean("String", cbf.getBeanDefinition(String.class));
+        assertEquals(new TestBeanAnnotation().getString(), actual);
     }
 
     @Test

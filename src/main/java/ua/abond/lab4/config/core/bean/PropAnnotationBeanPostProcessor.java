@@ -37,7 +37,7 @@ public class PropAnnotationBeanPostProcessor implements BeanPostProcessor {
 
             if (collect.isEmpty()) {
                 logger.warn(String.format(
-                        "You have annotated bean '%s' wih @Prop annotation but there is no fields to inject values to.",
+                        "You have annotated bean '%s' wih @Prop annotation but there is no fields to inject value to.",
                         beanName
                 ));
             }
@@ -46,9 +46,13 @@ public class PropAnnotationBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    @Override
+    public Object postProcessAfterInitialization(ConfigurableBeanFactory factory, Object bean, String simpleName) {
+        return bean;
+    }
+
     private void load(Properties properties, String path) {
         try {
-            // TODO investigate which is better getClass or ClassLoader.
             String relativePath = path.startsWith("/") ? path : "/" + path;
             InputStream inputStream = this.getClass().getResourceAsStream(relativePath);
             if (inputStream == null) {

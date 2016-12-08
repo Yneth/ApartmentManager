@@ -8,19 +8,18 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 public class AuthorityFilter implements Filter {
     private static final Logger logger = Logger.getLogger(AuthorityFilter.class);
-    private static final String AUTH_PARAM = "authority";
+    public static final String AUTH_PARAM = "authority";
 
     private String authority;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         authority = filterConfig.getInitParameter(AUTH_PARAM);
-        if (authority == null) {
-            throw new RuntimeException("Authority parameter was not given.");
-        }
+        Objects.requireNonNull(authority, "Authority parameter was not specified.");
     }
 
     @Override
@@ -28,14 +27,8 @@ public class AuthorityFilter implements Filter {
             throws IOException, ServletException {
         final String auth = authority;
 
-        final String errorMsg = "Expected %s but was %s";
-        if (!(request instanceof HttpServletRequest)) {
-            logger.error(String.format(errorMsg, "HttpServletRequest", request.getClass().getSimpleName()));
-            return;
-        }
-        if (!(response instanceof HttpServletResponse)) {
-            logger.error(String.format(errorMsg, "HttpServletResponse", response.getClass().getSimpleName()));
-            return;
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+            throw new ServletException("AuthorityFilter supports only HTTP requests.");
         }
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
@@ -51,7 +44,6 @@ public class AuthorityFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 
     private boolean isAuthorized(User user, String auth) {

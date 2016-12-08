@@ -3,6 +3,7 @@ package ua.abond.lab4.dao.jdbc;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.config.core.web.support.DefaultPage;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.config.core.web.support.Page;
@@ -24,6 +25,20 @@ import java.util.Optional;
 @Component
 @Prop("sql/request.sql.properties")
 public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
+    @Value("sql.create")
+    private String createSql;
+    @Value("sql.update")
+    private String updateSql;
+    @Value("sql.deleteById")
+    private String deleteByIdSql;
+    @Value("sql.getById")
+    private String getByIdSql;
+    @Value("sql.list")
+    private String listSql;
+    @Value("sql.count")
+    private String countSql;
+    @Value("sql.user.orders")
+    private String userOrdersSql;
 
     @Inject
     public JdbcRequestDAO(DataSource dataSource) {
@@ -32,12 +47,9 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void create(Request entity) {
-        final String sql =
-                "INSERT INTO requests (id, user_id, room_count, apartment_type_id, from_date, to_date, status_id) " +
-                        "VALUES (DEFAULT, ?, ?, ?, ?, ?, ?);";
         KeyHolder holder = new KeyHolder();
         jdbc.update(c -> {
-            PreparedStatement ps = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = c.prepareStatement(createSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
             ps.setLong(3, entity.getLookup().getType().getId());
@@ -52,10 +64,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     @Override
     public Optional<Request> getById(Long id) {
         return jdbc.querySingle(
-                "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
-                        "FROM requests q " +
-                        "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
-                        "WHERE q.id = ?;",
+                getByIdSql,
                 ps -> ps.setLong(1, id),
                 new RequestMapper()
         );
@@ -63,8 +72,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void update(Request entity) {
-        jdbc.execute("UPDATE requests SET user_id = ?, room_count = ?, apartment_type_id = ?, from_date = ?, to_date = ?, status_id = ?" +
-                        ", status_comment = ? WHERE id = ?",
+        jdbc.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getUser().getId());
                     ps.setInt(2, entity.getLookup().getRoomCount());
@@ -80,7 +88,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM requests WHERE id = ?;",
+        jdbc.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
@@ -88,10 +96,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     @Override
     public Page<Request> list(Pageable pageable) {
         List<Request> query = jdbc.query(
-                "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
-                        "FROM requests q " +
-                        "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
-                        "ORDER BY q.id ASC",
+                String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new RequestMapper()
         );
         return new DefaultPage<>(query, count(), pageable);
@@ -100,19 +105,16 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     @Override
     public Page<Request> getUserOrders(Pageable pageable, Long userId) {
         List<Request> query = jdbc.query(
-                "SELECT q.id, q.user_id, q.room_count, q.apartment_type_id, at.name, q.from_date, q.to_date, q.status_id, q.status_comment " +
-                        "FROM requests q " +
-                        "INNER JOIN apartment_types at ON at.id = q.apartment_type_id " +
-                        "WHERE q.user_id = ?",
+                String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> ps.setLong(1, userId),
                 new RequestMapper()
         );
-        return new DefaultPage<>(query, count(), new DefaultPageable(1, 10, null, null));
+        return new DefaultPage<>(query, count(), new DefaultPageable(1, 10, null));
     }
 
     @Override
     public long count() {
-        return jdbc.querySingle("SELECT COUNT(*) FROM requests;", rs -> rs.getLong(1)).
+        return jdbc.querySingle(countSql, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 

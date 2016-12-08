@@ -8,10 +8,11 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.service.exception.OrderAlreadyPayedException;
+import ua.abond.lab4.service.exception.OrderNotFoundException;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
-
-import java.util.Optional;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -37,26 +38,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Order> list(Pageable pageable) {
-        return orderDAO.list(pageable);
-    }
-
-    @Override
-    public Optional<Order> getById(Long id) {
-        return orderDAO.getById(id);
+    public Order getById(Long id) throws ResourceNotFoundException {
+        return orderDAO.getById(id).
+                orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
     public void payOrder(Long id) throws ServiceException {
         Order order = orderDAO.getById(id).orElse(null);
         if (order == null) {
-            throw new ServiceException("Could not find such order");
+            throw new OrderNotFoundException();
         }
         if (order.isPayed()) {
-            throw new ServiceException("Cannot pay already payed order.");
+            throw new OrderAlreadyPayedException();
         }
         order.setPayed(true);
         orderDAO.update(order);
+    }
+
+    @Override
+    public Page<Order> list(Pageable pageable) {
+        return orderDAO.list(pageable);
     }
 
     @Override

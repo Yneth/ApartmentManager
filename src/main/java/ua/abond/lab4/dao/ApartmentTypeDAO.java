@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface ApartmentTypeDAO extends DAO<ApartmentType> {
     Optional<ApartmentType> getByName(String name);
+
     List<ApartmentType> list();
 }

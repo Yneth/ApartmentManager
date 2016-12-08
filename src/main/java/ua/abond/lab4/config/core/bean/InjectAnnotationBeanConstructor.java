@@ -24,6 +24,9 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
 
     @Override
     public boolean canCreate(ConfigurableBeanFactory context, String bean, BeanDefinition beanDefinition) {
+        if (beanDefinition.isInnerClass()) {
+            return false;
+        }
         List<Constructor<?>> constructors = getInjectableConstructors(beanDefinition);
 
         if (beanDefinition.hasFactoryMethod()) {
@@ -39,7 +42,7 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
             );
         }
         if (constructors.isEmpty()) {
-            return true;
+            return false;
         }
         Constructor ctr = constructors.get(0);
         return Arrays.stream(ctr.getParameterTypes()).allMatch(context::containsBeanDefinition);
@@ -50,7 +53,7 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
     public Object create(ConfigurableBeanFactory context, String beanName, BeanDefinition beanDefinition) {
         logger.debug(String.format("Creating new instance of '%s'.", beanName));
         if (visited.contains(beanName)) {
-            throw new ImproperlyConfiguredException("Configuration contains cyclic dependency between");
+            throw new ImproperlyConfiguredException("Bean with name '%s' has cyclic dependency.");
         }
         visited.add(beanName);
         if (beanDefinition.hasFactoryMethod()) {

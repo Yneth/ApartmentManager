@@ -4,13 +4,14 @@ import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
-
-import java.util.List;
+import ua.abond.lab4.service.exception.ServiceException;
 
 public interface ApartmentService {
-    void createApartment(Apartment apartment);
+    Apartment getById(Long id) throws ServiceException;
 
-    void updateApartment(Apartment apartment);
+    void createApartment(Apartment apartment) throws ServiceException;
+
+    void updateApartment(Apartment apartment) throws ServiceException;
 
     void deleteApartment(Long id);
 

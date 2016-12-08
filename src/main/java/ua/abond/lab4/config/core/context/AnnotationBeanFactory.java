@@ -36,10 +36,11 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         Objects.requireNonNull(path);
         initDefault();
         scan(path);
-        prepare();
+        refresh();
     }
 
     private void initDefault() {
+        beans.put(this.getClass().getSimpleName(), this);
         this.scanner = new ClassPathBeanDefinitionScanner(this);
         this.beanConstructors.add(new DefaultBeanConstructor());
         this.beanConstructors.add(new InjectAnnotationBeanConstructor());
@@ -96,6 +97,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     public final void scan(String... paths) {
+        Objects.requireNonNull(paths);
         try {
             scanner.scan(paths);
         } catch (IOException e) {
@@ -106,10 +108,13 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     @Override
-    public final void prepare() {
-        // TODO: clear beans or somewhat
-        beans.put(this.getClass().getSimpleName(), this);
+    public final void refresh() {
+        beans.clear();
+        beanConstructors.clear();
+        beanPostProcessors.clear();
+        beanFactoryPostProcessors.clear();
 
+        initDefault();
         registerBeanFactoryPostProcessors();
         invokeBeanFactoryPostProcessors();
         registerBeanPostProcessors();
@@ -232,6 +237,10 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
         if (putToMap) {
             beans.put(simpleName, bean);
+        }
+
+        for (BeanPostProcessor bpp : beanPostProcessors) {
+            bean = bpp.postProcessAfterInitialization(this, bean, simpleName);
         }
         return bean;
     }

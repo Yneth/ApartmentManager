@@ -21,7 +21,7 @@ public class ApartmentRequestRequestMapper implements RequestMapper<Request> {
         request.setTo(to);
         request.setFrom(from);
         request.setLookup(new ApartmentRequestMapper().map(req));
-        request.setStatus(RequestStatus.values()[Parse.integer(req.getParameter("status"), 0)]);
+        request.setStatus(Parse.enumeration(RequestStatus.class, req.getParameter("status"), null));
         request.setStatusComment(req.getParameter("statusComment"));
         return request;
     }

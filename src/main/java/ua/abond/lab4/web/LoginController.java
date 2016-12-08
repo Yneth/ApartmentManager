@@ -1,8 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
@@ -20,10 +20,14 @@ import java.util.Optional;
 
 @Controller
 public class LoginController {
-    private static final String LOGIN_VIEW = "/WEB-INF/pages/login.jsp";
+    public static final String LOGIN_VIEW = "/WEB-INF/pages/login.jsp";
+
+    private final UserService userService;
 
     @Inject
-    private UserService userService;
+    public LoginController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping("/login")
     public void getLoginPage(HttpServletRequest req, HttpServletResponse resp)
@@ -50,7 +54,7 @@ public class LoginController {
         }
 
         LoginDTO loginDTO = new LoginDTORequestMapper().map(req);
-
+        // TODO add validation
         // TODO
         Optional<User> user = userService.findByLogin(loginDTO.getLogin());
         boolean rightCredentials = user.
@@ -63,7 +67,7 @@ public class LoginController {
             session.setAttribute("user", user.get());
             resp.sendRedirect("/");
         } else {
-            req.setAttribute("errors", Collections.singletonList("Wrong credentials"));
+            req.setAttribute("errors", Collections.singletonList("Wrong credentials."));
             getLoginPage(req, resp);
         }
     }

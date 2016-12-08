@@ -9,8 +9,6 @@ public interface Pageable {
 
     SortOrder getSortOrder();
 
-    String sortBy();
-
     boolean hasPrevious();
 
     Pageable first();

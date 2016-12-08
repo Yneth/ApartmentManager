@@ -9,7 +9,7 @@ public class Request extends Entity<Long> {
     private LocalDateTime from;
     private LocalDateTime to;
     private String statusComment;
-    private RequestStatus status = RequestStatus.CREATED;
+    private RequestStatus status;
 
     public Request() {
     }

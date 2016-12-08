@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 public class RequestServiceTest {
-    private static final String DATASET = "orders-dataset.xml";
+    private static final String DATASET = "orders.xml";
     private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     @Rule
@@ -131,7 +131,7 @@ public class RequestServiceTest {
     @Test
     public void testSuccessfulRequestRejection() throws Exception {
         requestService.rejectRequest(0L, "Changed date.");
-        Request request = requestService.getById(0L).orElse(null);
+        Request request = requestService.getById(0L);
         assertNotNull(request);
         assertTrue(RequestStatus.REJECTED == request.getStatus());
     }
@@ -169,7 +169,7 @@ public class RequestServiceTest {
             requestService.confirmRequest(requestDTO);
         } catch (ServiceException e) {
         }
-        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null, null)).getSize());
+        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null)).getSize());
     }
 
     @Test

@@ -1,7 +1,7 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.annotation.Controller;
-import ua.abond.lab4.config.core.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Controller
 public class HomeController {
-    private static final String HOME_VIEW = "/WEB-INF/pages/index.jsp";
+    public static final String HOME_VIEW = "/WEB-INF/pages/index.jsp";
 
     @RequestMapping("/")
     public void getIndexPage(HttpServletRequest req, HttpServletResponse resp)

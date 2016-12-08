@@ -7,6 +7,7 @@
     <div class="container">
         <div class="jumbotron">
             <p:requests-partial/>
+            <p:pagination-partial uri="/admin/requests"/>
             <c:if test="${empty requests}">
                 <p>No orders yet.</p>
             </c:if>

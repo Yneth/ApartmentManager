@@ -3,6 +3,7 @@ package ua.abond.lab4.dao.jdbc;
 import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.annotation.Prop;
+import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.util.jdbc.KeyHolder;
@@ -18,6 +19,17 @@ import java.util.Optional;
 @Prop("sql/authority.sql.properties")
 public class JdbcAuthorityDAO extends JdbcDAO<Authority>
         implements AuthorityDAO {
+
+    @Value("sql.create")
+    private String createSql;
+    @Value("sql.update")
+    private String updateSql;
+    @Value("sql.deleteById")
+    private String deleteByIdSql;
+    @Value("sql.getById")
+    private String getByIdSql;
+    @Value("sql.getByName")
+    private String getByNameSql;
 
     @Inject
     public JdbcAuthorityDAO(DataSource dataSource) {

@@ -7,7 +7,7 @@ public class DefaultPageable implements Pageable {
     private String sortBy;
     private SortOrder sortOrder;
 
-    public DefaultPageable(int pageNumber, int pageSize, String sortBy, SortOrder sortOrder) {
+    public DefaultPageable(int pageNumber, int pageSize, SortOrder sortOrder) {
         this.pageSize = pageSize;
         this.pageNumber = pageNumber;
         this.sortBy = sortBy;
@@ -35,23 +35,18 @@ public class DefaultPageable implements Pageable {
     }
 
     @Override
-    public String sortBy() {
-        return sortBy;
-    }
-
-    @Override
     public boolean hasPrevious() {
         return (pageNumber - 1) > 0;
     }
 
     @Override
     public Pageable first() {
-        return new DefaultPageable(1, pageSize, sortBy, sortOrder);
+        return new DefaultPageable(1, pageSize, sortOrder);
     }
 
     @Override
     public Pageable next() {
-        return new DefaultPageable(pageNumber + 1, pageSize, sortBy, sortOrder);
+        return new DefaultPageable(pageNumber + 1, pageSize, sortOrder);
     }
 
     @Override
@@ -59,6 +54,6 @@ public class DefaultPageable implements Pageable {
         if (!hasPrevious()) {
             return first();
         }
-        return new DefaultPageable(pageNumber + 1, pageSize, sortBy, sortOrder);
+        return new DefaultPageable(pageNumber + 1, pageSize, sortOrder);
     }
 }

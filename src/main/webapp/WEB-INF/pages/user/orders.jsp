@@ -7,7 +7,7 @@
     <div class="container">
         <div class="jumbotron">
             <p:orders-partial/>
-
+            <p:pagination-partial uri="/user/orders"/>
             <p:error-partial/>
         </div>
     </div>

@@ -6,6 +6,7 @@ import ua.abond.lab4.config.core.exception.BeanInstantiationException;
 import ua.abond.lab4.util.reflection.BeanUtil;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class DefaultBeanConstructor implements BeanConstructor {
@@ -24,11 +25,25 @@ public class DefaultBeanConstructor implements BeanConstructor {
                             beanName, beanDefinition.getType().getSimpleName()
                     ));
         }
+        if (beanDefinition.hasFactoryMethod()) {
+            Class declaringClass = beanDefinition.getDeclaringClass();
+            Method method = beanDefinition.getFactoryMethod();
+
+            return BeanUtil.create(beanName, getBean(context, declaringClass), method);
+        }
 
         Constructor<?> constructor = Arrays.stream(beanDefinition.getType().getDeclaredConstructors()).
                 filter(c -> c.getParameterCount() == 0).
                 findFirst().
                 orElse(null);
         return BeanUtil.create(beanName, constructor);
+    }
+
+    private Object getBean(ConfigurableBeanFactory factory, Class<?> type) {
+        if (factory.containsBean(type)) {
+            return factory.getBean(type);
+        }
+        BeanDefinition bd = factory.getBeanDefinition(type);
+        return factory.createBean(bd.getType().getSimpleName(), bd);
     }
 }

@@ -5,7 +5,6 @@ import org.junit.Test;
 import ua.abond.lab4.config.core.BeanFactory;
 import ua.abond.lab4.config.core.context.prop.PropTestClass;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +18,7 @@ public class BeanFactoryPropTest {
     private Properties properties;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         beanFactory = new AnnotationBeanFactory(TEST_PACKAGE);
         properties = new Properties();
         properties.load(ClassLoader.getSystemResourceAsStream(TEST_PROP_FILE));

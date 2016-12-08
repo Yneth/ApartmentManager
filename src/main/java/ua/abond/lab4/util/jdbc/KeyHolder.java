@@ -5,6 +5,7 @@ public class KeyHolder {
 
     public Number getKey() {
         if (!(value instanceof Number)) {
+            // TODO
             throw new RuntimeException();
         }
         return (Number) value;

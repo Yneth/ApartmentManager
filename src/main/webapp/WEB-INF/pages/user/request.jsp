@@ -8,10 +8,12 @@
         <div class="jumbotron">
             <c:if test="${not empty request}">
                 <p:request-partial request="${request}"/>
-                <form class="form-group" action="/user/request/reject" method="post">
-                    <input type="hidden" name="id" value="${request.id}"/>
-                    <input class="form-control btn btn-danger" type="submit" value="Reject"/>
-                </form>
+                <c:if test="request.status == 'CREATED'">
+                    <form class="form-group" action="/user/request/reject" method="post">
+                        <input type="hidden" name="id" value="${request.id}"/>
+                        <input class="form-control btn btn-danger" type="submit" value="Reject"/>
+                    </form>
+                </c:if>
             </c:if>
             <c:if test="${empty request}">
                 <h1>No such order.</h1>

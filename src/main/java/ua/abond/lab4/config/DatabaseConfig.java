@@ -24,6 +24,8 @@ public class DatabaseConfig {
         dataSource.setUrl(url);
         dataSource.setUser(username);
         dataSource.setPassword(password);
+        dataSource.setInitialConnections(10);
+        dataSource.setMaxConnections(50);
         return dataSource;
     }
 }

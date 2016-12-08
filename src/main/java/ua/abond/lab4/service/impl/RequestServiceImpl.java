@@ -11,12 +11,9 @@ import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.exception.RequestConfirmException;
-import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.*;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
-
-import java.util.Optional;
 
 @Component
 public class RequestServiceImpl implements RequestService {
@@ -33,17 +30,17 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void createRequest(Request request) {
+        request.setStatus(RequestStatus.CREATED);
         requestDAO.create(request);
     }
 
     @Override
-    public void confirmRequest(ConfirmRequestDTO requestDTO) throws ServiceException {
+    public void confirmRequest(ConfirmRequestDTO requestDTO)
+            throws ServiceException {
         logger.debug(String.format("Confirming request with id: %s", requestDTO.getRequestId()));
-
         Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
         if (request == null) {
-            throw new RequestConfirmException(String.format("Could not find request with such id: %s",
-                    requestDTO.getRequestId()));
+            throw new ResourceNotFoundException();
         }
         if (RequestStatus.CREATED != request.getStatus()) {
             throw new RequestConfirmException(String.format("Request with id %d is already confirmed or rejected",
@@ -69,8 +66,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Optional<Request> getById(Long id) {
-        return requestDAO.getById(id);
+    public Request getById(Long id) throws ResourceNotFoundException {
+        return requestDAO.getById(id).
+                orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
@@ -82,13 +80,10 @@ public class RequestServiceImpl implements RequestService {
     public void rejectRequest(Long id, String comment) throws ServiceException {
         Request request = requestDAO.getById(id).orElse(null);
         if (request == null) {
-            throw new ServiceException(String.format("Could not find request with such id: %s", id));
+            throw new ResourceNotFoundException();
         }
-        if (RequestStatus.REJECTED == request.getStatus()) {
-            throw new ServiceException(String.format("Request with id: %s was already rejected.", id));
-        }
-        if (RequestStatus.CONFIRMED == request.getStatus()) {
-            throw new ServiceException(String.format("Request with id: %s was already confirmed.", id));
+        if (RequestStatus.CREATED != request.getStatus()) {
+            throw new RejectRequestException();
         }
         request.setStatus(RequestStatus.REJECTED);
         request.setStatusComment(comment);
