@@ -2,10 +2,12 @@ package ua.abond.lab4.config.core.web.servlet;
 
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
-import ua.abond.lab4.config.core.annotation.Controller;
-import ua.abond.lab4.config.core.annotation.RequestMapping;
-import ua.abond.lab4.config.core.web.HandlerMethod;
-import ua.abond.lab4.config.core.web.HandlerMethodInfo;
+import ua.abond.lab4.config.core.web.*;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.ExceptionController;
+import ua.abond.lab4.config.core.web.annotation.ExceptionHandler;
+import ua.abond.lab4.config.core.web.annotation.RequestMapping;
+import ua.abond.lab4.config.core.web.exception.RequestMappingHandlerException;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +20,8 @@ import java.util.*;
 public class FrontControllerServlet extends BeanFactoryAwareServlet {
     private static final Logger logger = Logger.getLogger(FrontControllerServlet.class);
 
-    private Map<HandlerMethodInfo, HandlerMethod> handlers;
+    private Map<HandlerMethodInfo, HandlerMethod> mappingHandlers;
+    private Map<ExceptionHandlerInfo, ExceptionHandlerMethod> exceptionHandlers;
 
     @Override
     protected void doDispatch(HttpServletRequest req, HttpServletResponse resp)
@@ -28,27 +31,47 @@ public class FrontControllerServlet extends BeanFactoryAwareServlet {
         RequestMethod method = RequestMethod.valueOf(req.getMethod());
         HandlerMethodInfo key = new HandlerMethodInfo(requestURI, method);
 
-        HandlerMethod handlerMethod = handlers.get(key);
+        HandlerMethod handlerMethod = mappingHandlers.get(key);
         if (handlerMethod == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else {
-            try {
-                handlerMethod.handle(req, resp);
-            } catch (InvocationTargetException e) {
-                logger.error("Failed to invoke '" + requestURI + "' handler", e);
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+        try {
+            handlerMethod.handle(req, resp);
+        } catch (RequestMappingHandlerException e) {
+            ExceptionHandlerInfo info = new ExceptionHandlerInfo(e.getCause().getClass());
+            if (exceptionHandlers.containsKey(info)) {
+                ExceptionHandlerData data = new ExceptionHandlerData(
+                        handlerMethod.getMethod(),
+                        e.getCause().getClass()
+                );
+                ExceptionHandlerMethod exceptionHandler = exceptionHandlers.get(info);
+                try {
+                    exceptionHandler.invoke(req, resp, data);
+                } catch (InvocationTargetException e1) {
+                    defaultErrorHandle(requestURI, resp, e1);
+                }
+            } else {
+                defaultErrorHandle(requestURI, resp, e);
             }
         }
+    }
+
+    private void defaultErrorHandle(String uri, HttpServletResponse resp, Exception e)
+            throws IOException {
+        logger.error("Failed to invoke '" + uri + "' handler", e);
+        resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     @Override
     protected void onRefreshed(ConfigurableBeanFactory beanFactory) {
         super.onRefreshed(beanFactory);
-        initializeHandlers(beanFactory);
+        initializeMappingHandlers(beanFactory);
+        initializeExceptionHandlers(beanFactory);
     }
 
-    private void initializeHandlers(ConfigurableBeanFactory beanFactory) {
-        this.handlers = new HashMap<>();
+    private void initializeMappingHandlers(ConfigurableBeanFactory beanFactory) {
+        this.mappingHandlers = new HashMap<>();
         Collection<Object> controllers = beanFactory.getBeansWithAnnotation(Controller.class).values();
 
         for (Object controller : controllers) {
@@ -59,15 +82,35 @@ public class FrontControllerServlet extends BeanFactoryAwareServlet {
                     filter(m -> m.isAnnotationPresent(RequestMapping.class)).
                     forEach(m -> addHandler(prefix, controller, m));
         }
-        this.handlers = Collections.unmodifiableMap(this.handlers);
+        this.mappingHandlers = Collections.unmodifiableMap(this.mappingHandlers);
     }
 
-    private void addHandler(String prefix, Object declaringClass, Method method) {
+    private void addHandler(String prefix, Object declaringObj, Method method) {
         RequestMapping annotation = method.getAnnotation(RequestMapping.class);
         String url = prefix + annotation.value();
 
         logger.debug("Creating handler for url: " + url + " for " + annotation.method() + " method.");
 
-        this.handlers.put(new HandlerMethodInfo(url, annotation.method()), new HandlerMethod(declaringClass, method));
+        this.mappingHandlers.put(new HandlerMethodInfo(url, annotation.method()), new HandlerMethod(declaringObj, method));
+    }
+
+    private void initializeExceptionHandlers(ConfigurableBeanFactory beanFactory) {
+        this.exceptionHandlers = new HashMap<>();
+        Collection<Object> objects = beanFactory.getBeansWithAnnotation(ExceptionController.class).values();
+
+        for (Object handler : objects) {
+            Arrays.stream(handler.getClass().getDeclaredMethods()).
+                    filter(m -> m.isAnnotationPresent(ExceptionHandler.class)).
+                    forEach(m -> addExceptionHandler(handler, m));
+        }
+        this.exceptionHandlers = Collections.unmodifiableMap(exceptionHandlers);
+    }
+
+    private void addExceptionHandler(Object declaringObj, Method method) {
+        ExceptionHandler annotation = method.getAnnotation(ExceptionHandler.class);
+        Class<? extends Throwable>[] values = annotation.value();
+        Arrays.stream(values).
+                map(ExceptionHandlerInfo::new).
+                forEach(info -> exceptionHandlers.put(info, new ExceptionHandlerMethod(method, declaringObj)));
     }
 }

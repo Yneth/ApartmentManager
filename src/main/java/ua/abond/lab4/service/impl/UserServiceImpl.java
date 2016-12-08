@@ -9,6 +9,7 @@ import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.exception.ResourceAlreadyExistsException;
 import ua.abond.lab4.service.exception.ServiceException;
 
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
             throws ServiceException {
         User existing = userDAO.getByLogin(user.getLogin()).orElse(null);
         if (existing != null) {
-            throw new ServiceException("User with such login already exists.");
+            throw new ResourceAlreadyExistsException();
         }
         authorityDAO.getByName(authName).
                 map(auth -> {

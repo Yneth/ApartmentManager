@@ -12,6 +12,8 @@ import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.RequestConfirmException;
+import ua.abond.lab4.service.exception.RequestRejectException;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
@@ -82,13 +84,10 @@ public class RequestServiceImpl implements RequestService {
     public void rejectRequest(Long id, String comment) throws ServiceException {
         Request request = requestDAO.getById(id).orElse(null);
         if (request == null) {
-            throw new ServiceException(String.format("Could not find request with such id: %s", id));
+            throw new ResourceNotFoundException();
         }
-        if (RequestStatus.REJECTED == request.getStatus()) {
-            throw new ServiceException(String.format("Request with id: %s was already rejected.", id));
-        }
-        if (RequestStatus.CONFIRMED == request.getStatus()) {
-            throw new ServiceException(String.format("Request with id: %s was already confirmed.", id));
+        if (RequestStatus.CREATED != request.getStatus()) {
+            throw new RequestRejectException();
         }
         request.setStatus(RequestStatus.REJECTED);
         request.setStatusComment(comment);

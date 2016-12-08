@@ -8,6 +8,8 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.service.exception.OrderAlreadyPayedException;
+import ua.abond.lab4.service.exception.OrderNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 
@@ -50,10 +52,10 @@ public class OrderServiceImpl implements OrderService {
     public void payOrder(Long id) throws ServiceException {
         Order order = orderDAO.getById(id).orElse(null);
         if (order == null) {
-            throw new ServiceException("Could not find such order");
+            throw new OrderNotFoundException();
         }
         if (order.isPayed()) {
-            throw new ServiceException("Cannot pay already payed order.");
+            throw new OrderAlreadyPayedException();
         }
         order.setPayed(true);
         orderDAO.update(order);

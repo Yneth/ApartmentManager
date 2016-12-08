@@ -2,6 +2,7 @@ package ua.abond.lab4.web;
 
 import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -95,6 +96,7 @@ public class UserController {
         resp.sendRedirect("/user/requests");
     }
 
+    @OnException(forward = "/user/request")
     @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
     public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -133,6 +135,7 @@ public class UserController {
         req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
     }
 
+    @OnException(forward = "/user/order")
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
@@ -49,6 +50,7 @@ public class AdminController {
     @Inject
     private ApartmentTypeDAO apartmentTypeDAO;
 
+    @OnException(forward = "/admin/request")
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
     public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -148,6 +150,7 @@ public class AdminController {
         req.getRequestDispatcher(APARTMENT_VIEW).forward(req, resp);
     }
 
+    @OnException(forward = "/admin/apartment/order")
     @RequestMapping(value = "/apartment/update", method = RequestMethod.POST)
     public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
