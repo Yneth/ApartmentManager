@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
@@ -41,6 +42,7 @@ public class RegisterController {
         req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
     }
 
+    @OnException(forward = "/register")
     @RequestMapping(method = RequestMethod.POST)
     public void register(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

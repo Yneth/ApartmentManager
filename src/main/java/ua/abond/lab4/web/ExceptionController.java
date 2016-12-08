@@ -17,53 +17,41 @@ import java.util.ResourceBundle;
 public class ExceptionController {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public void handleResourceNotFoundException(HttpServletRequest req,
-                                                HttpServletResponse resp,
-                                                ExceptionHandlerData data)
+    public void handleResourceNotFoundException(ExceptionHandlerData data)
             throws IOException {
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        data.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @ExceptionHandler(RequestConfirmException.class)
-    public void handleRequestConfirmException(HttpServletRequest req,
-                                              HttpServletResponse resp,
-                                              ExceptionHandlerData e)
+    public void handleRequestConfirmException(ExceptionHandlerData data)
             throws IOException, ServletException {
-        localizedHandle("request.error.confirm", req, resp, e);
+        localizedHandle("request.error.confirm", data);
     }
 
-
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public void handleResourceAlreadyExistsException(HttpServletRequest req,
-                                                     HttpServletResponse resp,
-                                                     ExceptionHandlerData e)
+    public void handleResourceAlreadyExistsException(ExceptionHandlerData data)
             throws IOException, ServletException {
-        localizedHandle("order.error.payed", req, resp, e);
+        localizedHandle("order.error.payed", data);
     }
 
     @ExceptionHandler(OrderAlreadyPayedException.class)
-    public void handleOrderAlreadyPayedException(HttpServletRequest req,
-                                                 HttpServletResponse resp,
-                                                 ExceptionHandlerData e)
+    public void handleOrderAlreadyPayedException(ExceptionHandlerData data)
             throws IOException, ServletException {
-        localizedHandle("order.error.payed", req, resp, e);
+        localizedHandle("order.error.payed", data);
     }
 
     @ExceptionHandler(RejectRequestException.class)
-    public void handRejectRequestException(HttpServletRequest req,
-                                           HttpServletResponse resp,
-                                           ExceptionHandlerData e)
+    public void handRejectRequestException(ExceptionHandlerData data)
             throws ServletException, IOException {
-        localizedHandle("request.error.reject", req, resp, e);
+        localizedHandle("request.error.reject", data);
     }
 
-    private void localizedHandle(String errorKey,
-                                 HttpServletRequest req,
-                                 HttpServletResponse resp,
-                                 ExceptionHandlerData data)
+    private void localizedHandle(String errorKey, ExceptionHandlerData data)
             throws IOException, ServletException {
         String forward = getForward(data);
+        HttpServletResponse resp = data.getResponse();
         if (forward != null) {
+            HttpServletRequest req = data.getRequest();
             setLocalizedError(req, errorKey);
             req.getRequestDispatcher(forward).forward(req, resp);
         } else {

@@ -2,8 +2,6 @@ package ua.abond.lab4.config.core.web;
 
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -18,10 +16,10 @@ public class ExceptionHandlerMethod<E extends Throwable> {
         this.declaringObject = declaringObject;
     }
 
-    public void invoke(HttpServletRequest req, HttpServletResponse resp, ExceptionHandlerData data)
+    public void invoke(ExceptionHandlerData data)
             throws InvocationTargetException {
         try {
-            method.invoke(declaringObject, req, resp, data);
+            method.invoke(declaringObject, data);
         } catch (IllegalAccessException e) {
             logger.error(String.format("Failed to invoke ExceptionHandler for %s.%s",
                     declaringObject.getClass().getSimpleName(), method.getName()

@@ -42,12 +42,13 @@ public class FrontControllerServlet extends BeanFactoryAwareServlet {
             ExceptionHandlerInfo info = new ExceptionHandlerInfo(e.getCause().getClass());
             if (exceptionHandlers.containsKey(info)) {
                 ExceptionHandlerData data = new ExceptionHandlerData(
+                        req, resp,
                         handlerMethod.getMethod(),
                         e.getCause().getClass()
                 );
                 ExceptionHandlerMethod exceptionHandler = exceptionHandlers.get(info);
                 try {
-                    exceptionHandler.invoke(req, resp, data);
+                    exceptionHandler.invoke(data);
                 } catch (InvocationTargetException e1) {
                     defaultErrorHandle(requestURI, resp, e1);
                 }
