@@ -1,7 +1,8 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.Controller;
 import ua.abond.lab4.config.core.annotation.Inject;
+import ua.abond.lab4.config.core.web.annotation.Controller;
+import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
@@ -10,11 +11,9 @@ import ua.abond.lab4.web.dto.LoginDTO;
 import ua.abond.lab4.web.mapper.LoginDTORequestMapper;
 import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class LoginController {
 
     @RequestMapping("/login")
     public void getLoginPage(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws Exception {
         User sessionUser = new UserSessionRequestMapper().map(req);
         if (sessionUser != null) {
             resp.sendRedirect("/");
@@ -40,9 +39,10 @@ public class LoginController {
         req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
     }
 
+    @OnException("/login")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void login(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException, ServletException {
+            throws Exception {
         User sessionUser = new UserSessionRequestMapper().map(req);
         if (sessionUser != null) {
             resp.sendRedirect("/");
