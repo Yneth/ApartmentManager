@@ -12,4 +12,6 @@
 </p>
 <p><fmt:message key="request.from" bundle="${locale}"/>: ${order.request.from}</p>
 <p><fmt:message key="request.to" bundle="${locale}"/>: ${order.request.to}</p>
-<p><fmt:message key="order.payed" bundle="${locale}"/>: ${order.payed}</p>
+<p><fmt:message key="order.payed" bundle="${locale}"/>
+    :<fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/>
+</p>

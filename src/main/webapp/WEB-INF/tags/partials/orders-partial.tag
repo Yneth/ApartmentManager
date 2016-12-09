@@ -23,7 +23,7 @@
             <td>${order.apartment.id}</td>
             <td>${order.request.id}</td>
             <td>${order.price}</td>
-            <td>${order.payed}</td>
+            <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/></td>
             <td><a class="btn btn-primary"
                    href="/${fn:toLowerCase(sessionScope.user.authority.name)}/order?id=${order.id}"
                    role="button"><fmt:message key="view" bundle="${locale}"/></a>
