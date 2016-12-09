@@ -25,10 +25,11 @@
                     <input class="form-control" id="first-name-input" type="text" name="firstName"/>
 
                     <label for="last-name-input">
-                        <fmt:message key="register.firstname" bundle="${locale}"/>:
+                        <fmt:message key="register.lastname" bundle="${locale}"/>:
                     </label>
                     <input class="form-control" id="last-name-input" type="text" name="lastName"/>
 
+                    <br/>
                     <input class="btn btn-primary form-control" type="submit"
                            value="<fmt:message key="register" bundle="${locale}"/>"/>
                 </form>

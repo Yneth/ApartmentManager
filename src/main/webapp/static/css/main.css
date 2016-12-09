@@ -2,6 +2,11 @@
     float: none;
     margin: 0 auto;
 }
+
+.right {
+    float: right;
+}
+
 .btn-right {
     float: right;
 }
