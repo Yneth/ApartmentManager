@@ -9,6 +9,7 @@ import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.domain.Apartment;
+import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.util.jdbc.KeyHolder;
@@ -67,7 +68,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
         return jdbc.querySingle(
                 getByIdSql,
                 ps -> ps.setLong(1, id),
-                new OrderMapper()
+                new FetchedOrderMapper()
         );
     }
 
@@ -132,6 +133,27 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
             order.setRequest(request);
             order.setPrice(rs.getBigDecimal(4));
             order.setPayed(rs.getBoolean(5));
+            return order;
+        }
+    }
+
+    private static class FetchedOrderMapper implements RowMapper<Order> {
+
+        @Override
+        public Order mapRow(ResultSet rs) throws SQLException {
+            Order order = new OrderMapper().mapRow(rs);
+            Request request = order.getRequest();
+            request.setFrom(rs.getTimestamp(6).toLocalDateTime());
+            request.setTo(rs.getTimestamp(7).toLocalDateTime());
+
+            Apartment apartment = order.getApartment();
+            apartment.setName(rs.getString(8));
+            apartment.setRoomCount(rs.getInt(9));
+
+            ApartmentType apartmentType = new ApartmentType();
+            apartmentType.setId(rs.getLong(10));
+            apartmentType.setName(rs.getString(11));
+            apartment.setType(apartmentType);
             return order;
         }
     }

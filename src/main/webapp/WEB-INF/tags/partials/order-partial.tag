@@ -5,9 +5,11 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <h1><fmt:message key="order" bundle="${locale}"/></h1>
-<%--<p>Apartment name: ${order.request.lookup.name}</p>--%>
-<%--<p>Apartment room count: ${order.request.lookup.roomCount}</p>--%>
-<%--<p>Apartment type: ${order.lookup.type.name}</p>--%>
+<p><fmt:message key="apartment.name" bundle="${locale}"/>: ${order.apartment.name}</p>
+<p><fmt:message key="apartment.roomCount" bundle="${locale}"/>: ${order.apartment.roomCount}</p>
+<p><fmt:message key="apartment.type" bundle="${locale}"/>:
+    <fmt:message key="apartment.type.${fn:toLowerCase(order.apartment.type.name)}" bundle="${locale}"/>
+</p>
 <p><fmt:message key="request.from" bundle="${locale}"/>: ${order.request.from}</p>
 <p><fmt:message key="request.to" bundle="${locale}"/>: ${order.request.to}</p>
 <p><fmt:message key="order.payed" bundle="${locale}"/>: ${order.payed}</p>
