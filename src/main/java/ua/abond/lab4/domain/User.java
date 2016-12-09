@@ -1,8 +1,9 @@
 package ua.abond.lab4.domain;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class User extends Entity<Long> {
+public class User extends Entity<Long> implements Serializable {
     private String firstName;
     private String lastName;
 
@@ -60,8 +61,10 @@ public class User extends Entity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof User))
+            return false;
         User user = (User) o;
         return Objects.equals(getLogin(), user.getLogin()) &&
                 Objects.equals(getAuthority(), user.getAuthority());

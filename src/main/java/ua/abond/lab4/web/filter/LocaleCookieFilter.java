@@ -19,14 +19,16 @@ public class LocaleCookieFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String lang = request.getParameter("lang");
+        String lang = request.getParameter(LANG_KEY);
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         if (lang != null) {
-            Cookie cookie = new Cookie("lang", lang);
+            Cookie cookie = new Cookie(LANG_KEY, lang);
             cookie.setMaxAge(COOKIE_AGE);
+            cookie.setSecure(true);
+
             resp.addCookie(cookie);
-            request.setAttribute("lang", lang);
+            request.setAttribute(LANG_KEY, lang);
         } else {
             Arrays.stream(req.getCookies()).
                     filter(c -> LANG_KEY.equals(c.getName())).

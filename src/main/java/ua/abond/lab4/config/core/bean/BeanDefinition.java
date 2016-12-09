@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class BeanDefinition implements Comparable<BeanDefinition> {
+public class BeanDefinition {
     private final Class<?> type;
 
     private Class<?> declaringClass;
@@ -43,7 +43,6 @@ public class BeanDefinition implements Comparable<BeanDefinition> {
         }
         Constructor<?>[] constructors = type.getDeclaredConstructors();
         if (isNestedClass() && constructors.length == 2) {
-            Class<?> cls = type.getEnclosingClass();
             return Arrays.stream(constructors).
                     map(Constructor::getParameterTypes).
                     flatMap(Arrays::stream).
@@ -77,12 +76,17 @@ public class BeanDefinition implements Comparable<BeanDefinition> {
     }
 
     @Override
-    public int compareTo(BeanDefinition that) {
-        if (this.hasOnlyDefaultConstructor() && that.hasOnlyDefaultConstructor()) {
-            return 0;
-        } else if (this.hasOnlyDefaultConstructor()) {
-            return 1;
-        }
-        return -1;
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof BeanDefinition))
+            return false;
+        BeanDefinition that = (BeanDefinition) o;
+        return Objects.equals(getType(), that.getType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType());
     }
 }

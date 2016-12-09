@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ExceptionHandlerMethod<E extends Throwable> {
+public class ExceptionHandlerMethod {
     private static final Logger logger = Logger.getLogger(ExceptionHandlerMethod.class);
 
     private final Method method;
