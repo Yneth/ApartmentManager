@@ -16,15 +16,9 @@ public class LoginDTOValidator implements Validator<LoginDTO> {
         if (Objects.isNull(login)) {
             errors.add("login.dto.validation.login.null");
         }
-        if (!Objects.isNull(login) && login.length() < 6) {
-            errors.add("login.dto.validation.login");
-        }
         String password = object.getPassword();
         if (Objects.isNull(password)) {
             errors.add("login.dto.validation.password.null");
-        }
-        if (!Objects.isNull(password) && password.length() < 6) {
-            errors.add("login.dto.validation.password");
         }
         return errors;
     }

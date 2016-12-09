@@ -13,15 +13,17 @@ public class UserValidator implements Validator<User> {
         List<String> errors = new ArrayList<>();
         String login = object.getLogin();
         if (Objects.isNull(login)) {
-            errors.add("You should provide login.");
-        } else if (login.length() < 6) {
-            errors.add("Login length should be greater than 6 characters long.");
+            errors.add("user.validation.login.null");
+        }
+        if (!Objects.isNull(login) && login.length() < 6) {
+            errors.add("user.validation.login");
         }
         String password = object.getPassword();
         if (Objects.isNull(password)) {
-            errors.add("Password cannot be empty.");
-        } else if (password.length() < 6) {
-            errors.add("Password length should be greater than 6 characters long.");
+            errors.add("user.validation.password.null");
+        }
+        if (!Objects.isNull(password) && password.length() < 6) {
+            errors.add("user.validation.password");
         }
         return errors;
     }

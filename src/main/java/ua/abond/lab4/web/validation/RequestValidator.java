@@ -11,37 +11,38 @@ import java.util.List;
 import java.util.Objects;
 
 public class RequestValidator implements Validator<Request> {
+
     @Override
     public List<String> validate(Request object) {
         List<String> errors = new ArrayList<>();
         LocalDateTime from = object.getFrom();
         if (Objects.isNull(from)) {
-            errors.add("You didn't select From date");
+            errors.add("request.validation.from.null");
         }
         LocalDateTime to = object.getTo();
         if (Objects.isNull(to)) {
-            errors.add("You didn't select To date.");
+            errors.add("request.validation.to.null");
         }
         Apartment lookup = object.getLookup();
         if (Objects.isNull(lookup)) {
-            errors.add("Apartment lookup cannot be null.");
+            errors.add("request.validation.lookup.null");
         } else {
             ApartmentType apartmentType = object.getLookup().getType();
             if (Objects.isNull(apartmentType)) {
-                errors.add("You didn't select apartment type.");
+                errors.add("request.validation.type.null");
+            }
+            int roomCount = object.getLookup().getRoomCount();
+            if (roomCount > 11) {
+                errors.add("request.validation.room.count.greater");
+            }
+            if (roomCount <= 0) {
+                errors.add("request.validation.room.count.less");
             }
         }
-        int roomCount = object.getLookup().getRoomCount();
         if (from != null && to != null) {
             if (from.isAfter(to)) {
-                errors.add("To date should be after from date.");
+                errors.add("request.validation.from.after.to");
             }
-        }
-        if (roomCount > 11) {
-            errors.add("Room count cannot be larger than 11.");
-        }
-        if (roomCount <= 0) {
-            errors.add("Room count cannot be less or equal to zero.");
         }
         return errors;
     }
