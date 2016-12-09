@@ -14,17 +14,17 @@ public class LoginDTOValidator implements Validator<LoginDTO> {
         List<String> errors = new ArrayList<>();
         String login = object.getLogin();
         if (Objects.isNull(login)) {
-            errors.add("Login required.");
+            errors.add("login.dto.validation.login.null");
         }
         if (!Objects.isNull(login) && login.length() < 6) {
-            errors.add("Login should contain more than 6 characters long.");
+            errors.add("login.dto.validation.login");
         }
         String password = object.getPassword();
         if (Objects.isNull(password)) {
-            errors.add("Password required.");
+            errors.add("login.dto.validation.password.null");
         }
         if (!Objects.isNull(password) && password.length() < 6) {
-            errors.add("Login should contain more than 6 characters long.");
+            errors.add("login.dto.validation.password");
         }
         return errors;
     }

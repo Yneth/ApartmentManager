@@ -16,22 +16,22 @@ public class ApartmentValidator implements Validator<Apartment> {
         List<String> errors = new ArrayList<>();
         String name = object.getName();
         if (Objects.isNull(name) || "".equals(name)) {
-            errors.add("Apartment name cannot be empty.");
+            errors.add("apartment.validation.name.null");
         }
         int roomCount = object.getRoomCount();
         if (roomCount <= 0 || roomCount > 11) {
-            errors.add("Room count should be in range of (0 - 11]");
+            errors.add("apartment.validation.room.count");
         }
         ApartmentType type = object.getType();
         if (Objects.isNull(type) || Objects.isNull(type.getId())) {
-            errors.add("You didn't select apartment type.");
+            errors.add("apartment.validation.type.null");
         }
         BigDecimal price = object.getPrice();
         if (Objects.isNull(price)) {
-            errors.add("You didn't select price.");
+            errors.add("apartment.validation.price.null");
         }
         if (!Objects.isNull(price) && price.compareTo(BigDecimal.ZERO) < 0) {
-            errors.add("Apartment price cannot be less than zero.");
+            errors.add("apartment.validation.price");
         }
         return errors;
     }
