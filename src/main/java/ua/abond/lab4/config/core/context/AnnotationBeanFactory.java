@@ -234,13 +234,15 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
         for (BeanPostProcessor bpp : beanPostProcessors) {
             bean = bpp.postProcessBeforeInitialization(this, bean, simpleName);
         }
-
         if (putToMap) {
             beans.put(simpleName, bean);
         }
 
         for (BeanPostProcessor bpp : beanPostProcessors) {
             bean = bpp.postProcessAfterInitialization(this, bean, simpleName);
+        }
+        if (putToMap) {
+            beans.put(simpleName, bean);
         }
         return bean;
     }

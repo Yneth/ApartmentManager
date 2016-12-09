@@ -6,29 +6,24 @@ import ua.abond.lab4.config.core.infrastructure.TransactionManager;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class TransactionalInvocationHandler implements InvocationHandler {
     private Object object;
     private TransactionManager tm;
-    private List<Method> transactionalMethods;
 
     public TransactionalInvocationHandler(Object object, TransactionManager tm) {
         Objects.requireNonNull(object);
-        Objects.requireNonNull(transactionalMethods);
+        Objects.requireNonNull(tm);
         this.object = object;
-        this.transactionalMethods = Arrays.stream(object.getClass().getDeclaredMethods()).
-                filter(m -> m.isAnnotationPresent(Transactional.class)).
-                collect(Collectors.toList());
+        this.tm = tm;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Exception {
-        if (transactionalMethods.contains(method)) {
+        if (method.isAnnotationPresent(Transactional.class)
+                || object.getClass().getMethod(method.getName()).isAnnotationPresent(Transactional.class)) {
             tm.createConnection();
             try {
                 Object obj = method.invoke(object, args);

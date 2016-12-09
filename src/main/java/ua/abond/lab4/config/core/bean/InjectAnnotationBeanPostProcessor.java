@@ -115,7 +115,7 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        return Ordered.LOWEST_PRECEDENCE - 1000;
     }
 
     @FunctionalInterface
