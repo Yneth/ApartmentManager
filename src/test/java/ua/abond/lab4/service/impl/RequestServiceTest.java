@@ -21,6 +21,7 @@ import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.dto.RequestDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -69,9 +70,11 @@ public class RequestServiceTest {
 
     @Test
     public void createRequest() throws Exception {
-        Request request = new Request();
-        request.setUser(userDAO.getById(0L).get());
-        request.setLookup(apartmentDAO.getById(0L).get());
+        RequestDTO request = new RequestDTO();
+        request.setUserId(0L);
+//        request.setLookup(apartmentDAO.getById(0L).get());
+        request.setApartmentTypeId(0L);
+        request.setRoomCount(10);
         request.setFrom(LocalDateTime.now().minusDays(10));
         request.setTo(LocalDateTime.now());
         requestService.createRequest(request);

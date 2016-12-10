@@ -1,12 +1,16 @@
 package ua.abond.lab4.web.mapper;
 
+import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.SortOrder;
 import ua.abond.lab4.util.Parse;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class PageableRequestMapper implements RequestMapper<DefaultPageable> {
+@Component
+public class PageableRequestMapper implements RequestMapper<Pageable> {
+
     @Override
     public DefaultPageable map(HttpServletRequest req) {
         int page = Parse.integerPrimitive(req.getParameter("page"), 1);

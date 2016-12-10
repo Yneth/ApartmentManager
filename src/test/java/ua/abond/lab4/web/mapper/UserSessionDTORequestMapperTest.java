@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,7 +16,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserSessionRequestMapperTest {
+public class UserSessionDTORequestMapperTest {
     @Mock
     private HttpSession session;
     @Mock
@@ -34,7 +35,7 @@ public class UserSessionRequestMapperTest {
         user.setPassword("password");
         when(session.getAttribute("user")).thenReturn(user);
 
-        User map = new UserSessionRequestMapper().map(request);
+        UserSessionDTO map = new UserSessionDTORequestMapper().map(request);
         assertNotNull(map);
         assertEquals(user.getLogin(), map.getLogin());
         assertEquals(user.getPassword(), map.getPassword());
@@ -42,6 +43,6 @@ public class UserSessionRequestMapperTest {
 
     @Test
     public void testMapEmptyRequest() {
-        assertNull(new UserSessionRequestMapper().map(request));
+        assertNull(new UserSessionDTORequestMapper().map(request));
     }
 }

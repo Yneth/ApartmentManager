@@ -1,13 +1,16 @@
 package ua.abond.lab4.web.validation;
 
+import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.util.validation.Validator;
+import ua.abond.lab4.service.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class UserValidator implements Validator<User> {
+
     @Override
     public List<String> validate(User object) {
         List<String> errors = new ArrayList<>();

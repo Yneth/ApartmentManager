@@ -1,5 +1,6 @@
 package ua.abond.lab4.web.mapper;
 
+import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.util.Parse;
 
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+@Component
 public class ApartmentRequestMapper implements RequestMapper<Apartment> {
 
     @Override

@@ -1,10 +1,12 @@
 package ua.abond.lab4.web.mapper;
 
+import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Component
 public class ConfirmRequestDTORequestMapper implements RequestMapper<ConfirmRequestDTO> {
 
     @Override
