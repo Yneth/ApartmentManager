@@ -11,15 +11,11 @@ import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.OrderService;
-import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.service.*;
 import ua.abond.lab4.util.Parse;
-import ua.abond.lab4.web.mapper.ApartmentRequestRequestMapper;
+import ua.abond.lab4.web.dto.RequestDTO;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 import ua.abond.lab4.web.mapper.PageableRequestMapper;
-import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
-import ua.abond.lab4.web.validation.RequestValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +31,10 @@ public class UserController {
     public static final String REQUEST_CREATE_VIEW = "/WEB-INF/pages/user/create-request.jsp";
 
     @Inject
+    private ValidationService validationService;
+    @Inject
+    private RequestMapperService mapperService;
+    @Inject
     private UserService userService;
     @Inject
     private RequestService requestService;
@@ -46,8 +46,8 @@ public class UserController {
     @RequestMapping("/requests")
     public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        User user = new UserSessionRequestMapper().map(req);
-        Pageable pageable = new PageableRequestMapper().map(req);
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
+        Pageable pageable = mapperService.map(req, Pageable.class);
 
         Page<Request> userRequests = requestService.getUserRequests(pageable, user.getId());
         req.setAttribute("requests", userRequests.getContent());
@@ -77,16 +77,12 @@ public class UserController {
     @RequestMapping(value = "/request/new", method = RequestMethod.POST)
     public void createRequest(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        User user = new UserSessionRequestMapper().map(req);
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
+        RequestDTO request = mapperService.map(req, RequestDTO.class);
 
-        Request request = new ApartmentRequestRequestMapper().map(req);
-        List<String> errors = new RequestValidator().validate(request);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            getCreateRequestPage(req, resp);
-            return;
-        }
-        request.setUser(user);
+        validationService.validate(request);
+
+        request.setUserId(user.getId());
         requestService.createRequest(request);
         resp.sendRedirect("/user/requests");
     }
@@ -104,7 +100,7 @@ public class UserController {
     @RequestMapping("/orders")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        User user = new UserSessionRequestMapper().map(req);
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
         Pageable pageable = new PageableRequestMapper().map(req);
 
         Page<Order> page = orderService.getUserOrders(pageable, user.getId());

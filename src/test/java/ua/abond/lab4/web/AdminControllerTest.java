@@ -15,6 +15,7 @@ import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.ValidationException;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.isNull;
 
@@ -41,34 +42,14 @@ public class AdminControllerTest extends ControllerTest {
     @InjectMocks
     private AdminController adminController;
 
-    @Test(expected = ServiceException.class)
-    public void testConfirmRequestWithNullIdAndValidationError() throws Exception {
-        when(requestService.getById(or(any(Long.class), isNull()))).
-                thenThrow(new ServiceException());
+    @Test(expected = ValidationException.class)
+    public void testConfirmRequestValidationException() throws Exception {
+        mockThrowValidationException(Request.class);
         adminController.confirmRequest(request, response);
     }
 
     @Test
-    public void testConfirmRequestWithValidationError() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("userId")).thenReturn("1");
-        when(request.getParameter("apartmentId")).thenReturn("1");
-        Request request = new Request();
-        when(requestService.getById(anyLong())).thenReturn(request);
-        when(apartmentService.listMostAppropriate(any(Pageable.class), eq(request))).
-                thenReturn(mock(Page.class));
-        adminController.confirmRequest(this.request, response);
-        verify(this.request, times(1)).setAttribute(eq("errors"), anyList());
-        verify(this.request).getRequestDispatcher(AdminController.REQUEST_VIEW);
-        verifyForward();
-    }
-
-    @Test
     public void testConfirmRequest() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("userId")).thenReturn("1");
-        when(request.getParameter("apartmentId")).thenReturn("1");
-        when(request.getParameter("price")).thenReturn("10");
         adminController.confirmRequest(request, response);
         verify(response).sendRedirect(anyString());
     }
@@ -82,14 +63,11 @@ public class AdminControllerTest extends ControllerTest {
 
     @Test
     public void testViewRequest() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        Request req = new Request();
-        when(requestService.getById(anyLong())).thenReturn(req);
-        when(apartmentService.listMostAppropriate(any(Pageable.class), eq(req))).
+        when(apartmentService.listMostAppropriate(isNull(), isNull())).
                 thenReturn(mock(Page.class));
         adminController.viewRequest(request, response);
         verifyForward();
-        verify(request).setAttribute(eq("request"), eq(req));
+        verify(request).setAttribute(eq("request"), isNull());
         verify(request).getRequestDispatcher(AdminController.REQUEST_VIEW);
     }
 
@@ -126,29 +104,22 @@ public class AdminControllerTest extends ControllerTest {
         verifyForward();
     }
 
-    @Test
-    public void testCreateApartmentValidationError() throws Exception {
+    @Test(expected = ValidationException.class)
+    public void testCreateApartmentValidationException() throws Exception {
+        mockThrowValidationException(Apartment.class);
         adminController.createApartment(request, response);
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(AdminController.APARTMENT_CREATE_VIEW);
-        verifyForward();
     }
 
     @Test
     public void testCreateApartment() throws Exception {
-        when(request.getParameter("apartmentTypeId")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("test");
-        when(request.getParameter("roomCount")).thenReturn("10");
-        when(request.getParameter("price")).thenReturn("20");
         adminController.createApartment(request, response);
         verify(response).sendRedirect(anyString());
     }
 
     @Test
     public void testViewApartment() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
         Apartment apartment = new Apartment();
-        when(apartmentService.getById(anyLong())).thenReturn(apartment);
+        when(apartmentService.getById(isNull())).thenReturn(apartment);
         adminController.viewApartment(request, response);
         verifyForward();
         verify(request).setAttribute(eq("apartment"), eq(apartment));
@@ -157,50 +128,21 @@ public class AdminControllerTest extends ControllerTest {
     }
 
     @Test(expected = ServiceException.class)
-    public void testViewNoApartment() throws Exception {
-        when(apartmentService.getById(or(any(Long.class), isNull()))).
-                thenThrow(new ServiceException());
-        adminController.viewApartment(request, response);
-        verifyForward();
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testUpdateApartmentWithValidationErrorAndNoId() throws Exception {
-        when(apartmentService.getById(or(any(Long.class), isNull()))).
-                thenThrow(new ServiceException());
-        adminController.updateApartment(request, response);
-    }
-
-    @Test
-    public void testUpdateApartmentWithValidationError() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        adminController.updateApartment(request, response);
-        verify(request, times(1)).setAttribute(eq("errors"), anyList());
-        verifyForward();
-        verify(request).getRequestDispatcher(AdminController.APARTMENT_VIEW);
-    }
-
-    @Test(expected = ServiceException.class)
     public void testUpdateApartmentWithServiceException() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("long name");
-        when(request.getParameter("roomCount")).thenReturn("10");
-        when(request.getParameter("price")).thenReturn("100");
-        when(request.getParameter("apartmentTypeId")).thenReturn("1");
-        doThrow(new ServiceException()).when(apartmentService).
-                updateApartment(any(Apartment.class));
+        doThrow(new ServiceException()).
+                when(apartmentService).updateApartment(isNull());
         adminController.updateApartment(request, response);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testUpdateApartmentWithException() throws Exception {
+        mockThrowValidationException(Apartment.class);
+        adminController.updateApartment(request, response);
+        verify(response, never()).sendError(anyInt());
     }
 
     @Test
     public void testUpdateApartment() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("long name");
-        when(request.getParameter("roomCount")).thenReturn("10");
-        when(request.getParameter("price")).thenReturn("100");
-        when(request.getParameter("apartmentTypeId")).thenReturn("1");
         adminController.updateApartment(request, response);
         verify(response).sendRedirect(anyString());
     }

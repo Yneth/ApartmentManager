@@ -6,19 +6,23 @@ import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.service.RequestMapperService;
 import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.web.mapper.UserRequestMapper;
-import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
-import ua.abond.lab4.web.validation.UserValidator;
+import ua.abond.lab4.service.ValidationService;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
     public static final String REGISTER_VIEW = "/WEB-INF/pages/register.jsp";
+
+    @Inject
+    private RequestMapperService mapperService;
+    @Inject
+    private ValidationService validationService;
 
     private final UserService service;
 
@@ -30,7 +34,7 @@ public class RegisterController {
     @RequestMapping
     public void getRegisterPage(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        User user = new UserSessionRequestMapper().map(req);
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
         if (user != null) {
             resp.sendRedirect("/");
             return;
@@ -42,19 +46,14 @@ public class RegisterController {
     @RequestMapping(method = RequestMethod.POST)
     public void register(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        User sessionUser = new UserSessionRequestMapper().map(req);
+        UserSessionDTO sessionUser = mapperService.map(req, UserSessionDTO.class);
         if (sessionUser != null) {
             resp.sendRedirect("/");
             return;
         }
 
-        User user = new UserRequestMapper().map(req);
-        List<String> errors = new UserValidator().validate(user);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            req.getRequestDispatcher(REGISTER_VIEW).forward(req, resp);
-            return;
-        }
+        User user = mapperService.map(req, User.class);
+        validationService.validate(user);
 
         service.register(user);
         resp.sendRedirect("/");

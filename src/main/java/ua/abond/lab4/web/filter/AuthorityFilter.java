@@ -1,8 +1,8 @@
 package ua.abond.lab4.web.filter;
 
 import org.apache.log4j.Logger;
-import ua.abond.lab4.domain.User;
-import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
+import ua.abond.lab4.web.dto.UserSessionDTO;
+import ua.abond.lab4.web.mapper.UserSessionDTORequestMapper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -29,7 +29,7 @@ public class AuthorityFilter extends HttpFilter {
             throws IOException, ServletException {
         final String auth = authority;
 
-        User user = new UserSessionRequestMapper().map(request);
+        UserSessionDTO user = new UserSessionDTORequestMapper().map(request);
         if (isAuthorized(user, auth)) {
             chain.doFilter(request, response);
         } else {
@@ -38,7 +38,7 @@ public class AuthorityFilter extends HttpFilter {
         }
     }
 
-    private boolean isAuthorized(User user, String auth) {
+    private boolean isAuthorized(UserSessionDTO user, String auth) {
         return user != null
                 && user.getAuthority() != null
                 && user.getAuthority().getName() != null

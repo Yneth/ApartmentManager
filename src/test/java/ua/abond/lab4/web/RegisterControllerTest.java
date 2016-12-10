@@ -8,8 +8,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
+import ua.abond.lab4.service.exception.ValidationException;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -22,8 +24,8 @@ public class RegisterControllerTest extends ControllerTest {
 
     @Test
     public void testGetRegisterPageRedirectIfLoggedIn() throws Exception {
-        mockUserToSession(create("test", "test"));
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
         registerController.getRegisterPage(request, response);
         verify(response).sendRedirect(anyString());
     }
@@ -36,43 +38,39 @@ public class RegisterControllerTest extends ControllerTest {
 
     @Test
     public void testRegisterIfLoggedIn() throws Exception {
-        mockUserToSession(create("test", "test"));
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
         registerController.register(request, response);
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ValidationException.class)
     public void testUnsuccessfulRegisterFailedOnValidation() throws Exception {
-        User user = create("user", "user");
-        when(request.getParameter("login")).thenReturn(user.getLogin());
-        when(request.getParameter("password")).thenReturn(user.getPassword());
+        mockThrowValidationException(User.class);
         registerController.register(request, response);
-        verify(request).setAttribute(eq("errors"), anyList());
-        verify(userService, never()).register(user);
-
-        verify(request).getRequestDispatcher(RegisterController.REGISTER_VIEW);
-        verifyForward();
+        verify(userService, never()).register(or(any(User.class), isNull()));
+        verify(request, never()).getRequestDispatcher(RegisterController.REGISTER_VIEW);
     }
 
     @Test(expected = LoginIsAlreadyTakenException.class)
     public void testUnsuccessfulRegisterAlreadyExists() throws Exception {
-        User user = create("testtest", "testtest");
-        when(request.getParameter("login")).thenReturn(user.getLogin());
-        when(request.getParameter("password")).thenReturn(user.getPassword());
-        doThrow(new LoginIsAlreadyTakenException()).when(userService).register(user);
+        when(mapperService.map(request, User.class)).
+                thenReturn(mock(User.class));
+        doThrow(new LoginIsAlreadyTakenException()).
+                when(userService).
+                register(any(User.class));
 
         registerController.register(request, response);
     }
 
     @Test
     public void testSuccessfulRegister() throws Exception {
-        User user = create("testtest", "testtest");
-        when(request.getParameter("login")).thenReturn(user.getLogin());
-        when(request.getParameter("password")).thenReturn(user.getPassword());
+        when(mapperService.map(request, User.class)).
+                thenReturn(mock(User.class));
 
         registerController.register(request, response);
 
-        verify(userService).register(user);
+        verify(userService).register(any(User.class));
         verify(response).sendRedirect(anyString());
     }
 }
