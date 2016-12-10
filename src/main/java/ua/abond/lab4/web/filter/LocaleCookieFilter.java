@@ -19,7 +19,6 @@ public class LocaleCookieFilter extends HttpFilter {
         if (lang != null) {
             Cookie cookie = new Cookie(LANG_KEY, lang);
             cookie.setMaxAge(COOKIE_AGE);
-            cookie.setSecure(true);
 
             response.addCookie(cookie);
             request.setAttribute(LANG_KEY, lang);
