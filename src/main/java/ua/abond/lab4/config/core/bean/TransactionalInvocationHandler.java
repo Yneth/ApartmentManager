@@ -1,6 +1,7 @@
 package ua.abond.lab4.config.core.bean;
 
 import ua.abond.lab4.config.core.annotation.Transactional;
+import ua.abond.lab4.config.core.exception.TransactionException;
 import ua.abond.lab4.config.core.infrastructure.TransactionManager;
 
 import java.lang.reflect.InvocationHandler;
@@ -29,24 +30,17 @@ public class TransactionalInvocationHandler implements InvocationHandler {
                 Object obj = method.invoke(object, args);
                 tm.commit();
                 return obj;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 tm.rollback();
+                throw new TransactionException("Failed to invoke '" + object.getClass() + "." + method.getName() + "'", e);
             } finally {
                 tm.releaseConnection();
             }
         }
-        Object result = null;
         try {
-            result = method.invoke(object, args);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            return method.invoke(object, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw e;
         }
-        return result;
     }
 }
