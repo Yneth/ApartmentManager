@@ -2,6 +2,7 @@ package ua.abond.lab4.config;
 
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.config.core.annotation.*;
+import ua.abond.lab4.config.core.infrastructure.TransactionManager;
 
 import javax.sql.DataSource;
 
@@ -27,5 +28,10 @@ public class DatabaseConfig {
         dataSource.setInitialConnections(10);
         dataSource.setMaxConnections(50);
         return dataSource;
+    }
+
+    @Bean
+    public TransactionManager transactionManager() {
+        return new TransactionManager();
     }
 }
