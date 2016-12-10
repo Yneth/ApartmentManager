@@ -25,7 +25,7 @@
                             <c:forEach items="${apartments}" var="apartment">
                                 <div class="radio">
                                     <label><input type="radio" name="apartmentId" value="${apartment.id}"/>
-                                            ${apartment.type.name}
+                                            ${apartment.name}
                                     </label>
                                 </div>
                             </c:forEach>

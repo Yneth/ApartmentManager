@@ -11,22 +11,14 @@ import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.OrderService;
-import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.service.exception.ResourceAlreadyExistsException;
-import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.*;
 import ua.abond.lab4.util.Parse;
-import ua.abond.lab4.web.mapper.ApartmentRequestRequestMapper;
+import ua.abond.lab4.web.dto.RequestDTO;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 import ua.abond.lab4.web.mapper.PageableRequestMapper;
-import ua.abond.lab4.web.mapper.UserSessionRequestMapper;
-import ua.abond.lab4.web.validation.RequestValidator;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -39,6 +31,10 @@ public class UserController {
     public static final String REQUEST_CREATE_VIEW = "/WEB-INF/pages/user/create-request.jsp";
 
     @Inject
+    private ValidationService validationService;
+    @Inject
+    private RequestMapperService mapperService;
+    @Inject
     private UserService userService;
     @Inject
     private RequestService requestService;
@@ -49,9 +45,9 @@ public class UserController {
 
     @RequestMapping("/requests")
     public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
-        User user = new UserSessionRequestMapper().map(req);
-        Pageable pageable = new PageableRequestMapper().map(req);
+            throws Exception {
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
+        Pageable pageable = mapperService.map(req, Pageable.class);
 
         Page<Request> userRequests = requestService.getUserRequests(pageable, user.getId());
         req.setAttribute("requests", userRequests.getContent());
@@ -62,7 +58,7 @@ public class UserController {
 
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
         Request request = requestService.getById(id);
         req.setAttribute("request", request);
@@ -71,7 +67,7 @@ public class UserController {
 
     @RequestMapping("/request/new")
     public void getCreateRequestPage(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws Exception {
         List<ApartmentType> list = apartmentTypeDAO.list();
         req.setAttribute("apartmentTypes", list);
         req.getRequestDispatcher(REQUEST_CREATE_VIEW).forward(req, resp);
@@ -80,17 +76,13 @@ public class UserController {
     @OnException("/user/request/new")
     @RequestMapping(value = "/request/new", method = RequestMethod.POST)
     public void createRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
-        User user = new UserSessionRequestMapper().map(req);
+            throws Exception {
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
+        RequestDTO request = mapperService.map(req, RequestDTO.class);
 
-        Request request = new ApartmentRequestRequestMapper().map(req);
-        List<String> errors = new RequestValidator().validate(request);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            getCreateRequestPage(req, resp);
-            return;
-        }
-        request.setUser(user);
+        validationService.validate(request);
+
+        request.setUserId(user.getId());
         requestService.createRequest(request);
         resp.sendRedirect("/user/requests");
     }
@@ -98,7 +90,7 @@ public class UserController {
     @OnException(value = "/user/request")
     @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
     public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
         String comment = req.getParameter("comment");
         requestService.rejectRequest(id, comment);
@@ -107,8 +99,8 @@ public class UserController {
 
     @RequestMapping("/orders")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ResourceAlreadyExistsException {
-        User user = new UserSessionRequestMapper().map(req);
+            throws Exception {
+        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
         Pageable pageable = new PageableRequestMapper().map(req);
 
         Page<Order> page = orderService.getUserOrders(pageable, user.getId());
@@ -120,7 +112,7 @@ public class UserController {
 
     @RequestMapping("/order")
     public void viewOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
         Order order = orderService.getById(id);
         req.setAttribute("order", order);
@@ -130,7 +122,7 @@ public class UserController {
     @OnException(value = "/user/order")
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
         orderService.payOrder(id);
         resp.sendRedirect("/user/orders");

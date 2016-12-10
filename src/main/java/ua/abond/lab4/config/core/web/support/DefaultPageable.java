@@ -1,16 +1,13 @@
 package ua.abond.lab4.config.core.web.support;
 
 public class DefaultPageable implements Pageable {
-    private int count;
     private int pageSize;
     private int pageNumber;
-    private String sortBy;
     private SortOrder sortOrder;
 
     public DefaultPageable(int pageNumber, int pageSize, SortOrder sortOrder) {
         this.pageSize = pageSize;
         this.pageNumber = pageNumber;
-        this.sortBy = sortBy;
         this.sortOrder = sortOrder;
     }
 

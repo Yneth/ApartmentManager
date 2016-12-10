@@ -138,21 +138,21 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     private void registerBeanFactoryPostProcessors() {
-        getBeanDefinitionsOfTypeStream(BeanFactoryPostProcessor.class).forEach(e -> {
-            beanFactoryPostProcessors.add((BeanFactoryPostProcessor) createBean(e.getKey(), e.getValue(), false));
-        });
+        getBeanDefinitionsOfTypeStream(BeanFactoryPostProcessor.class).forEach(e ->
+                beanFactoryPostProcessors.add((BeanFactoryPostProcessor) createBean(e.getKey(), e.getValue(), false))
+        );
     }
 
     private void registerBeanCreators() {
-        getBeanDefinitionsOfTypeStream(BeanConstructor.class).forEach(e -> {
-            beanConstructors.add((BeanConstructor) createBean(e.getKey(), e.getValue(), false));
-        });
+        getBeanDefinitionsOfTypeStream(BeanConstructor.class).forEach(e ->
+                beanConstructors.add((BeanConstructor) createBean(e.getKey(), e.getValue(), false))
+        );
     }
 
     private void registerBeanPostProcessors() {
-        getBeanDefinitionsOfTypeStream(BeanPostProcessor.class).forEach(e -> {
-            beanPostProcessors.add((BeanPostProcessor) createBean(e.getKey(), e.getValue(), false));
-        });
+        getBeanDefinitionsOfTypeStream(BeanPostProcessor.class).forEach(e ->
+                beanPostProcessors.add((BeanPostProcessor) createBean(e.getKey(), e.getValue(), false))
+        );
     }
 
     private <T> Stream<Map.Entry<String, BeanDefinition>> getBeanDefinitionsOfTypeStream(Class<T> type) {

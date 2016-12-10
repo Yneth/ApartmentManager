@@ -6,10 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.ValidationException;
 
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,7 +24,7 @@ public class SuperUserControllerTest extends ControllerTest {
 
     @Test
     public void testViewAdmins() throws Exception {
-        when(userService.listAdmins(any(Pageable.class))).
+        when(userService.listAdmins(isNull())).
                 thenReturn(mock(Page.class));
         superUserController.viewAdmins(request, response);
         verifyForward();
@@ -34,7 +34,7 @@ public class SuperUserControllerTest extends ControllerTest {
 
     @Test(expected = ServiceException.class)
     public void testViewAdminsWithServiceException() throws Exception {
-        when(userService.listAdmins(any(Pageable.class))).
+        when(userService.listAdmins(isNull())).
                 thenThrow(new ServiceException());
         superUserController.viewAdmins(request, response);
     }
@@ -48,26 +48,20 @@ public class SuperUserControllerTest extends ControllerTest {
 
     @Test
     public void testCreateAdmin() throws Exception {
-        when(request.getParameter("login")).thenReturn("12345678");
-        when(request.getParameter("password")).thenReturn("12345678");
         superUserController.createAdmin(request, response);
 
         verify(response).sendRedirect(anyString());
     }
 
-    @Test
+    @Test(expected = ValidationException.class)
     public void testCreateAdminWithValidationError() throws Exception {
+        mockThrowValidationException(User.class);
         superUserController.createAdmin(request, response);
-        verifyForward();
-        verify(request).getRequestDispatcher(SuperUserController.CREATE_ADMIN_VIEW);
-        verify(request, times(1)).setAttribute(eq("errors"), anyList());
     }
 
     @Test(expected = ServiceException.class)
     public void testCreateAdminWithServiceException() throws Exception {
-        when(request.getParameter("login")).thenReturn("12345678");
-        when(request.getParameter("password")).thenReturn("12345678");
-        doThrow(new ServiceException()).when(userService).createAdmin(any(User.class));
+        doThrow(new ServiceException()).when(userService).createAdmin(isNull());
         superUserController.createAdmin(request, response);
     }
 

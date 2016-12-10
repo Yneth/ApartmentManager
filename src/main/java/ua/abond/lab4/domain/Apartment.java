@@ -46,8 +46,10 @@ public class Apartment extends Entity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Apartment)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Apartment))
+            return false;
         Apartment apartment = (Apartment) o;
         return getRoomCount() == apartment.getRoomCount() &&
                 Objects.equals(getName(), apartment.getName()) &&

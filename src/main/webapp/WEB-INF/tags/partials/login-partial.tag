@@ -16,6 +16,7 @@
                     <fmt:message key="password" bundle="${locale}"/>:
                 </label>
                 <input class="form-control" id="password-input" type="password" name="password"/>
+                <br/>
                 <input class="form-control btn btn-primary" type="submit"
                        value="<fmt:message key="login" bundle="${locale}"/>"/>
                 <a class="btn-right" href="/register">

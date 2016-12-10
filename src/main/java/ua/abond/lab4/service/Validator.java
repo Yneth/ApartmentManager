@@ -1,4 +1,4 @@
-package ua.abond.lab4.util.validation;
+package ua.abond.lab4.service;
 
 import java.util.List;
 

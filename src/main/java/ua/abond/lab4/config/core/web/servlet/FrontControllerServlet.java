@@ -43,32 +43,30 @@ public class FrontControllerServlet extends BeanFactoryAwareServlet {
             ExceptionHandlerData data = new ExceptionHandlerData(
                     req, resp,
                     handlerMethod.getMethod(),
-                    e.getCause().getClass()
+                    e.getCause()
             );
-            if (!handleException(data)) {
+            ExceptionHandlerInfo info = new ExceptionHandlerInfo(data.getException().getClass());
+            if (exceptionHandlers.containsKey(info)) {
+                handleException(exceptionHandlers.get(info), data);
+            } else {
                 defaultErrorHandle(requestURI, resp, e);
             }
         }
     }
 
-    private boolean handleException(ExceptionHandlerData data) throws IOException {
+    private void handleException(ExceptionHandlerMethod method, ExceptionHandlerData data)
+            throws IOException {
         HttpServletRequest req = data.getRequest();
         HttpServletResponse resp = data.getResponse();
-        ExceptionHandlerInfo info = new ExceptionHandlerInfo(data.getException());
-        if (exceptionHandlers.containsKey(info)) {
-            ExceptionHandlerMethod exceptionHandler = exceptionHandlers.get(info);
-            try {
-                Object result = exceptionHandler.invoke(data);
-                if (result instanceof HandlerMethodInfo) {
-                    HandlerMethod handler = mappingHandlers.get(result);
-                    handler.handle(data.getRequest(), data.getResponse());
-                }
-            } catch (InvocationTargetException | RequestMappingHandlerException e) {
-                defaultErrorHandle(req.getRequestURI(), resp, e);
+        try {
+            Object result = method.invoke(data);
+            if (result instanceof HandlerMethodInfo) {
+                HandlerMethod handler = mappingHandlers.get(result);
+                handler.handle(data.getRequest(), data.getResponse());
             }
-            return true;
+        } catch (InvocationTargetException | RequestMappingHandlerException e) {
+            defaultErrorHandle(req.getRequestURI(), resp, e);
         }
-        return false;
     }
 
     private void defaultErrorHandle(String uri, HttpServletResponse resp, Exception e)

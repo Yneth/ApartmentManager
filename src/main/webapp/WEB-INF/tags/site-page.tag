@@ -19,7 +19,8 @@
     </jsp:attribute>
 
     <jsp:attribute name="footer">
-        <div class="copyright">Copyright © Anton 2016</div>
+        <div><a href="/?lang=en">en</a>&nbsp<a href="/?lang=ua">ua</a></div>
+        <div class="copyright right">Copyright © Anton 2016</div>
     </jsp:attribute>
 
     <jsp:body>

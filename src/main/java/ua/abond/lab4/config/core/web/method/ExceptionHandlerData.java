@@ -8,10 +8,10 @@ public class ExceptionHandlerData {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final Method handler;
-    private final Class<? extends Throwable> exception;
+    private final Throwable exception;
 
     public ExceptionHandlerData(HttpServletRequest request, HttpServletResponse response,
-                                Method handler, Class<? extends Throwable> exception) {
+                                Method handler, Throwable exception) {
         this.request = request;
         this.response = response;
         this.handler = handler;
@@ -30,7 +30,7 @@ public class ExceptionHandlerData {
         return handler;
     }
 
-    public Class<? extends Throwable> getException() {
+    public Throwable getException() {
         return exception;
     }
 }

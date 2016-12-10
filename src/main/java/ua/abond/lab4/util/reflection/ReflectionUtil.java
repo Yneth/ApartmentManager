@@ -2,10 +2,10 @@ package ua.abond.lab4.util.reflection;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public final class ReflectionUtil {
 
@@ -54,5 +54,43 @@ public final class ReflectionUtil {
             }
         }
         return classes;
+    }
+
+    public static List<Class<?>> getSuperclasses(Class<?> type) {
+        List<Class<?>> result = new ArrayList<>();
+        Class<?> superclass = type.getSuperclass();
+        while (!Object.class.equals(superclass) && !Objects.isNull(superclass)) {
+            result.add(superclass);
+            superclass = superclass.getSuperclass();
+        }
+        return result;
+    }
+
+    public static List<Class<?>> getInterfaces(Class<?> type) {
+        List<Class<?>> result = new ArrayList<>();
+        result.addAll(Arrays.asList(type.getInterfaces()));
+        Class<?> superclass = type.getSuperclass();
+        while (!Object.class.equals(superclass) && !Objects.isNull(superclass)) {
+            result.addAll(Arrays.asList(superclass.getInterfaces()));
+            superclass = superclass.getSuperclass();
+        }
+        return result;
+    }
+
+    public static List<Class<?>> getGenericTypeClasses(Class<?> type) {
+        List<Class<?>> result = new ArrayList<>();
+        Type[] genericInterfaces = type.getGenericInterfaces();
+        for (Type t : genericInterfaces) {
+            if (!(t instanceof ParameterizedType)) {
+                continue;
+            }
+            ParameterizedType pt = (ParameterizedType) t;
+            for (Type typeArgument : pt.getActualTypeArguments()) {
+                if (typeArgument instanceof Class) {
+                    result.add((Class<?>) typeArgument);
+                }
+            }
+        }
+        return result;
     }
 }

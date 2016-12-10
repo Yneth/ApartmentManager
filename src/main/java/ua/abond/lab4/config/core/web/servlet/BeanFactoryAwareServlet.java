@@ -3,7 +3,6 @@ package ua.abond.lab4.config.core.web.servlet;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
-import ua.abond.lab4.config.core.exception.BeanFactoryException;
 import ua.abond.lab4.config.core.web.exception.ApplicationException;
 
 import javax.servlet.ServletException;
@@ -35,11 +34,11 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
                 if (beanFactory instanceof AnnotationBeanFactory) {
                     ((AnnotationBeanFactory) beanFactory).scan(getContextConfigLocation());
                 }
-            } catch (BeanFactoryException e) {
+                beanFactory.refresh();
+            } catch (Exception e) {
                 logger.error("Failed to create bean factory.", e);
                 throw e;
             }
-            beanFactory.refresh();
             onRefreshed(beanFactory);
         }
     }

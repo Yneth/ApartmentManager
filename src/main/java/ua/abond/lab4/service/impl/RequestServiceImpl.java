@@ -6,14 +6,16 @@ import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
-import ua.abond.lab4.domain.Order;
-import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.RequestStatus;
+import ua.abond.lab4.domain.*;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.exception.*;
+import ua.abond.lab4.service.exception.RejectRequestException;
+import ua.abond.lab4.service.exception.RequestConfirmException;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
+import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.dto.RequestDTO;
 
 @Component
 public class RequestServiceImpl implements RequestService {
@@ -29,8 +31,22 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void createRequest(Request request) {
+    public void createRequest(RequestDTO dto) {
+        Request request = new Request();
+        request.setFrom(dto.getFrom());
+        request.setTo(dto.getTo());
+        request.setStatusComment(dto.getStatusComment());
         request.setStatus(RequestStatus.CREATED);
+
+        ApartmentType apartmentType = new ApartmentType();
+        apartmentType.setId(dto.getApartmentTypeId());
+        Apartment apartment = new Apartment();
+        apartment.setType(apartmentType);
+        apartment.setRoomCount(dto.getRoomCount());
+        request.setLookup(apartment);
+        User user = new User();
+        user.setId(dto.getUserId());
+        request.setUser(user);
         requestDAO.create(request);
     }
 

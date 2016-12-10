@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
@@ -25,10 +25,11 @@
                     <input class="form-control" id="first-name-input" type="text" name="firstName"/>
 
                     <label for="last-name-input">
-                        <fmt:message key="register.firstname" bundle="${locale}"/>:
+                        <fmt:message key="register.lastname" bundle="${locale}"/>:
                     </label>
                     <input class="form-control" id="last-name-input" type="text" name="lastName"/>
 
+                    <br/>
                     <input class="btn btn-primary form-control" type="submit"
                            value="<fmt:message key="register" bundle="${locale}"/>"/>
                 </form>

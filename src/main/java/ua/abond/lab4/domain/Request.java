@@ -64,8 +64,10 @@ public class Request extends Entity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Request)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Request))
+            return false;
         Request request = (Request) o;
         return Objects.equals(getUser(), request.getUser()) &&
                 Objects.equals(getLookup(), request.getLookup()) &&

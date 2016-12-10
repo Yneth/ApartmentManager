@@ -1,12 +1,14 @@
 package ua.abond.lab4.web.validation;
 
-import ua.abond.lab4.util.validation.Validator;
+import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.service.Validator;
 import ua.abond.lab4.web.dto.LoginDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class LoginDTOValidator implements Validator<LoginDTO> {
 
     @Override
@@ -14,17 +16,11 @@ public class LoginDTOValidator implements Validator<LoginDTO> {
         List<String> errors = new ArrayList<>();
         String login = object.getLogin();
         if (Objects.isNull(login)) {
-            errors.add("Login required.");
-        }
-        if (!Objects.isNull(login) && login.length() < 6) {
-            errors.add("Login should contain more than 6 characters long.");
+            errors.add("login.dto.validation.login.null");
         }
         String password = object.getPassword();
         if (Objects.isNull(password)) {
-            errors.add("Password required.");
-        }
-        if (!Objects.isNull(password) && password.length() < 6) {
-            errors.add("Login should contain more than 6 characters long.");
+            errors.add("login.dto.validation.password.null");
         }
         return errors;
     }

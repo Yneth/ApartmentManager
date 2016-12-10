@@ -11,23 +11,12 @@ import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.service.ApartmentService;
-import ua.abond.lab4.service.OrderService;
-import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.*;
 import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
-import ua.abond.lab4.web.mapper.ApartmentRequestMapper;
-import ua.abond.lab4.web.mapper.ConfirmRequestDTORequestMapper;
-import ua.abond.lab4.web.mapper.PageableRequestMapper;
-import ua.abond.lab4.web.validation.ApartmentValidator;
-import ua.abond.lab4.web.validation.ConfirmRequestDTOValidator;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,6 +29,10 @@ public class AdminController {
     public static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
 
     @Inject
+    private RequestMapperService mapperService;
+    @Inject
+    private ValidationService validationService;
+    @Inject
     private OrderService orderService;
     @Inject
     private RequestService requestService;
@@ -50,15 +43,9 @@ public class AdminController {
 
     @OnException(value = "/admin/request")
     @RequestMapping(value = "/request/confirm", method = RequestMethod.POST)
-    public void confirmRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
-        ConfirmRequestDTO dto = new ConfirmRequestDTORequestMapper().map(req);
-        List<String> errors = new ConfirmRequestDTOValidator().validate(dto);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            viewRequest(req, resp);
-            return;
-        }
+    public void confirmRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        ConfirmRequestDTO dto = mapperService.map(req, ConfirmRequestDTO.class);
+        validationService.validate(dto);
 
         requestService.confirmRequest(dto);
         resp.sendRedirect("/admin/requests");
@@ -66,9 +53,9 @@ public class AdminController {
 
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
-        Pageable pageable = new PageableRequestMapper().map(req);
+        Pageable pageable = mapperService.map(req, Pageable.class);
 
         Request request = requestService.getById(id);
         Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
@@ -81,8 +68,8 @@ public class AdminController {
 
     @RequestMapping("/requests")
     public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        Pageable pageable = new PageableRequestMapper().map(req);
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Request> page = requestService.list(pageable);
 
         req.setAttribute("pageable", pageable);
@@ -93,8 +80,8 @@ public class AdminController {
 
     @RequestMapping("/apartments")
     public void viewApartments(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        Pageable pageable = new PageableRequestMapper().map(req);
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Apartment> page = apartmentService.list(pageable);
 
         req.setAttribute("apartments", page.getContent());
@@ -105,7 +92,7 @@ public class AdminController {
 
     @RequestMapping("/apartment/new")
     public void getApartmentCreatePage(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws Exception {
         req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
         req.getRequestDispatcher(APARTMENT_CREATE_VIEW).forward(req, resp);
     }
@@ -113,21 +100,17 @@ public class AdminController {
     @OnException("/admin/apartment/new")
     @RequestMapping(value = "/apartment/new", method = RequestMethod.POST)
     public void createApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
-        Apartment apartment = new ApartmentRequestMapper().map(req);
-        List<String> errors = new ApartmentValidator().validate(apartment);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            getApartmentCreatePage(req, resp);
-            return;
-        }
+            throws Exception {
+        Apartment apartment = mapperService.map(req, Apartment.class);
+        validationService.validate(apartment);
+
         apartmentService.createApartment(apartment);
         resp.sendRedirect("/admin/apartments");
     }
 
     @RequestMapping("/apartment")
     public void viewApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+            throws Exception {
         Long id = Parse.longValue(req.getParameter("id"));
         req.setAttribute("apartment", apartmentService.getById(id));
         req.setAttribute("apartmentTypes", apartmentTypeDAO.list());
@@ -137,22 +120,18 @@ public class AdminController {
     @OnException(value = "/admin/apartment/order")
     @RequestMapping(value = "/apartment/update", method = RequestMethod.POST)
     public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
-        Apartment apartment = new ApartmentRequestMapper().map(req);
-        List<String> errors = new ApartmentValidator().validate(apartment);
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            viewApartment(req, resp);
-            return;
-        }
+            throws Exception {
+        Apartment apartment = mapperService.map(req, Apartment.class);
+        validationService.validate(apartment);
+
         apartmentService.updateApartment(apartment);
         resp.sendRedirect("/admin/apartments");
     }
 
     @RequestMapping("/orders")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        Pageable pageable = new PageableRequestMapper().map(req);
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Order> page = orderService.list(pageable);
 
         req.setAttribute("pageable", pageable);

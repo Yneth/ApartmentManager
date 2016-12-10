@@ -26,8 +26,10 @@ public class HandlerMethodInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof HandlerMethodInfo)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof HandlerMethodInfo))
+            return false;
         HandlerMethodInfo that = (HandlerMethodInfo) o;
         return Objects.equals(getUrl(), that.getUrl()) &&
                 getMethod() == that.getMethod();
