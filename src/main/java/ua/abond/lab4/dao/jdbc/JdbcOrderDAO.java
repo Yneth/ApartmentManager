@@ -49,7 +49,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     @Override
     public void create(Order entity) {
         KeyHolder holder = new KeyHolder();
-        jdbcTemplate.update(c -> {
+        defaultJdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -65,7 +65,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Optional<Order> getById(Long id) {
-        return jdbcTemplate.querySingle(
+        return defaultJdbcTemplate.querySingle(
                 getByIdSql,
                 ps -> ps.setLong(1, id),
                 new FetchedOrderMapper()
@@ -74,7 +74,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void update(Order entity) {
-        jdbcTemplate.execute(updateSql,
+        defaultJdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getApartment().getId());
                     ps.setLong(2, entity.getRequest().getId());
@@ -87,14 +87,14 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.execute(deleteByIdSql,
+        defaultJdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Page<Order> list(Pageable pageable) {
-        List<Order> content = jdbcTemplate.query(
+        List<Order> content = defaultJdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new OrderMapper()
         );
@@ -103,7 +103,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public Page<Order> getUserOrders(Pageable pageable, Long id) {
-        List<Order> content = jdbcTemplate.query(
+        List<Order> content = defaultJdbcTemplate.query(
                 String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> ps.setLong(1, id),
                 new OrderMapper()
@@ -113,7 +113,7 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
 
     @Override
     public long count() {
-        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1))
+        return defaultJdbcTemplate.querySingle(countSql, rs -> rs.getLong(1))
                 .orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 

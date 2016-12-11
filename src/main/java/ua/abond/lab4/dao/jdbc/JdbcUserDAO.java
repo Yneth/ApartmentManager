@@ -46,7 +46,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     @Override
     public void create(User entity) {
         KeyHolder holder = new KeyHolder();
-        jdbcTemplate.update(c -> {
+        defaultJdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -63,7 +63,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Optional<User> getById(Long id) {
-        return jdbcTemplate.querySingle(getByIdSql,
+        return defaultJdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new UserMapper()
         );
@@ -71,7 +71,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void update(User entity) {
-        jdbcTemplate.execute(updateSql,
+        defaultJdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getFirstName());
                     ps.setString(2, entity.getLastName());
@@ -83,14 +83,14 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.execute(deleteByIdSql,
+        defaultJdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<User> getByLogin(String login) {
-        return jdbcTemplate.querySingle(getByLoginSql,
+        return defaultJdbcTemplate.querySingle(getByLoginSql,
                 ps -> ps.setString(1, login),
                 new UserMapper()
         );
@@ -98,9 +98,9 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Page<User> list(Pageable pageable, Long authId) {
-        long count = jdbcTemplate.querySingle(countSql, ps -> ps.setLong(1, authId), rs -> rs.getLong(1)).
+        long count = defaultJdbcTemplate.querySingle(countSql, ps -> ps.setLong(1, authId), rs -> rs.getLong(1)).
                 orElse(0L);
-        List<User> query = jdbcTemplate.query(
+        List<User> query = defaultJdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> ps.setLong(1, authId),
                 new UserMapper()

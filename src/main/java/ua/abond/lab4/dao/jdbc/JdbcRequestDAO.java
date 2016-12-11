@@ -48,7 +48,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     @Override
     public void create(Request entity) {
         KeyHolder holder = new KeyHolder();
-        jdbcTemplate.update(c -> {
+        defaultJdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(createSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
@@ -63,7 +63,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Optional<Request> getById(Long id) {
-        return jdbcTemplate.querySingle(
+        return defaultJdbcTemplate.querySingle(
                 getByIdSql,
                 ps -> ps.setLong(1, id),
                 new RequestMapper()
@@ -72,7 +72,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void update(Request entity) {
-        jdbcTemplate.execute(updateSql,
+        defaultJdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getUser().getId());
                     ps.setInt(2, entity.getLookup().getRoomCount());
@@ -88,14 +88,14 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.execute(deleteByIdSql,
+        defaultJdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Page<Request> list(Pageable pageable) {
-        List<Request> query = jdbcTemplate.query(
+        List<Request> query = defaultJdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new RequestMapper()
         );
@@ -104,7 +104,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Page<Request> getUserOrders(Pageable pageable, Long userId) {
-        List<Request> query = jdbcTemplate.query(
+        List<Request> query = defaultJdbcTemplate.query(
                 String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> ps.setLong(1, userId),
                 new RequestMapper()
@@ -114,7 +114,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public long count() {
-        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).
+        return defaultJdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 

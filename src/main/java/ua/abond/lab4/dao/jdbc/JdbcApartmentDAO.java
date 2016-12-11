@@ -50,7 +50,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public void create(Apartment entity) {
         KeyHolder holder = new KeyHolder();
-        jdbcTemplate.update(c -> {
+        defaultJdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     insertSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -66,7 +66,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Optional<Apartment> getById(Long id) {
-        return jdbcTemplate.querySingle(getByIdSql,
+        return defaultJdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new ApartmentMapper()
         );
@@ -74,7 +74,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void update(Apartment entity) {
-        jdbcTemplate.execute(updateSql,
+        defaultJdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
@@ -87,7 +87,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.execute(deleteByIdSql,
+        defaultJdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
@@ -96,7 +96,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable) {
         long count = count();
-        List<Apartment> query = jdbcTemplate.query(
+        List<Apartment> query = defaultJdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new ApartmentMapper()
         );
@@ -106,7 +106,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable, Request filter) {
         long count = count();
-        List<Apartment> query = jdbcTemplate.query(
+        List<Apartment> query = defaultJdbcTemplate.query(
                 String.format(filterMostAppropriateSql, pageable.getPageSize(), pageable.getOffset()),
                 ps -> {
                     ps.setInt(1, filter.getLookup().getRoomCount());
@@ -120,7 +120,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public long count() {
-        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).orElse(0L);
+        return defaultJdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).orElse(0L);
     }
 
     private static class ApartmentMapper implements RowMapper<Apartment> {

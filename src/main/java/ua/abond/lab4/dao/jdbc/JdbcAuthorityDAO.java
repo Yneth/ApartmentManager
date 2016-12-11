@@ -39,7 +39,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public void create(Authority entity) {
         KeyHolder holder = new KeyHolder();
-        jdbcTemplate.update(c -> {
+        defaultJdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -52,7 +52,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public Optional<Authority> getById(Long id) {
-        return jdbcTemplate.querySingle(getByIdSql,
+        return defaultJdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new AuthorityMapper()
         );
@@ -60,7 +60,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void update(Authority entity) {
-        jdbcTemplate.execute(updateSql,
+        defaultJdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -70,14 +70,14 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.execute(deleteByIdSql,
+        defaultJdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<Authority> getByName(String name) {
-        return jdbcTemplate.querySingle(getByNameSql,
+        return defaultJdbcTemplate.querySingle(getByNameSql,
                 ps -> ps.setString(1, name),
                 new AuthorityMapper()
         );
