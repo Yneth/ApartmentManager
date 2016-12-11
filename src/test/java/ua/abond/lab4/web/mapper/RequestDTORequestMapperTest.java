@@ -23,7 +23,6 @@ public class RequestDTORequestMapperTest {
         when(request.getParameter("to")).thenReturn("2016-10-20T10:22");
         when(request.getParameter("roomCount")).thenReturn("1");
         when(request.getParameter("apartmentTypeId")).thenReturn("1");
-        when(request.getParameter("status")).thenReturn("confirmed");
         when(request.getParameter("statusComment")).thenReturn("test");
         RequestDTO map = new RequestDTORequestMapper().map(request);
         assertEquals(1, map.getRoomCount());
