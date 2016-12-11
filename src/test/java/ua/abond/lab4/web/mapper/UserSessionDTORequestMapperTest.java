@@ -33,7 +33,7 @@ public class UserSessionDTORequestMapperTest {
         User user = new User();
         user.setLogin("login");
         user.setPassword("password");
-        when(session.getAttribute("user")).thenReturn(user);
+        when(session.getAttribute("user")).thenReturn(new UserSessionDTO(user));
 
         UserSessionDTO map = new UserSessionDTORequestMapper().map(request);
         assertNotNull(map);
