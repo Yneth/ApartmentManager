@@ -50,8 +50,7 @@ public class UserController {
         Pageable pageable = mapperService.map(req, Pageable.class);
 
         Page<Request> userRequests = requestService.getUserRequests(pageable, user.getId());
-        req.setAttribute("requests", userRequests.getContent());
-        req.setAttribute("pageable", pageable);
+        req.setAttribute("page", userRequests);
 
         req.getRequestDispatcher(REQUESTS_VIEW).forward(req, resp);
     }
@@ -104,8 +103,7 @@ public class UserController {
         Pageable pageable = new PageableRequestMapper().map(req);
 
         Page<Order> page = orderService.getUserOrders(pageable, user.getId());
-        req.setAttribute("orders", page.getContent());
-        req.setAttribute("pageable", pageable);
+        req.setAttribute("page", page);
 
         req.getRequestDispatcher(ORDERS_VIEW).forward(req, resp);
     }

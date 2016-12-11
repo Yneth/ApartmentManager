@@ -3,6 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
+<c:set var="requests" value="${page.content}" scope="page"/>
 <t:admin-page>
     <div class="container">
         <div class="jumbotron">

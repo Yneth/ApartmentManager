@@ -112,7 +112,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
 
         List<Request> query = jdbcTemplate.query(
-                String.format(countUserOrdersSql, pageable.getPageSize(), pageable.getOffset()),
+                String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
                 pss,
                 new RequestMapper()
         );

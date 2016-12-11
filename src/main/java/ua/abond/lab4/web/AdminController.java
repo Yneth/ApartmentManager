@@ -60,8 +60,7 @@ public class AdminController {
         Request request = requestService.getById(id);
         Page<Apartment> apartmentPage = apartmentService.listMostAppropriate(pageable, request);
         req.setAttribute("request", request);
-        req.setAttribute("apartments", apartmentPage.getContent());
-        req.setAttribute("pageable", pageable);
+        req.setAttribute("page", apartmentPage);
 
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
@@ -72,9 +71,7 @@ public class AdminController {
         Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Request> page = requestService.list(pageable);
 
-        req.setAttribute("pageable", pageable);
-        req.setAttribute("requests", page.getContent());
-        req.setAttribute("pageCount", page.getTotalPages());
+        req.setAttribute("page", page);
         req.getRequestDispatcher(REQUESTS_VIEW).forward(req, resp);
     }
 
@@ -84,9 +81,7 @@ public class AdminController {
         Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Apartment> page = apartmentService.list(pageable);
 
-        req.setAttribute("apartments", page.getContent());
-        req.setAttribute("pageable", pageable);
-        req.setAttribute("pageCount", page.getTotalPages());
+        req.setAttribute("page", page);
         req.getRequestDispatcher(APARTMENTS_VIEW).forward(req, resp);
     }
 
@@ -134,9 +129,7 @@ public class AdminController {
         Pageable pageable = mapperService.map(req, Pageable.class);
         Page<Order> page = orderService.list(pageable);
 
-        req.setAttribute("pageable", pageable);
-        req.setAttribute("orders", page.getContent());
-        req.setAttribute("pageCount", page.getTotalPages());
+        req.setAttribute("page", page);
         req.getRequestDispatcher(ORDERS_VIEW).forward(req, resp);
     }
 }

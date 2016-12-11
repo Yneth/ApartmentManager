@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
+<c:set var="requests" value="${page.content}" scope="page"/>
 <h1><fmt:message key="requests" bundle="${locale}"/></h1>
 <table class="table">
     <thead>

@@ -41,9 +41,8 @@ public class SuperUserController {
         Pageable pageable = mapperService.map(req, Pageable.class);
 
         Page<User> page = userService.listAdmins(pageable);
-        req.setAttribute("admins", page.getContent());
-        req.setAttribute("pageable", pageable);
-        req.setAttribute("pageCount", page.getTotalPages());
+        req.setAttribute("page", page);
+
         req.getRequestDispatcher(ADMINS_VIEW).forward(req, resp);
     }
 

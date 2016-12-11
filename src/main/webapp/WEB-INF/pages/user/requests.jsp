@@ -7,6 +7,8 @@
     <div class="container">
         <div class="jumbotron">
             <div class="row">
+                <c:set var="requests" value="${page.content}" scope="page"/>
+
                 <p:requests-partial/>
                 <p:pagination-partial uri="/user/requests"/>
                 <c:if test="${empty requests}">
