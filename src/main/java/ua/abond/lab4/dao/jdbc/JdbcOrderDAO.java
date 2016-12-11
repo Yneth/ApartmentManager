@@ -35,6 +35,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     private String deleteByIdSql;
     @Value("sql.getById")
     private String getByIdSql;
+    @Value("sql.getByRequestId")
+    private String getByRequestIdSql;
     @Value("sql.list")
     private String listSql;
     @Value("sql.count")
@@ -116,6 +118,15 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
                 new OrderMapper()
         );
         return new DefaultPage<>(content, count, pageable);
+    }
+
+    @Override
+    public Optional<Order> findByRequestId(Long requestId) {
+        return jdbcTemplate.querySingle(
+                getByRequestIdSql,
+                ps -> ps.setLong(1, requestId),
+                new OrderMapper()
+        );
     }
 
     @Override
