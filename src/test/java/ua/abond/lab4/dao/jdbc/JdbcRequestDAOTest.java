@@ -75,7 +75,7 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
         request.setTo(LocalDateTime.now());
         requestDAO.update(request);
 
-        assertEquals(request, requestDAO.getById(0L).get());
+        assertTrue(request.getTo().equals(requestDAO.getById(0L).get().getTo()));
     }
 
     @Test

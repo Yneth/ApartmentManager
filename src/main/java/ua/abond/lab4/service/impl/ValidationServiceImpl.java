@@ -19,11 +19,6 @@ public class ValidationServiceImpl extends AbstractClassRegistry<Validator>
     }
 
     @Override
-    public void register(Class<?> type, Validator validator) {
-        registry.put(type, validator);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> List<String> tryValidate(T object) {
         Objects.requireNonNull(object);
