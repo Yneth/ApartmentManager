@@ -12,7 +12,9 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.util.jdbc.KeyHolder;
+import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -41,6 +43,8 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     private String countSql;
     @Value("sql.filter")
     private String filterMostAppropriateSql;
+    @Value("sql.filter.count")
+    private String countMostAppropriateSql;
 
     @Inject
     public JdbcApartmentDAO(DataSource dataSource) {
@@ -50,7 +54,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public void create(Apartment entity) {
         KeyHolder holder = new KeyHolder();
-        defaultJdbcTemplate.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     insertSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -66,7 +70,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Optional<Apartment> getById(Long id) {
-        return defaultJdbcTemplate.querySingle(getByIdSql,
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new ApartmentMapper()
         );
@@ -74,7 +78,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void update(Apartment entity) {
-        defaultJdbcTemplate.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setInt(1, entity.getRoomCount());
                     ps.setLong(2, entity.getType().getId());
@@ -87,7 +91,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public void deleteById(Long id) {
-        defaultJdbcTemplate.execute(deleteByIdSql,
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
@@ -96,7 +100,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     @Override
     public Page<Apartment> list(Pageable pageable) {
         long count = count();
-        List<Apartment> query = defaultJdbcTemplate.query(
+        List<Apartment> query = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new ApartmentMapper()
         );
@@ -105,14 +109,17 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public Page<Apartment> list(Pageable pageable, Request filter) {
-        long count = count();
-        List<Apartment> query = defaultJdbcTemplate.query(
+        PreparedStatementSetter pss = ps -> {
+            ps.setInt(1, filter.getLookup().getRoomCount());
+            ps.setString(2, filter.getLookup().getType().getName());
+            ps.setObject(3, Timestamp.valueOf(filter.getTo()));
+        };
+        long count = jdbcTemplate.querySingle(countMostAppropriateSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+
+        List<Apartment> query = jdbcTemplate.query(
                 String.format(filterMostAppropriateSql, pageable.getPageSize(), pageable.getOffset()),
-                ps -> {
-                    ps.setInt(1, filter.getLookup().getRoomCount());
-                    ps.setString(2, filter.getLookup().getType().getName());
-                    ps.setObject(3, Timestamp.valueOf(filter.getTo()));
-                },
+                pss,
                 new ApartmentMapper()
         );
         return new DefaultPage<>(query, count, pageable);
@@ -120,7 +127,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
     @Override
     public long count() {
-        return defaultJdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).orElse(0L);
+        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).orElse(0L);
     }
 
     private static class ApartmentMapper implements RowMapper<Apartment> {

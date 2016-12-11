@@ -43,7 +43,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
     @Override
     public void create(ApartmentType entity) {
         KeyHolder keyHolder = new KeyHolder();
-        defaultJdbcTemplate.update(
+        jdbcTemplate.update(
                 conn -> {
                     PreparedStatement ps = conn.prepareStatement(createSql, Statement.RETURN_GENERATED_KEYS);
                     ps.setString(1, entity.getName());
@@ -55,7 +55,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public Optional<ApartmentType> getById(Long id) {
-        return defaultJdbcTemplate.querySingle(getByIdSql,
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new ApartmentTypeRowMapper()
         );
@@ -63,7 +63,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public void update(ApartmentType entity) {
-        defaultJdbcTemplate.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -73,12 +73,12 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public void deleteById(Long id) {
-        defaultJdbcTemplate.execute(deleteByIdSql, ps -> ps.setLong(1, id));
+        jdbcTemplate.execute(deleteByIdSql, ps -> ps.setLong(1, id));
     }
 
     @Override
     public Optional<ApartmentType> getByName(String name) {
-        return defaultJdbcTemplate.querySingle(getByNameSql,
+        return jdbcTemplate.querySingle(getByNameSql,
                 ps -> ps.setString(1, name),
                 new ApartmentTypeRowMapper()
         );
@@ -86,7 +86,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public List<ApartmentType> list() {
-        return defaultJdbcTemplate.query(listSql, new ApartmentTypeRowMapper());
+        return jdbcTemplate.query(listSql, new ApartmentTypeRowMapper());
     }
 
     private static class ApartmentTypeRowMapper implements RowMapper<ApartmentType> {

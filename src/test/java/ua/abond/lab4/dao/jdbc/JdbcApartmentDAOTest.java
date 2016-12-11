@@ -105,7 +105,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     public void testListFiltered() {
         Request request = new Request();
         Apartment lookup = new Apartment();
-        lookup.setRoomCount(100);
+        lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
@@ -113,7 +113,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(3, page.getTotalElements());
+        assertEquals(5, page.getTotalElements());
         assertEquals(1, page.getTotalPages());
     }
 
@@ -121,7 +121,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     public void testListFilteredPageByOne() {
         Request request = new Request();
         Apartment lookup = new Apartment();
-        lookup.setRoomCount(100);
+        lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
@@ -129,7 +129,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(3, page.getTotalElements());
-        assertEquals(3, page.getTotalPages());
+        assertEquals(5, page.getTotalElements());
+        assertEquals(5, page.getTotalPages());
     }
 }

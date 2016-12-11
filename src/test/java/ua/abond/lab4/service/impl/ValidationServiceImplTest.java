@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.service.ValidationService;
 import ua.abond.lab4.service.Validator;
-import ua.abond.lab4.service.exception.NoSuchRequestMapperException;
+import ua.abond.lab4.service.exception.NoSuchValidatorException;
 import ua.abond.lab4.service.exception.ValidationException;
 
 import static org.mockito.Mockito.mock;
@@ -27,16 +27,16 @@ public class ValidationServiceImplTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testRegisterNullRowMapper() {
+    public void testRegisterNullValidator() {
         service.register(Object.class, null);
     }
 
-    @Test(expected = NoSuchRequestMapperException.class)
+    @Test(expected = NoSuchValidatorException.class)
     public void testNoSuchValidatorTryValidateMethod() {
         service.tryValidate(new Object());
     }
 
-    @Test(expected = NoSuchRequestMapperException.class)
+    @Test(expected = NoSuchValidatorException.class)
     public void testNoSuchValidatorValidateMethod() throws ValidationException {
         service.validate(new Object());
     }

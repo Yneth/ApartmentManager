@@ -11,6 +11,7 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.*;
 import ua.abond.lab4.util.jdbc.KeyHolder;
+import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
@@ -39,6 +40,8 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     private String countSql;
     @Value("sql.user.orders")
     private String userOrdersSql;
+    @Value("sql.user.orders.count")
+    private String countUserOrdersSql;
 
     @Inject
     public JdbcRequestDAO(DataSource dataSource) {
@@ -48,7 +51,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     @Override
     public void create(Request entity) {
         KeyHolder holder = new KeyHolder();
-        defaultJdbcTemplate.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(createSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
@@ -63,7 +66,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Optional<Request> getById(Long id) {
-        return defaultJdbcTemplate.querySingle(
+        return jdbcTemplate.querySingle(
                 getByIdSql,
                 ps -> ps.setLong(1, id),
                 new RequestMapper()
@@ -72,7 +75,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void update(Request entity) {
-        defaultJdbcTemplate.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getUser().getId());
                     ps.setInt(2, entity.getLookup().getRoomCount());
@@ -88,14 +91,14 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void deleteById(Long id) {
-        defaultJdbcTemplate.execute(deleteByIdSql,
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Page<Request> list(Pageable pageable) {
-        List<Request> query = defaultJdbcTemplate.query(
+        List<Request> query = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new RequestMapper()
         );
@@ -104,17 +107,21 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Page<Request> getUserOrders(Pageable pageable, Long userId) {
-        List<Request> query = defaultJdbcTemplate.query(
-                String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
-                ps -> ps.setLong(1, userId),
+        PreparedStatementSetter pss = ps -> ps.setLong(1, userId);
+        long count = jdbcTemplate.querySingle(countUserOrdersSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+
+        List<Request> query = jdbcTemplate.query(
+                String.format(countUserOrdersSql, pageable.getPageSize(), pageable.getOffset()),
+                pss,
                 new RequestMapper()
         );
-        return new DefaultPage<>(query, count(), new DefaultPageable(1, 10, null));
+        return new DefaultPage<>(query, count, new DefaultPageable(1, 10, null));
     }
 
     @Override
     public long count() {
-        return defaultJdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).
+        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 

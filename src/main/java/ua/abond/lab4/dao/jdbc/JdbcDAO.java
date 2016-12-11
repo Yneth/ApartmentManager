@@ -6,26 +6,26 @@ import ua.abond.lab4.util.jdbc.DefaultJdbcTemplate;
 import javax.sql.DataSource;
 
 public abstract class JdbcDAO<T> implements DAO<T> {
-    protected final DefaultJdbcTemplate defaultJdbcTemplate;
+    protected final DefaultJdbcTemplate jdbcTemplate;
 
     public JdbcDAO(DataSource dataSource) {
-        this.defaultJdbcTemplate = new DefaultJdbcTemplate(dataSource);
+        this.jdbcTemplate = new DefaultJdbcTemplate(dataSource);
     }
 
     public void rollback() {
-        defaultJdbcTemplate.rollback();
+        jdbcTemplate.rollback();
     }
 
     public void commit() {
-        defaultJdbcTemplate.commit();
+        jdbcTemplate.commit();
     }
 
     public void beginTransaction() {
-        defaultJdbcTemplate.beginTransaction();
+        jdbcTemplate.beginTransaction();
     }
 
     public void endTransaction() {
-        defaultJdbcTemplate.endTransaction();
+        jdbcTemplate.endTransaction();
     }
 
 }

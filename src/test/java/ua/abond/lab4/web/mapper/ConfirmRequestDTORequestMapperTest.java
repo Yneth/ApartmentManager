@@ -25,7 +25,6 @@ public class ConfirmRequestDTORequestMapperTest {
         BigDecimal price = new BigDecimal(100);
         when(request.getParameter("id")).thenReturn("" + requestId);
         when(request.getParameter("apartmentId")).thenReturn("" + apartmentId);
-        when(request.getParameter("price")).thenReturn("" + price);
         ConfirmRequestDTO map = new ConfirmRequestDTORequestMapper().map(request);
         assertEquals(requestId, map.getRequestId());
         assertEquals(apartmentId, map.getApartmentId());

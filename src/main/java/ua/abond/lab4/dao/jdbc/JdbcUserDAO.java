@@ -11,7 +11,9 @@ import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.util.jdbc.KeyHolder;
+import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -46,7 +48,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     @Override
     public void create(User entity) {
         KeyHolder holder = new KeyHolder();
-        defaultJdbcTemplate.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -63,7 +65,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Optional<User> getById(Long id) {
-        return defaultJdbcTemplate.querySingle(getByIdSql,
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new UserMapper()
         );
@@ -71,7 +73,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void update(User entity) {
-        defaultJdbcTemplate.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getFirstName());
                     ps.setString(2, entity.getLastName());
@@ -83,14 +85,14 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void deleteById(Long id) {
-        defaultJdbcTemplate.execute(deleteByIdSql,
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<User> getByLogin(String login) {
-        return defaultJdbcTemplate.querySingle(getByLoginSql,
+        return jdbcTemplate.querySingle(getByLoginSql,
                 ps -> ps.setString(1, login),
                 new UserMapper()
         );
@@ -98,11 +100,13 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Page<User> list(Pageable pageable, Long authId) {
-        long count = defaultJdbcTemplate.querySingle(countSql, ps -> ps.setLong(1, authId), rs -> rs.getLong(1)).
-                orElse(0L);
-        List<User> query = defaultJdbcTemplate.query(
+        PreparedStatementSetter pss = ps -> ps.setLong(1, authId);
+
+        long count = jdbcTemplate.querySingle(countSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+        List<User> query = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
-                ps -> ps.setLong(1, authId),
+                pss,
                 new UserMapper()
         );
         return new DefaultPage<>(query, count, pageable);
