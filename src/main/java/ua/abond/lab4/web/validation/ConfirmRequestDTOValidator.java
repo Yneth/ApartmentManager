@@ -4,7 +4,6 @@ import ua.abond.lab4.config.core.annotation.Component;
 import ua.abond.lab4.service.Validator;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,13 +25,6 @@ public class ConfirmRequestDTOValidator implements Validator<ConfirmRequestDTO> 
         Long userId = object.getUserId();
         if (Objects.isNull(userId)) {
             errors.add("request.dto.validation.user.id.null");
-        }
-        BigDecimal price = object.getPrice();
-        if (Objects.isNull(price)) {
-            errors.add("request.dto.validation.price.null");
-        }
-        if (price != null && price.compareTo(BigDecimal.ZERO) < 0) {
-            errors.add("request.dto.validation.price");
         }
         return errors;
     }

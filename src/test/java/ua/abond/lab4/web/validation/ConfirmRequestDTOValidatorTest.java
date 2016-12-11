@@ -16,7 +16,7 @@ public class ConfirmRequestDTOValidatorTest {
         ConfirmRequestDTO dto = new ConfirmRequestDTO();
         List<String> validate = new ConfirmRequestDTOValidator().validate(dto);
         assertNotNull(validate);
-        assertEquals(4, validate.size());
+        assertEquals(3, validate.size());
     }
 
     @Test
@@ -29,14 +29,5 @@ public class ConfirmRequestDTOValidatorTest {
         List<String> validate = new ConfirmRequestDTOValidator().validate(dto);
         assertNotNull(validate);
         assertEquals(0, validate.size());
-    }
-
-    @Test
-    public void testNegativePrice() {
-        ConfirmRequestDTO dto = new ConfirmRequestDTO();
-        dto.setPrice(new BigDecimal(-100));
-        List<String> validate = new ConfirmRequestDTOValidator().validate(dto);
-        assertNotNull(validate);
-        assertEquals(1, validate.size());
     }
 }

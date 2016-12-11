@@ -15,7 +15,6 @@ public class ConfirmRequestDTORequestMapper implements RequestMapper<ConfirmRequ
         dto.setRequestId(Parse.longValue(req.getParameter("id")));
         dto.setUserId(Parse.longValue(req.getParameter("userId")));
         dto.setApartmentId(Parse.longValue(req.getParameter("apartmentId")));
-        dto.setPrice(Parse.bigDecimal(req.getParameter("price")));
         return dto;
     }
 }

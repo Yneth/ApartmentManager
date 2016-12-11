@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,8 +28,9 @@ public class ConfirmRequestDTORequestMapperTest {
         when(request.getParameter("price")).thenReturn("" + price);
         ConfirmRequestDTO map = new ConfirmRequestDTORequestMapper().map(request);
         assertEquals(requestId, map.getRequestId());
-        assertEquals(price, map.getPrice());
         assertEquals(apartmentId, map.getApartmentId());
+
+        assertNull(map.getPrice());
     }
 
     @Test
