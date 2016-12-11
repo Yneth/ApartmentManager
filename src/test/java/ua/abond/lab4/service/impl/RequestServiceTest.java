@@ -4,15 +4,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ua.abond.lab4.config.core.web.support.DefaultPageable;
+import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.dao.jdbc.JdbcDAOTest;
+import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
-import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 import ua.abond.lab4.web.dto.RequestDTO;
 
@@ -20,9 +21,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 
 public class RequestServiceTest extends JdbcDAOTest {
     private static final String DATASET = "orders.xml";
@@ -32,6 +30,7 @@ public class RequestServiceTest extends JdbcDAOTest {
 
     private RequestDAO requestDAO;
     private OrderDAO orderDAO;
+    private ApartmentDAO apartmentDAO;
     private RequestService requestService;
     private OrderService orderService;
 
@@ -40,6 +39,7 @@ public class RequestServiceTest extends JdbcDAOTest {
         requestDAO = beanFactory.getBean(RequestDAO.class);
         requestService = beanFactory.getBean(RequestService.class);
         orderDAO = beanFactory.getBean(OrderDAO.class);
+        apartmentDAO = beanFactory.getBean(ApartmentDAO.class);
         orderService = beanFactory.getBean(OrderService.class);
         dataSet = loadDataSet(DATASET);
     }
@@ -84,6 +84,7 @@ public class RequestServiceTest extends JdbcDAOTest {
     public void testConfirmConfirmedRequest() throws Exception {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(2L);
+        requestDTO.setApartmentId(-2L);
         requestService.confirmRequest(requestDTO);
     }
 
@@ -132,10 +133,33 @@ public class RequestServiceTest extends JdbcDAOTest {
     }
 
     @Test
-    public void testOrderCountOnBadRequestUpdate() throws Exception {
-        RequestDAO requestDAO = spy(this.requestDAO);
-        doThrow(new DataAccessException()).when(requestDAO).update(any());
+    public void testPriceAfterRequestConfirmation() throws ServiceException {
+        ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
+        requestDTO.setRequestId(20L);
+        requestDTO.setApartmentId(0L);
+        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
 
+        requestService.confirmRequest(requestDTO);
+        Order byRequestId = orderDAO.findByRequestId(request.getId()).orElse(null);
+        assertNotNull(byRequestId.getPrice());
+        assertTrue(byRequestId.getPrice().equals(new BigDecimal(600)));
+    }
+
+    @Test
+    public void testPriceAfterRequestConfirmationShouldWorkForOneDayInterval() throws ServiceException {
+        ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
+        requestDTO.setRequestId(21L);
+        requestDTO.setApartmentId(0L);
+        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
+
+        requestService.confirmRequest(requestDTO);
+        Order byRequestId = orderDAO.findByRequestId(request.getId()).orElse(null);
+        assertNotNull(byRequestId.getPrice());
+        assertTrue(byRequestId.getPrice().equals(new BigDecimal(300)));
+    }
+
+    @Test
+    public void testOrderCountOnBadRequestUpdate() throws Exception {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(0L);
         requestDTO.setPrice(new BigDecimal(100));

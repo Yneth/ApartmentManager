@@ -114,4 +114,16 @@ public class JdbcOrderDAOTest extends JdbcDAOTest {
         assertEquals(1, page.getSize());
         assertEquals(2, page.getTotalPages());
     }
+
+    @Test
+    public void testFindOrderByRequestId() throws Exception {
+        Order order = orderDAO.findByRequestId(1L).orElse(null);
+        assertNotNull(order);
+    }
+
+    @Test
+    public void testFindNonExistingOrderByRequestId() throws Exception {
+        Order order = orderDAO.findByRequestId(0L).orElse(null);
+        assertNull(order);
+    }
 }

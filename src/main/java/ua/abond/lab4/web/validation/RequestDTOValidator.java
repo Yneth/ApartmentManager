@@ -34,8 +34,13 @@ public class RequestDTOValidator implements Validator<RequestDTO> {
         if (roomCount <= 0) {
             errors.add("request.validation.room.count.less");
         }
-        if (from != null && to != null && from.isAfter(to)) {
-            errors.add("request.validation.from.after.to");
+        if (from != null && to != null) {
+            if (from.isAfter(to)) {
+                errors.add("request.validation.from.after.to");
+            }
+            if (from.isBefore(LocalDateTime.now().plusDays(1))) {
+                errors.add("request.validation.from.past");
+            }
         }
         return errors;
     }

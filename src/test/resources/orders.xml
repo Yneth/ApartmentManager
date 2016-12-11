@@ -13,6 +13,10 @@
 
     <requests id="0" user_id="0" room_count="2" apartment_type_id="0" from_date="2015-10-02 10:00:00"
               to_date="2016-10-02 10:00:00" status_id="0"/>
+    <requests id="20" user_id="0" room_count="2" apartment_type_id="0" from_date="2016-10-02 00:00:00"
+              to_date="2016-10-04 10:00:00" status_id="0"/>
+    <requests id="21" user_id="0" room_count="2" apartment_type_id="0" from_date="2016-10-02 00:00:00"
+              to_date="2016-10-03 10:00:00" status_id="0"/>
     <requests id="1" user_id="1" room_count="4" apartment_type_id="1" from_date="2015-10-02 10:00:00"
               to_date="2016-10-02 10:00:00" status_id="1"/>
     <requests id="2" user_id="1" room_count="4" apartment_type_id="1" from_date="2015-10-02 10:00:00"

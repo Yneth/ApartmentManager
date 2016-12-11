@@ -14,7 +14,7 @@ public class RequestDTOValidatorTest {
     @Test
     public void testSuccessfulValidation() {
         RequestDTO request = new RequestDTO();
-        request.setFrom(LocalDateTime.now());
+        request.setFrom(LocalDateTime.now().plusDays(2));
         request.setTo(LocalDateTime.now().plusDays(10));
         request.setApartmentTypeId(0L);
         request.setRoomCount(10);
@@ -30,10 +30,21 @@ public class RequestDTOValidatorTest {
     }
 
     @Test
-    public void testFromAfterToDates() {
+    public void testFromAfterToDate() {
         RequestDTO request = new RequestDTO();
         request.setFrom(LocalDateTime.now().plusDays(10));
         request.setTo(LocalDateTime.now());
+        request.setApartmentTypeId(0L);
+        request.setRoomCount(10);
+        List<String> validate = new RequestDTOValidator().validate(request);
+        assertEquals(1, validate.size());
+    }
+
+    @Test
+    public void testFromIsToSoonOrInPast() {
+        RequestDTO request = new RequestDTO();
+        request.setFrom(LocalDateTime.now());
+        request.setTo(LocalDateTime.now().plusDays(10));
         request.setApartmentTypeId(0L);
         request.setRoomCount(10);
         List<String> validate = new RequestDTOValidator().validate(request);
