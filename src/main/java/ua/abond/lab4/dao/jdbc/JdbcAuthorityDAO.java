@@ -39,9 +39,9 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     @Override
     public void create(Authority entity) {
         KeyHolder holder = new KeyHolder();
-        jdbc.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO authorities (id, name) VALUES (DEFAULT, ?);",
+                    createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, entity.getName());
@@ -52,7 +52,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public Optional<Authority> getById(Long id) {
-        return jdbc.querySingle("SELECT id, name FROM authorities WHERE id = ?",
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new AuthorityMapper()
         );
@@ -60,7 +60,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void update(Authority entity) {
-        jdbc.execute("UPDATE authorities SET name = ? WHERE id = ?",
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -70,14 +70,14 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM authorities WHERE id = ?",
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<Authority> getByName(String name) {
-        return jdbc.querySingle("SELECT id, name FROM authorities WHERE name = ?",
+        return jdbcTemplate.querySingle(getByNameSql,
                 ps -> ps.setString(1, name),
                 new AuthorityMapper()
         );

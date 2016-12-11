@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class Jdbc {
+public class JdbcTemplate {
     private final DataSource dataSource;
 
     private boolean userManaged;
     private Connection connection;
 
-    public Jdbc(DataSource dataSource) {
+    public JdbcTemplate(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
