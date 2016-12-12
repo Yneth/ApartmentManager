@@ -20,7 +20,7 @@ public final class BeanUtil {
         } catch (IllegalAccessException e) {
             throw new BeanInstantiationException("Is " + beanName + "'s constructor private?", e);
         } catch (InvocationTargetException e) {
-            throw new BeanInstantiationException("Constructor threw an exception.", e);
+            throw new BeanInstantiationException(beanName + " constructor threw an exception.", e);
         }
     }
 
