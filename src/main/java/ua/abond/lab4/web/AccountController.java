@@ -4,6 +4,7 @@ import ua.abond.lab4.config.core.annotation.Inject;
 import ua.abond.lab4.config.core.web.annotation.OnException;
 import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
+import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.RequestMapperService;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.ValidationService;
@@ -36,7 +37,7 @@ public class AccountController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public void updateAccount(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
+        User user = mapperService.map(req, User.class);
         userService.updateAccount(user);
         resp.sendRedirect("/account");
     }
