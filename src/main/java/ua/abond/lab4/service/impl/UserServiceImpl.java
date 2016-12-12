@@ -13,6 +13,7 @@ import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.web.dto.LoginDTO;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateAccount(User user) throws ServiceException {
+    public void updateAccount(UserSessionDTO user) throws ServiceException {
         User userToUpdate = getById(user.getId());
         userToUpdate.setFirstName(user.getFirstName());
         userToUpdate.setLastName(user.getLastName());

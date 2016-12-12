@@ -83,6 +83,12 @@ public class AdminControllerTest extends ControllerTest {
     }
 
     @Test
+    public void testDeleteRequest() throws Exception {
+        adminController.deleteRequest(request, response);
+        verify(response).sendRedirect(anyString());
+    }
+
+    @Test
     public void testViewApartments() throws Exception {
         when(apartmentService.list(or(any(Pageable.class), isNull()))).
                 thenReturn(mock(Page.class));
