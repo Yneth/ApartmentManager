@@ -21,6 +21,9 @@
         <ul class="nav navbar-nav navbar-right">
             <c:if test="${not empty sessionScope.user}">
                 <li>
+                    <a href="/account"><fmt:message key="account" bundle="${locale}"/></a>
+                </li>
+                <li>
                     <a href="/logout"><fmt:message key="logout" bundle="${locale}"/></a>
                 </li>
             </c:if>
