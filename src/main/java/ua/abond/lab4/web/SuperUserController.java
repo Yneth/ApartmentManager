@@ -7,10 +7,9 @@ import ua.abond.lab4.config.core.web.annotation.RequestMapping;
 import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.config.core.web.support.RequestMethod;
+import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.service.RequestMapperService;
-import ua.abond.lab4.service.UserService;
-import ua.abond.lab4.service.ValidationService;
+import ua.abond.lab4.service.*;
 import ua.abond.lab4.util.Parse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/supersu")
 public class SuperUserController {
+    public static final String ORDERS_VIEW = "/WEB-INF/pages/supersu/orders.jsp";
     public static final String ADMINS_VIEW = "/WEB-INF/pages/supersu/admins.jsp";
     public static final String CREATE_ADMIN_VIEW = "/WEB-INF/pages/supersu/create-admin.jsp";
 
@@ -26,12 +26,37 @@ public class SuperUserController {
     private RequestMapperService mapperService;
     @Inject
     private ValidationService validationService;
+    @Inject
+    private RequestService requestService;
+    @Inject
+    private OrderService orderService;
 
     private final UserService userService;
 
     @Inject
     public SuperUserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @RequestMapping("/orders")
+    public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
+
+        Page<Order> page = orderService.list(pageable);
+        req.setAttribute("page", page);
+
+        req.getRequestDispatcher(ORDERS_VIEW).forward(req, resp);
+    }
+
+    @OnException("/supersu/orders")
+    @RequestMapping(value = "/order/delete", method = RequestMethod.POST)
+    public void deleteOrder(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Long id = Parse.longValue(req.getParameter("id"));
+
+        orderService.deleteOrder(id);
+        resp.sendRedirect("/supersu/orders");
     }
 
     @OnException("/supersu/admins")
