@@ -56,8 +56,8 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
             ps.setLong(3, entity.getLookup().getType().getId());
-            ps.setObject(4, Timestamp.valueOf(entity.getTo()));
-            ps.setObject(5, Timestamp.valueOf(entity.getFrom()));
+            ps.setObject(4, Timestamp.valueOf(entity.getFrom()));
+            ps.setObject(5, Timestamp.valueOf(entity.getTo()));
             ps.setLong(6, entity.getStatus().ordinal());
             return ps;
         }, holder);
