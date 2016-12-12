@@ -21,4 +21,6 @@ public interface RequestService {
     Page<Request> getUserRequests(Pageable pageable, Long userId);
 
     Page<Request> listCreated(Pageable pageable);
+
+    void deleteById(Long id);
 }

@@ -65,6 +65,14 @@ public class AdminController {
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
     }
 
+    @RequestMapping(value = "/request/delete", method = RequestMethod.POST)
+    public void deleteRequest(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Long id = Parse.longValue(req.getParameter("id"));
+        requestService.deleteById(id);
+        resp.sendRedirect("/admin/requests");
+    }
+
     @RequestMapping("/requests")
     public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {

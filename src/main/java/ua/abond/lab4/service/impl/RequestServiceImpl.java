@@ -116,4 +116,9 @@ public class RequestServiceImpl implements RequestService {
     public Page<Request> listCreated(Pageable pageable) {
         return requestDAO.list(pageable);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        requestDAO.deleteById(id);
+    }
 }
