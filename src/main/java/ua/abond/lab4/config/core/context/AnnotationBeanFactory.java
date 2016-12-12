@@ -198,14 +198,15 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
     @Override
     public Map<String, BeanDefinition> getBeanDefinitionsOfType(Class<?> type) {
-        return getBeanDefinitionsOfTypeStream(type).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        return getBeanDefinitionsOfTypeStream(type).
+                collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
     public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotation) {
         return beans.entrySet().stream().
                 filter(e -> e.getValue().getClass().isAnnotationPresent(annotation)).
-                collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
