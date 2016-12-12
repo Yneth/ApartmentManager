@@ -101,7 +101,11 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     public Page<Order> list(Pageable pageable) {
         List<Order> content = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
-                new OrderMapper()
+                rs -> {
+                    Order order = new OrderMapper().mapRow(rs);
+                    order.getApartment().setName(rs.getString(7));
+                    return order;
+                }
         );
         return new DefaultPage<>(content, count(), pageable);
     }

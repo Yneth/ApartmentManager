@@ -23,7 +23,7 @@
                 <c:forEach items="${orders}" var="order">
                     <tr>
                         <td>${order.id}</td>
-                        <td>${order.apartment.id}</td>
+                        <td>${order.apartment.name}</td>
                         <td>${order.request.id}</td>
                         <td>${order.price}</td>
                         <td>${order.payed}</td>
