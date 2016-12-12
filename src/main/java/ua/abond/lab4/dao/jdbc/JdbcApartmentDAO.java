@@ -28,7 +28,6 @@ import java.util.Optional;
 @Prop("sql/apartment.sql.properties")
 public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         implements ApartmentDAO {
-
     @Value("sql.insert")
     private String insertSql;
     @Value("sql.update")
@@ -96,7 +95,6 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         );
     }
 
-
     @Override
     public Page<Apartment> list(Pageable pageable) {
         long count = count();
@@ -113,6 +111,7 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
             ps.setInt(1, filter.getLookup().getRoomCount());
             ps.setString(2, filter.getLookup().getType().getName());
             ps.setObject(3, Timestamp.valueOf(filter.getTo()));
+            ps.setObject(4, Timestamp.valueOf(filter.getFrom()));
         };
         long count = jdbcTemplate.querySingle(countMostAppropriateSql, pss, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
