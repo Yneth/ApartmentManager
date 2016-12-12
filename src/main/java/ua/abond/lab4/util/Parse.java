@@ -78,11 +78,4 @@ public final class Parse {
         }
         return result;
     }
-
-    public static String string(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str;
-    }
 }
