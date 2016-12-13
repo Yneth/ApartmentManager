@@ -12,6 +12,8 @@ import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.UserOldPasswordMismatchException;
+import ua.abond.lab4.web.dto.ChangePasswordDTO;
 import ua.abond.lab4.web.dto.LoginDTO;
 
 import java.util.Optional;
@@ -54,6 +56,16 @@ public class UserServiceImpl implements UserService {
         User userToUpdate = getById(user.getId());
         userToUpdate.setFirstName(user.getFirstName());
         userToUpdate.setLastName(user.getLastName());
+        userDAO.update(userToUpdate);
+    }
+
+    @Override
+    public void changePassword(Long id, ChangePasswordDTO dto) throws ServiceException {
+        User userToUpdate = getById(id);
+        if (!userToUpdate.getPassword().equals(dto.getOldPassword())) {
+            throw new UserOldPasswordMismatchException();
+        }
+        userToUpdate.setPassword(dto.getNewPassword());
         userDAO.update(userToUpdate);
     }
 

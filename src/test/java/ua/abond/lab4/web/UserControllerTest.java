@@ -132,7 +132,7 @@ public class UserControllerTest extends ControllerTest {
                 thenReturn(mock(Page.class));
 
         userController.viewOrders(request, response);
-        verify(request).setAttribute(anyString(), or(anyList(), isNull()));
+        verify(request).setAttribute(anyString(), or(any(Page.class), isNull()));
         verify(request).getRequestDispatcher(UserController.ORDERS_VIEW);
         verifyForward();
     }

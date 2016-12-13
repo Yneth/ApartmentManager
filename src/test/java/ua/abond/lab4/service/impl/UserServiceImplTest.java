@@ -11,6 +11,8 @@ import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.UserOldPasswordMismatchException;
+import ua.abond.lab4.web.dto.ChangePasswordDTO;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +29,34 @@ public class UserServiceImplTest extends JdbcDAOTest {
         userDAO = beanFactory.getBean(UserDAO.class);
         authorityDAO = beanFactory.getBean(AuthorityDAO.class);
         userService = beanFactory.getBean(UserService.class);
+    }
+
+    @Test
+    public void testSuccessfulChangePassword() throws Exception {
+        User byId = userService.getById(0L);
+        String newPassword = "newPassword";
+        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
+        changePasswordDTO.setNewPassword(newPassword);
+        changePasswordDTO.setOldPassword(byId.getPassword());
+        userService.changePassword(byId.getId(), changePasswordDTO);
+
+        User result = userService.getById(byId.getId());
+        assertEquals(newPassword, result.getPassword());
+    }
+
+    @Test(expected = UserOldPasswordMismatchException.class)
+    public void testWrongOldPassword() throws Exception {
+        User byId = userService.getById(0L);
+        String newPassword = "newPassword";
+        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
+        changePasswordDTO.setNewPassword(newPassword);
+        changePasswordDTO.setOldPassword("wrong");
+        userService.changePassword(byId.getId(), changePasswordDTO);
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void testUserNotFoundOnChangePassword() throws Exception {
+        userService.changePassword(Long.MIN_VALUE, null);
     }
 
     @Test
