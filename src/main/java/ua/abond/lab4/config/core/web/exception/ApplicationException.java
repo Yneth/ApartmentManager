@@ -1,6 +1,7 @@
 package ua.abond.lab4.config.core.web.exception;
 
 public class ApplicationException extends RuntimeException {
+
     public ApplicationException() {
     }
 

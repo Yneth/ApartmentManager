@@ -21,7 +21,6 @@ import java.util.Optional;
 @Prop("sql/apartment-type.sql.properties")
 public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
         implements ApartmentTypeDAO {
-
     @Value("sql.create")
     private String createSql;
     @Value("sql.update")

@@ -1,6 +1,6 @@
 package ua.abond.lab4.config.core.exception;
 
-public class ImproperlyConfiguredException extends BeanFactoryException {
+public class ImproperlyConfiguredException extends BeansException {
 
     public ImproperlyConfiguredException() {
     }

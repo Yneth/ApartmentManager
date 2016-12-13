@@ -16,7 +16,7 @@ public final class ReflectionUtil {
     public static Class[] getClasses(String packageName)
             throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        assert classLoader != null;
+
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = classLoader.getResources(path);
         List<File> dirs = new ArrayList<>();
@@ -56,7 +56,13 @@ public final class ReflectionUtil {
         return classes;
     }
 
-    public static List<Class<?>> getSuperclasses(Class<?> type) {
+    public static <T> boolean containsMethod(Class<T> type, String name) {
+        return Arrays.stream(type.getDeclaredMethods()).
+                filter(m -> m.getName().equals(name)).
+                findFirst().isPresent();
+    }
+
+    public static <T> List<Class<?>> getSuperclasses(Class<T> type) {
         List<Class<?>> result = new ArrayList<>();
         Class<?> superclass = type.getSuperclass();
         while (!Object.class.equals(superclass) && !Objects.isNull(superclass)) {
@@ -66,7 +72,7 @@ public final class ReflectionUtil {
         return result;
     }
 
-    public static List<Class<?>> getInterfaces(Class<?> type) {
+    public static <T> List<Class<?>> getInterfaces(Class<T> type) {
         List<Class<?>> result = new ArrayList<>();
         result.addAll(Arrays.asList(type.getInterfaces()));
         Class<?> superclass = type.getSuperclass();

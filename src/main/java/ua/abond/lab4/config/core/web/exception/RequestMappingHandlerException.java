@@ -1,6 +1,7 @@
 package ua.abond.lab4.config.core.web.exception;
 
 public class RequestMappingHandlerException extends Exception {
+
     public RequestMappingHandlerException() {
     }
 

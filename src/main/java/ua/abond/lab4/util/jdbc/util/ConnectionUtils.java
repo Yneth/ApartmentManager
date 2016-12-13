@@ -12,7 +12,6 @@ public final class ConnectionUtils {
     private static final Logger logger = Logger.getLogger(ConnectionUtils.class);
 
     private ConnectionUtils() {
-
     }
 
     public static Connection getConnection(DataSource ds) {
@@ -49,8 +48,7 @@ public final class ConnectionUtils {
         try {
             conn.rollback();
         } catch (SQLException e) {
-            // TODO
-            logger.error("Failed to rollback connection");
+            logger.error("Failed to rollback connection", e);
         }
     }
 
@@ -61,7 +59,7 @@ public final class ConnectionUtils {
         try {
             conn.close();
         } catch (SQLException e) {
-            logger.error("Failed to rollback connection");
+            logger.error("Failed to rollback connection", e);
         }
     }
 }

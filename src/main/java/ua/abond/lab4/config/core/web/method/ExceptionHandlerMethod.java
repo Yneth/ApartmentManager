@@ -23,7 +23,7 @@ public class ExceptionHandlerMethod {
         } catch (IllegalAccessException e) {
             logger.error(String.format("Failed to invoke ExceptionHandler for %s.%s",
                     declaringObject.getClass().getSimpleName(), method.getName()
-            ));
+            ), e);
         }
         return null;
     }

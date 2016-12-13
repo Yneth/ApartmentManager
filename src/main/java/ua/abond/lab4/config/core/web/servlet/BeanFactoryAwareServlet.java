@@ -61,9 +61,9 @@ public abstract class BeanFactoryAwareServlet extends HttpServlet {
         try {
             return (ConfigurableBeanFactory) contextClass.newInstance();
         } catch (InstantiationException e) {
-            throw new ApplicationException("Given contextClass is abstract.");
+            throw new ApplicationException("Given contextClass is abstract.", e);
         } catch (IllegalAccessException e) {
-            throw new ApplicationException("Given contextClass has non public constructor.");
+            throw new ApplicationException("Given contextClass has non public constructor.", e);
         }
     }
 

@@ -24,7 +24,7 @@ public class HandlerMethod {
         try {
             method.invoke(declaringObject, args);
         } catch (IllegalAccessException e) {
-            logger.error("Failed to invoke RequestHandler for " + method.getName());
+            logger.error("Failed to invoke RequestHandler for " + method.getName(), e);
         } catch (InvocationTargetException e) {
             throw new RequestMappingHandlerException(e.getTargetException());
         }
