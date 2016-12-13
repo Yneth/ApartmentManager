@@ -23,9 +23,9 @@ public class DatabaseConfig {
     @Bean
     public DataSource getDataSource() {
         PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        dataSource.setUrl(getEnvProperty("DATABASE_URL").orElse(url));
-        dataSource.setUser(getEnvProperty("DATABASE_USERNAME").orElse(username));
-        dataSource.setPassword(getEnvProperty("DATABASE_PASSWORD").orElse(password));
+        dataSource.setUrl(getEnvProperty("JDBC_DATABASE_URL").orElse(url));
+        dataSource.setUser(getEnvProperty("JDBC_DATABASE_USERNAME").orElse(username));
+        dataSource.setPassword(getEnvProperty("JDBC_DATABASE_PASSWORD").orElse(password));
         dataSource.setInitialConnections(10);
         dataSource.setMaxConnections(50);
         return dataSource;
