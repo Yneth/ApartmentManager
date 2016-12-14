@@ -24,34 +24,35 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
     public Object postProcessAfterInitialization(ConfigurableBeanFactory factory, Object bean, String simpleName) {
         Arrays.stream(bean.getClass().getDeclaredFields()).
                 filter(f -> f.isAnnotationPresent(Inject.class)).
-                forEach(f -> inject(factory, bean, f));
+                forEach(f -> fieldInjection(factory, bean, f));
+
         Arrays.stream(bean.getClass().getDeclaredMethods()).
                 filter(m -> m.isAnnotationPresent(Inject.class)).
-                forEach(m -> inject(factory, bean, m));
+                forEach(m -> setterInjection(factory, bean, m));
         return bean;
     }
 
-    private void inject(ConfigurableBeanFactory factory, Object bean, Field f) {
-        logger.debug("Trying to inject " + f.getName() + " of type " + f.getType()
+    private void fieldInjection(ConfigurableBeanFactory factory, Object bean, Field f) {
+        logger.debug("Trying to setterInjection " + f.getName() + " of type " + f.getType()
                 + " to '" + bean.getClass().getSimpleName() + "'");
 
         Method setter = findSetter(bean, f);
         if (setter != null) {
-            inject(factory, bean, setter);
+            setterInjection(factory, bean, setter);
         } else {
             Object inject = getBean(factory, f.getType());
-            inject(bean, inject, f);
+            fieldInjection(bean, inject, f);
         }
     }
 
-    private void inject(ConfigurableBeanFactory factory, Object bean, Method setter) {
-        logger.debug(String.format("Trying to inject to method '%s' bean of type '%s' of '%s' object",
+    private void setterInjection(ConfigurableBeanFactory factory, Object bean, Method setter) {
+        logger.debug(String.format("Trying to setterInjection to method '%s' bean of type '%s' of '%s' object",
                 setter.getName(), setter.getReturnType(), bean.getClass().getSimpleName()
         ));
         if (setter.getParameterCount() == 1 && isSetter(setter)) {
             Object inject = getBean(factory, setter.getParameterTypes()[0]);
 
-            inject(bean, inject, setter);
+            fieldInjection(bean, inject, setter);
         } else {
             throw new BeanInstantiationException(String.format("Setter '%s' of bean '%s' has invalid declaration.",
                     setter.getName(), bean.getClass().getSimpleName()
@@ -74,8 +75,8 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         }
     }
 
-    private void inject(Object bean, Object inject, Method setter) {
-        inject(bean, inject, () -> {
+    private void fieldInjection(Object bean, Object inject, Method setter) {
+        fieldInjection(bean, inject, () -> {
             try {
                 setter.invoke(bean, inject);
             } catch (InvocationTargetException e) {
@@ -84,8 +85,8 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         });
     }
 
-    private void inject(Object bean, Object inject, Field f) {
-        inject(bean, inject, () -> {
+    private void fieldInjection(Object bean, Object inject, Field f) {
+        fieldInjection(bean, inject, () -> {
             if (!f.isAccessible()) {
                 f.setAccessible(true);
             }
@@ -93,11 +94,11 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         });
     }
 
-    private void inject(Object bean, Object inject, InjectionCallback callback) {
+    private void fieldInjection(Object bean, Object inject, InjectionCallback callback) {
         try {
             callback.inject();
         } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException(String.format("Failed to inject '%s' to '%s'.", inject, bean), e);
+            throw new BeanInstantiationException(String.format("Failed to setterInjection '%s' to '%s'.", inject, bean), e);
         }
     }
 
@@ -105,7 +106,7 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         String setterName = String.format("set%s", firstToUppercase(f.getName()));
         return Arrays.stream(bean.getClass().getMethods()).
                 filter(m -> setterName.equals(m.getName())).
-                filter(m -> m.getParameterCount() == 0).
+                filter(m -> m.getParameterCount() == 1).
                 findFirst().orElse(null);
     }
 

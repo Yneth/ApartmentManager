@@ -53,7 +53,7 @@ public class InjectAnnotationBeanConstructor implements BeanConstructor {
     public Object create(ConfigurableBeanFactory context, String beanName, BeanDefinition beanDefinition) {
         logger.debug(String.format("Creating new instance of '%s'.", beanName));
         if (visited.contains(beanName)) {
-            throw new ImproperlyConfiguredException("Bean with name '%s' has cyclic dependency.");
+            throw new ImproperlyConfiguredException(String.format("Bean with name '%s' has cyclic dependency.", beanName));
         }
         visited.add(beanName);
         if (beanDefinition.hasFactoryMethod()) {

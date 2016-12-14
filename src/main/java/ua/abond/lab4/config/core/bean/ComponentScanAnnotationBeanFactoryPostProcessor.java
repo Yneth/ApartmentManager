@@ -27,6 +27,7 @@ public class ComponentScanAnnotationBeanFactoryPostProcessor implements BeanFact
                 flatMap(Arrays::stream).
                 peek(path -> logger.debug(String.format("Scanning '%s' for components.", path))).
                 collect(Collectors.toList());
+
         String[] pathArray = new String[paths.size()];
         paths.toArray(pathArray);
         beanFactory.scan(pathArray);
