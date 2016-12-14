@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ua.abond.lab4.config.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.UserService;

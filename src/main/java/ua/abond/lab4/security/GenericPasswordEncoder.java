@@ -1,6 +1,7 @@
 package ua.abond.lab4.security;
 
 public class GenericPasswordEncoder implements PasswordEncoder {
+    private int iterations;
     private String algorithm;
 
     @Override

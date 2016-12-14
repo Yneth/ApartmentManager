@@ -1,14 +1,14 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
-import ua.abond.lab4.util.jdbc.JdbcTemplate;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.RowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

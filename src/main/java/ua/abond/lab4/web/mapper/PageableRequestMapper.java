@@ -1,9 +1,9 @@
 package ua.abond.lab4.web.mapper;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Pageable;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Pageable;
+import ua.abond.lab4.core.web.support.SortOrder;
 import ua.abond.lab4.util.Parse;
 
 import javax.servlet.http.HttpServletRequest;

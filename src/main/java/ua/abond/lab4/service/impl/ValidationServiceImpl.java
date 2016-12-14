@@ -1,6 +1,6 @@
 package ua.abond.lab4.service.impl;
 
-import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.service.ValidationService;
 import ua.abond.lab4.service.Validator;
 import ua.abond.lab4.service.exception.NoSuchValidatorException;

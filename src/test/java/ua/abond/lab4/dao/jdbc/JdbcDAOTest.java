@@ -7,8 +7,8 @@ import org.dbunit.dataset.xml.FlatDtdDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
 import org.junit.Before;
-import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
+import ua.abond.lab4.core.BeanFactory;
+import ua.abond.lab4.core.context.AnnotationBeanFactory;
 
 import java.io.FileOutputStream;
 

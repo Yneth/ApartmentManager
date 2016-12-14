@@ -1,8 +1,8 @@
 package ua.abond.lab4.service.impl;
 
 import org.junit.Test;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.SortOrder;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.dao.jdbc.JdbcDAOTest;

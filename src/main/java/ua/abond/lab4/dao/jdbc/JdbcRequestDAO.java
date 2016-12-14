@@ -1,20 +1,20 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
-import ua.abond.lab4.config.core.web.support.DefaultPage;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
+import ua.abond.lab4.core.web.support.DefaultPage;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.*;
-import ua.abond.lab4.util.jdbc.JdbcTemplate;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
-import ua.abond.lab4.util.jdbc.RowMapper;
-import ua.abond.lab4.util.jdbc.exception.DataAccessException;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.PreparedStatementSetter;
+import ua.abond.lab4.core.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

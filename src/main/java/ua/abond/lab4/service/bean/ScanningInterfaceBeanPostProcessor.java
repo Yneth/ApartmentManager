@@ -1,10 +1,10 @@
 package ua.abond.lab4.service.bean;
 
-import ua.abond.lab4.config.core.BeanPostProcessor;
-import ua.abond.lab4.config.core.ConfigurableBeanFactory;
-import ua.abond.lab4.config.core.bean.BeanDefinition;
-import ua.abond.lab4.config.core.exception.ImproperlyConfiguredException;
-import ua.abond.lab4.util.reflection.ReflectionUtil;
+import ua.abond.lab4.core.BeanPostProcessor;
+import ua.abond.lab4.core.ConfigurableBeanFactory;
+import ua.abond.lab4.core.bean.BeanDefinition;
+import ua.abond.lab4.core.exception.ImproperlyConfiguredException;
+import ua.abond.lab4.core.util.reflection.ReflectionUtil;
 
 import java.util.List;
 import java.util.Map;

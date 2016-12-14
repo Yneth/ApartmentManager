@@ -1,11 +1,11 @@
 package ua.abond.lab4.config;
 
 import org.postgresql.ds.PGPoolingDataSource;
-import ua.abond.lab4.config.core.annotation.*;
-import ua.abond.lab4.config.core.tm.TransactionManager;
-import ua.abond.lab4.config.core.tm.bean.TransactionalBeanPostProcessor;
-import ua.abond.lab4.util.jdbc.JdbcTemplate;
-import ua.abond.lab4.util.jdbc.TransactionalJdbcTemplate;
+import ua.abond.lab4.core.annotation.*;
+import ua.abond.lab4.core.tm.TransactionManager;
+import ua.abond.lab4.core.tm.bean.TransactionalBeanPostProcessor;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.TransactionalJdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Optional;

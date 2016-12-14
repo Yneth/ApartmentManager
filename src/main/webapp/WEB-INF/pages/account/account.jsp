@@ -1,11 +1,11 @@
-<%@ page language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
-<c:set var="sessionUser" value="${sessionScope.user}"/>
 <t:site-page>
+    <c:set var="sessionUser" value="${sessionScope.user}"/>
     <c:if test="${not empty sessionUser}">
         <div class="container">
             <div class="jumbotron">

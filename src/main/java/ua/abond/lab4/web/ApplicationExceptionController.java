@@ -1,11 +1,11 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.web.annotation.ExceptionController;
-import ua.abond.lab4.config.core.web.annotation.ExceptionHandler;
-import ua.abond.lab4.config.core.web.annotation.OnException;
-import ua.abond.lab4.config.core.web.method.ExceptionHandlerData;
-import ua.abond.lab4.config.core.web.method.HandlerMethodInfo;
-import ua.abond.lab4.config.core.web.support.RequestMethod;
+import ua.abond.lab4.core.web.annotation.ExceptionController;
+import ua.abond.lab4.core.web.annotation.ExceptionHandler;
+import ua.abond.lab4.core.web.annotation.OnException;
+import ua.abond.lab4.core.web.method.ExceptionHandlerData;
+import ua.abond.lab4.core.web.method.HandlerMethodInfo;
+import ua.abond.lab4.core.web.support.RequestMethod;
 import ua.abond.lab4.service.exception.*;
 
 import javax.servlet.http.HttpServletRequest;

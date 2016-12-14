@@ -6,10 +6,10 @@
 
     <servlet>
         <servlet-name>FrontController</servlet-name>
-        <servlet-class>ua.abond.lab4.config.core.web.servlet.FrontControllerServlet</servlet-class>
+        <servlet-class>ua.abond.lab4.core.web.servlet.FrontControllerServlet</servlet-class>
         <init-param>
             <param-name>contextClass</param-name>
-            <param-value>ua.abond.lab4.config.core.context.AnnotationBeanFactory</param-value>
+            <param-value>ua.abond.lab4.core.context.AnnotationBeanFactory</param-value>
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
@@ -24,7 +24,7 @@
 
     <servlet>
         <servlet-name>Default</servlet-name>
-        <servlet-class>ua.abond.lab4.config.core.web.servlet.DefaultServlet</servlet-class>
+        <servlet-class>ua.abond.lab4.core.web.servlet.DefaultServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Default</servlet-name>

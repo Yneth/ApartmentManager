@@ -1,6 +1,7 @@
 package ua.abond.lab4.util.reflection;
 
 import org.junit.Test;
+import ua.abond.lab4.core.util.reflection.ReflectionUtil;
 
 import java.util.List;
 

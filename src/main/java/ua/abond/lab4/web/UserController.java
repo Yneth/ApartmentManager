@@ -1,12 +1,12 @@
 package ua.abond.lab4.web;
 
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.web.annotation.Controller;
-import ua.abond.lab4.config.core.web.annotation.OnException;
-import ua.abond.lab4.config.core.web.annotation.RequestMapping;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
-import ua.abond.lab4.config.core.web.support.RequestMethod;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.web.annotation.Controller;
+import ua.abond.lab4.core.web.annotation.OnException;
+import ua.abond.lab4.core.web.annotation.RequestMapping;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
+import ua.abond.lab4.core.web.support.RequestMethod;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;

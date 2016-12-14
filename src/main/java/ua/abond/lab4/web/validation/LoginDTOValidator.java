@@ -1,6 +1,6 @@
 package ua.abond.lab4.web.validation;
 
-import ua.abond.lab4.config.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.service.Validator;
 import ua.abond.lab4.web.dto.LoginDTO;
 
