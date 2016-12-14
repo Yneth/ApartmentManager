@@ -109,17 +109,19 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
     @Override
     public final void refresh() {
-        beans.clear();
-        beanConstructors.clear();
-        beanPostProcessors.clear();
-        beanFactoryPostProcessors.clear();
+        synchronized (this) {
+            beans.clear();
+            beanConstructors.clear();
+            beanPostProcessors.clear();
+            beanFactoryPostProcessors.clear();
 
-        initDefault();
-        registerBeanFactoryPostProcessors();
-        invokeBeanFactoryPostProcessors();
-        registerBeanPostProcessors();
-        registerBeanCreators();
-        createBeans();
+            initDefault();
+            registerBeanFactoryPostProcessors();
+            invokeBeanFactoryPostProcessors();
+            registerBeanPostProcessors();
+            registerBeanCreators();
+            createBeans();
+        }
     }
 
     private void createBeans() {
