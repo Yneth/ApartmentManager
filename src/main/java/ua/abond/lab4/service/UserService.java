@@ -14,7 +14,7 @@ public interface UserService {
 
     Optional<User> findByLogin(String name);
 
-    boolean isAuthorized(LoginDTO login);
+    boolean isAuthorized(LoginDTO login) throws ServiceException;
 
     void register(User user) throws ServiceException;
 

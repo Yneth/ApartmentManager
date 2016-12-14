@@ -8,6 +8,7 @@ import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.security.PasswordEncoder;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.LoginIsAlreadyTakenException;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
@@ -22,6 +23,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
     private final AuthorityDAO authorityDAO;
+
+    @Inject
+    private PasswordEncoder passwordEncoder;
 
     @Inject
     public UserServiceImpl(UserDAO userDAO, AuthorityDAO authorityDAO) {
@@ -42,7 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isAuthorized(LoginDTO login) {
-        return false;
+        return findByLogin(login.getLogin()).
+                map(u -> passwordEncoder.matches(login.getPassword(), u.getPassword())).
+                orElse(false);
     }
 
     @Override
@@ -65,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if (!userToUpdate.getPassword().equals(dto.getOldPassword())) {
             throw new UserOldPasswordMismatchException();
         }
-        userToUpdate.setPassword(dto.getNewPassword());
+        userToUpdate.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userDAO.update(userToUpdate);
     }
 
@@ -102,6 +108,7 @@ public class UserServiceImpl implements UserService {
         authorityDAO.getByName(authName).
                 map(auth -> {
                     user.setAuthority(auth);
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
                     userDAO.create(user);
                     return user;
                 }).
