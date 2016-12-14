@@ -38,8 +38,8 @@ public class BeanDefinition {
     }
 
     public boolean hasOnlyDefaultConstructor() {
-        if (hasFactoryMethod() && factoryMethod.getParameterCount() == 0) {
-            return true;
+        if (hasFactoryMethod()) {
+            return factoryMethod.getParameterCount() == 0;
         }
         Constructor<?>[] constructors = type.getDeclaredConstructors();
         if (isNestedClass() && constructors.length == 2) {
