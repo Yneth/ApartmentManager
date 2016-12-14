@@ -28,6 +28,7 @@ public abstract class JdbcDAOTest {
 
         IDatabaseConnection connection = tester.getConnection();
         FlatDtdDataSet.write(connection.createDataSet(), new FileOutputStream(DB_UNIT_DTD_PATH));
+        connection.close();
         this.tester.setDataSet(dataSet);
         this.tester.onSetup();
     }
