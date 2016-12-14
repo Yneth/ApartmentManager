@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
+import java.util.Objects;
 
 public class TransactionManager implements InvocationHandler {
     private static final Logger logger = Logger.getLogger(TransactionManager.class);
@@ -19,6 +20,8 @@ public class TransactionManager implements InvocationHandler {
     private DataSource dataSource;
 
     public TransactionManager(DataSource dataSource) {
+        Objects.requireNonNull(dataSource);
+
         this.dataSource = dataSource;
         this.proxy = newInstance();
     }
@@ -27,6 +30,7 @@ public class TransactionManager implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Connection conn = LOCAL_CONNECTION.get();
         if (GET_CONNECTION.equals(method.getName()) && conn != null) {
+            logger.debug("Taking scoped connection");
             return conn;
         }
         return method.invoke(dataSource, args);
