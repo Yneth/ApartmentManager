@@ -12,12 +12,12 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,8 +47,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
     private String countUserOrdersSql;
 
     @Inject
-    public JdbcOrderDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcOrderDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override

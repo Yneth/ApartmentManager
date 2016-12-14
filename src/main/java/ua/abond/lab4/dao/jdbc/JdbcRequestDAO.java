@@ -10,12 +10,12 @@ import ua.abond.lab4.config.core.web.support.Page;
 import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.*;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,8 +44,8 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     private String countUserOrdersSql;
 
     @Inject
-    public JdbcRequestDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcRequestDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override

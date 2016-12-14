@@ -6,10 +6,10 @@ import ua.abond.lab4.config.core.annotation.Prop;
 import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,8 +35,8 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
     private String listSql;
 
     @Inject
-    public JdbcApartmentTypeDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcApartmentTypeDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override

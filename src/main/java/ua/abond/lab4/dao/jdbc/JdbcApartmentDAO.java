@@ -11,12 +11,12 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,8 +46,8 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     private String countMostAppropriateSql;
 
     @Inject
-    public JdbcApartmentDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcApartmentDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override

@@ -10,12 +10,12 @@ import ua.abond.lab4.config.core.web.support.Pageable;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.PreparedStatementSetter;
 import ua.abond.lab4.util.jdbc.RowMapper;
 import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,8 +41,8 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     private String countSql;
 
     @Inject
-    public JdbcUserDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcUserDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override

@@ -2,7 +2,10 @@ package ua.abond.lab4.config;
 
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.config.core.annotation.*;
-import ua.abond.lab4.config.core.infrastructure.TransactionManager;
+import ua.abond.lab4.config.core.tm.TransactionManager;
+import ua.abond.lab4.config.core.tm.bean.TransactionalBeanPostProcessor;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
+import ua.abond.lab4.util.jdbc.TransactionalJdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -32,8 +35,19 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public TransactionManager transactionManager() {
-        return new TransactionManager();
+    public TransactionalBeanPostProcessor getTransactionalBeanPostProcessor() {
+        return new TransactionalBeanPostProcessor();
+    }
+
+    @Bean
+    public TransactionManager transactionManager(DataSource dataSource) {
+        TransactionManager tm = new TransactionManager(dataSource);
+        return tm;
+    }
+
+    @Bean
+    public JdbcTemplate getJdbcTemplate() {
+        return new TransactionalJdbcTemplate();
     }
 
     private Optional<String> getEnvProperty(String prop) {

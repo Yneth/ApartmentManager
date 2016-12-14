@@ -5,6 +5,10 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.operation.DatabaseOperation;
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.config.core.annotation.*;
+import ua.abond.lab4.config.core.tm.TransactionManager;
+import ua.abond.lab4.config.core.tm.bean.TransactionalBeanPostProcessor;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
+import ua.abond.lab4.util.jdbc.TransactionalJdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -28,6 +32,21 @@ public class DatabaseTestConfig {
         dataSource.setUser(username);
         dataSource.setPassword(password);
         return dataSource;
+    }
+
+    @Bean
+    public TransactionalBeanPostProcessor getTransactionalBeanPostProcessor() {
+        return new TransactionalBeanPostProcessor();
+    }
+
+    @Bean
+    public TransactionManager transactionManager(DataSource dataSource) {
+        return new TransactionManager(dataSource);
+    }
+
+    @Bean
+    public JdbcTemplate getJdbcTemplate() {
+        return new TransactionalJdbcTemplate();
     }
 
     @Bean

@@ -3,7 +3,6 @@ package ua.abond.lab4.service.impl;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
@@ -20,7 +19,8 @@ import ua.abond.lab4.web.dto.RequestDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RequestServiceTest extends JdbcDAOTest {
     private static final String DATASET = "orders.xml";
@@ -77,6 +77,7 @@ public class RequestServiceTest extends JdbcDAOTest {
     public void testConfirmRejectedRequest() throws Exception {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(1L);
+        requestDTO.setApartmentId(Long.MIN_VALUE);
         requestService.confirmRequest(requestDTO);
     }
 
@@ -156,19 +157,6 @@ public class RequestServiceTest extends JdbcDAOTest {
         Order byRequestId = orderDAO.findByRequestId(request.getId()).orElse(null);
         assertNotNull(byRequestId.getPrice());
         assertTrue(byRequestId.getPrice().equals(new BigDecimal(300)));
-    }
-
-    @Test
-    public void testOrderCountOnBadRequestUpdate() throws Exception {
-        ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
-        requestDTO.setRequestId(0L);
-        requestDTO.setPrice(new BigDecimal(100));
-        requestDTO.setApartmentId(0L);
-        try {
-            requestService.confirmRequest(requestDTO);
-        } catch (ServiceException e) {
-        }
-        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null)).getSize());
     }
 
     @Test

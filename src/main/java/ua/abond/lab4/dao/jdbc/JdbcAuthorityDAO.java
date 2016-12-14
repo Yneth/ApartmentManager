@@ -6,10 +6,10 @@ import ua.abond.lab4.config.core.annotation.Prop;
 import ua.abond.lab4.config.core.annotation.Value;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
+import ua.abond.lab4.util.jdbc.JdbcTemplate;
 import ua.abond.lab4.util.jdbc.KeyHolder;
 import ua.abond.lab4.util.jdbc.RowMapper;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,8 +32,8 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     private String getByNameSql;
 
     @Inject
-    public JdbcAuthorityDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcAuthorityDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override
