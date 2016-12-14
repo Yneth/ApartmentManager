@@ -19,7 +19,6 @@ public abstract class JdbcTemplate {
     protected DataSource dataSource;
 
     public JdbcTemplate() {
-
     }
 
     public JdbcTemplate(DataSource dataSource) {
@@ -134,7 +133,6 @@ public abstract class JdbcTemplate {
     }
 
     private Connection getConnection() {
-        logger.debug("CREATED CONNECTION");
         return ConnectionUtils.getConnection(dataSource);
     }
 
@@ -145,13 +143,13 @@ public abstract class JdbcTemplate {
     }
 
     private void rollback(Connection connection) {
-        if (!isManaged())
+        if (!isManaged()) {
             ConnectionUtils.rollback(connection);
+        }
     }
 
     private void close(Connection connection) {
         if (!isManaged()) {
-            logger.debug("CLOSED CONNECTION");
             ConnectionUtils.closeConnection(connection);
         }
     }

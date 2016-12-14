@@ -22,6 +22,7 @@ public final class ConnectionUtils {
         Objects.requireNonNull(ds);
 
         try {
+            logger.debug("Retrieving connection.");
             Connection connection = ds.getConnection();
             connection.setAutoCommit(autoCommit);
             return connection;
@@ -57,6 +58,7 @@ public final class ConnectionUtils {
             return;
         }
         try {
+            logger.debug("Closing connection.");
             conn.close();
         } catch (SQLException e) {
             logger.error("Failed to rollback connection", e);
