@@ -25,6 +25,7 @@
         <dbunit.slf4j.log4j.version>1.7.21</dbunit.slf4j.log4j.version>
         <mockito.version>2.1.0-RC.1</mockito.version>
         <log4j.version>1.2.17</log4j.version>
+        <bcrypt.version>0.3m</bcrypt.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <maven.war.version>3.0.0</maven.war.version>
@@ -57,6 +58,12 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${bcrypt.version}</version>
         </dependency>
 
         <dependency>
