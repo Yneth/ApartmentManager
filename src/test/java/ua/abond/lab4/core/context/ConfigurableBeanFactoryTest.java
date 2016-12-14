@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class ConfigurableBeanFactoryTest {
-    private static final String TEST_PACKAGE = "ua.abond.lab4.config.core.context.test";
+    private static final String TEST_PACKAGE = "ua.abond.lab4.core.context.test";
 
     private ConfigurableBeanFactory beanFactory;
 

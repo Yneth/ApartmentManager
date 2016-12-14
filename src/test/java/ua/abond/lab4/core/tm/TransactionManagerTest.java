@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.core.bean.BeanDefinition;
 import ua.abond.lab4.core.context.AnnotationBeanFactory;
-import ua.abond.lab4.core.tm.TransactionManager;
 import ua.abond.lab4.core.tm.bean.TransactionalBeanPostProcessor;
 
 import javax.sql.DataSource;
@@ -35,7 +34,7 @@ public class TransactionManagerTest {
         beanFactory = new AnnotationBeanFactory();
         beanFactory.register(new BeanDefinition(TransactionManager.class));
         beanFactory.register(new BeanDefinition(TransactionalBeanPostProcessor.class));
-        beanFactory.scan("ua.abond.lab4.db");
+        beanFactory.scan("ua.abond.lab4.config");
         beanFactory.refresh();
     }
 

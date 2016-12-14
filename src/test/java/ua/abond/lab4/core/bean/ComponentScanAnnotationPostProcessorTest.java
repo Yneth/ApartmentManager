@@ -14,10 +14,11 @@ public class ComponentScanAnnotationPostProcessorTest {
         AnnotationBeanFactory abf = new AnnotationBeanFactory();
         abf.register(new BeanDefinition(TestComponent.class));
         new ComponentScanAnnotationBeanFactoryPostProcessor().postProcess(abf);
+        abf.refresh();
         assertTrue(abf.containsBeanDefinition(TestClass.class));
     }
 
-    @ComponentScan("ua.abond.lab4.config.core.bean.componentscan")
+    @ComponentScan("ua.abond.lab4.core.bean.componentscan")
     private static class TestComponent {
 
     }

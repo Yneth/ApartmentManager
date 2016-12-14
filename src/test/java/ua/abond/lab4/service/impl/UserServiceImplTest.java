@@ -8,17 +8,20 @@ import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.dao.jdbc.JdbcDAOTest;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.security.PasswordEncoder;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.service.exception.UserOldPasswordMismatchException;
 import ua.abond.lab4.web.dto.ChangePasswordDTO;
+import ua.abond.lab4.web.dto.LoginDTO;
 
 import static org.junit.Assert.*;
 
 public class UserServiceImplTest extends JdbcDAOTest {
     private static final String DATA_SET = "orders.xml";
 
+    private PasswordEncoder passwordEncoder;
     private UserDAO userDAO;
     private AuthorityDAO authorityDAO;
     private UserService userService;
@@ -29,10 +32,32 @@ public class UserServiceImplTest extends JdbcDAOTest {
         userDAO = beanFactory.getBean(UserDAO.class);
         authorityDAO = beanFactory.getBean(AuthorityDAO.class);
         userService = beanFactory.getBean(UserService.class);
+        passwordEncoder = beanFactory.getBean(PasswordEncoder.class);
     }
 
     @Test
-    public void testSuccessfulChangePassword() throws Exception {
+    public void testIsAuthorized() throws Exception {
+        User user = createUser("test");
+
+        LoginDTO dto = new LoginDTO();
+        dto.setLogin(user.getLogin());
+        dto.setPassword(user.getPassword());
+
+        userService.register(user);
+        assertTrue(userService.isAuthorized(dto));
+    }
+
+    @Test
+    public void testIsNotAuthorized() throws Exception {
+        LoginDTO dto = new LoginDTO();
+        dto.setLogin("test");
+        dto.setPassword("test");
+
+        assertFalse(userService.isAuthorized(dto));
+    }
+
+    @Test
+    public void testSuccessfulPasswordChange() throws Exception {
         User byId = userService.getById(0L);
         String newPassword = "newPassword";
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
@@ -41,7 +66,7 @@ public class UserServiceImplTest extends JdbcDAOTest {
         userService.changePassword(byId.getId(), changePasswordDTO);
 
         User result = userService.getById(byId.getId());
-        assertEquals(newPassword, result.getPassword());
+        assertTrue(passwordEncoder.matches(newPassword, result.getPassword()));
     }
 
     @Test(expected = UserOldPasswordMismatchException.class)

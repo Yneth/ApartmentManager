@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.core.web.exception.ApplicationException;
-import ua.abond.lab4.core.web.servlet.FrontControllerServlet;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FrontControllerServletTest {
-    private static final String CONTEXT_CONF_LOCATION = "ua.abond.lab4.config.core.web.servlet.config";
+    private static final String CONTEXT_CONF_LOCATION = "ua.abond.lab4.core.web.servlet.config";
     @Mock
     private ServletConfig config;
     @Mock

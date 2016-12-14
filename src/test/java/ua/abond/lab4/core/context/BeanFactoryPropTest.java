@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class BeanFactoryPropTest {
-    private static final String TEST_PACKAGE = "ua.abond.lab4.config.core.context.prop";
+    private static final String TEST_PACKAGE = "ua.abond.lab4.core.context.prop";
     private static final String TEST_PROP_FILE = "prop.test.properties";
 
     private BeanFactory beanFactory;
