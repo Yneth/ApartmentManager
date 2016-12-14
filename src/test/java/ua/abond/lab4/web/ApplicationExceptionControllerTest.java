@@ -6,6 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.config.core.web.method.ExceptionHandlerData;
+import ua.abond.lab4.service.exception.ValidationException;
+
+import java.util.Collections;
+
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplicationExceptionControllerTest extends ControllerTest {
@@ -19,7 +27,21 @@ public class ApplicationExceptionControllerTest extends ControllerTest {
     }
 
     @Test
-    public void testHandleResourceNotFound() {
+    public void testHandleResourceNotFound() throws Exception {
+        controller.handleResourceNotFoundException(handlerData);
+        verify(response).sendError(anyInt());
+    }
 
+    @Test
+    public void testHandleValidationException() throws Exception {
+        when(handlerData.getException()).
+                thenReturn(new ValidationException(Collections.emptyList()));
+
+        controller.handleValidationException(handlerData);
+
+        verify(request).setAttribute(eq("errors"), or(isNull(), anyList()));
+
+        verifyForward();
+        verify(request).getRequestDispatcher(anyString());
     }
 }
