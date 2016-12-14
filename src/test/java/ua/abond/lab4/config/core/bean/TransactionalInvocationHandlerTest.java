@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.config.core.annotation.Transactional;
-import ua.abond.lab4.config.core.exception.TransactionException;
-import ua.abond.lab4.config.core.infrastructure.TransactionManager;
+import ua.abond.lab4.config.core.tm.TransactionManager;
+import ua.abond.lab4.config.core.tm.bean.TransactionalInvocationHandler;
 
 import java.lang.reflect.Method;
 
@@ -30,22 +30,22 @@ public class TransactionalInvocationHandlerTest {
     }
 
     @Test
-    public void testSuccessfulInvoke() throws Exception {
+    public void testSuccessfulInvoke() throws Throwable {
         handler.invoke(null, testMethod, new Object[]{});
-        verify(tm).createConnection();
+        verify(tm).begin();
         verify(tm).commit();
-        verify(tm).releaseConnection();
+        verify(tm).end();
     }
 
-    @Test(expected = TransactionException.class)
-    public void testInvokeWithException() throws Exception {
+    @Test(expected = RuntimeException.class)
+    public void testInvokeWithException() throws Throwable {
         doThrow(new RuntimeException()).when(testClass).test();
         try {
             handler.invoke(null, testMethod, new Object[]{});
         } finally {
-            verify(tm).createConnection();
+            verify(tm).begin();
             verify(tm).rollback();
-            verify(tm).releaseConnection();
+            verify(tm).end();
         }
     }
 

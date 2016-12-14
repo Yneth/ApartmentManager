@@ -1,12 +1,12 @@
-package ua.abond.lab4.config.core.bean;
+package ua.abond.lab4.config.core.tm.bean;
 
 import ua.abond.lab4.config.core.BeanPostProcessor;
 import ua.abond.lab4.config.core.ConfigurableBeanFactory;
 import ua.abond.lab4.config.core.Ordered;
 import ua.abond.lab4.config.core.annotation.Transactional;
-import ua.abond.lab4.config.core.infrastructure.TransactionManager;
+import ua.abond.lab4.config.core.bean.BeanDefinition;
+import ua.abond.lab4.config.core.tm.TransactionManager;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
@@ -14,28 +14,27 @@ public class TransactionalBeanPostProcessor implements BeanPostProcessor, Ordere
 
     @Override
     public Object postProcessBeforeInitialization(ConfigurableBeanFactory factory, Object bean, String beanName) {
-        if (TransactionManager.class.isAssignableFrom(bean.getClass())) {
-            return bean;
-        }
-        BeanDefinition bd = new BeanDefinition(TransactionManager.class);
-        TransactionManager tm = (TransactionManager)
-                factory.createBean(TransactionManager.class.getSimpleName(), bd);
-        if (DataSource.class.isAssignableFrom(bean.getClass())) {
-            tm.setDataSource((DataSource) bean);
-            return tm.getProxy();
-        }
         return bean;
     }
 
     @Override
     public Object postProcessAfterInitialization(ConfigurableBeanFactory factory, Object bean, String simpleName) {
-        TransactionManager tm = factory.getBean(TransactionManager.class);
-
         Object result = bean;
         if (containsTransactionalMethods(bean)) {
+            TransactionManager tm = getTransactionManager(factory);
             result = createProxy(bean, tm);
         }
         return result;
+    }
+
+    private TransactionManager getTransactionManager(ConfigurableBeanFactory factory) {
+        Class<? extends TransactionManager> type = TransactionManager.class;
+        if (!factory.containsBean(type)) {
+            BeanDefinition bd = factory.getBeanDefinition(type);
+            return (TransactionManager) factory.createBean(type.getSimpleName(), bd);
+        } else {
+            return factory.getBean(type);
+        }
     }
 
     private boolean containsTransactionalMethods(Object obj) {

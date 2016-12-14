@@ -1,21 +1,18 @@
-package ua.abond.lab4.config.core.infrastructure;
+package ua.abond.lab4.config.core.tm;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Transactional;
 import ua.abond.lab4.config.core.bean.BeanDefinition;
-import ua.abond.lab4.config.core.bean.TransactionalBeanPostProcessor;
 import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
+import ua.abond.lab4.config.core.tm.bean.TransactionalBeanPostProcessor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,53 +27,45 @@ public class TransactionManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        transactionManager = new TransactionManager();
+        transactionManager = new TransactionManager(dataSource);
         transactionManager.setDataSource(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
 
         beanFactory = new AnnotationBeanFactory();
         beanFactory.register(new BeanDefinition(TransactionManager.class));
         beanFactory.register(new BeanDefinition(TransactionalBeanPostProcessor.class));
-        beanFactory.register(new BeanDefinition(TestTransactional.class));
         beanFactory.scan("ua.abond.lab4.db");
         beanFactory.refresh();
     }
 
-    @Test
-    public void testTransactionManager() throws Exception {
-        TestInterface bean = beanFactory.getBean(TestInterface.class);
-        assertTrue(bean.test());
-    }
-
-    @Test
-    public void testNestingOfTransactionMethods() throws Exception {
-        TestInterface bean = beanFactory.getBean(TestInterface.class);
-        assertTrue(bean.firstMethod());
+    @After
+    public void cleanUp() {
+        transactionManager.end();
     }
 
     @Test
     public void testCreateConnection() throws Exception {
-        transactionManager.createConnection();
+        transactionManager.begin();
         verify(dataSource).getConnection();
         verify(connection).setAutoCommit(false);
     }
 
     @Test
     public void testCloseConnection() throws Exception {
-        transactionManager.createConnection();
-        transactionManager.releaseConnection();
+        transactionManager.begin();
+        transactionManager.end();
         verify(connection).close();
     }
 
     @Test
     public void testCloseConnectionWhenNoOpenConnection() throws Exception {
-        transactionManager.releaseConnection();
+        transactionManager.end();
         verify(connection, never()).close();
     }
 
     @Test
     public void testCommit() throws Exception {
-        transactionManager.createConnection();
+        transactionManager.begin();
         transactionManager.commit();
         verify(connection).commit();
     }
@@ -89,7 +78,7 @@ public class TransactionManagerTest {
 
     @Test
     public void testRollback() throws Exception {
-        transactionManager.createConnection();
+        transactionManager.begin();
         transactionManager.rollback();
         verify(connection).rollback();
     }
@@ -98,36 +87,5 @@ public class TransactionManagerTest {
     public void testRollbackWhenNoOpenConnection() throws Exception {
         transactionManager.rollback();
         verify(connection, never()).rollback();
-    }
-
-    public static class TestTransactional implements TestInterface {
-        @Inject
-        private DataSource dataSource;
-
-        @Override
-        @Transactional
-        public boolean test() throws SQLException {
-            return dataSource.getConnection() == dataSource.getConnection();
-        }
-
-        @Override
-        @Transactional
-        public boolean firstMethod() throws Exception {
-            return secondMethod(dataSource.getConnection());
-        }
-
-        @Override
-        @Transactional
-        public boolean secondMethod(Connection connection) throws Exception {
-            return connection == dataSource.getConnection();
-        }
-    }
-
-    public interface TestInterface {
-        boolean test() throws Exception;
-
-        boolean firstMethod() throws Exception;
-
-        boolean secondMethod(Connection connection) throws Exception;
     }
 }

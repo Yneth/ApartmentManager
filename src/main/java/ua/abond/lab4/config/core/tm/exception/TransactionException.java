@@ -1,4 +1,4 @@
-package ua.abond.lab4.config.core.exception;
+package ua.abond.lab4.config.core.tm.exception;
 
 public class TransactionException extends Exception {
 
