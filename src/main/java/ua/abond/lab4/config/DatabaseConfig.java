@@ -2,11 +2,14 @@ package ua.abond.lab4.config;
 
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.core.annotation.*;
-import ua.abond.lab4.core.tm.TransactionManager;
-import ua.abond.lab4.core.tm.bean.TransactionalBeanPostProcessor;
 import ua.abond.lab4.core.jdbc.JdbcTemplate;
 import ua.abond.lab4.core.jdbc.TransactionalJdbcTemplate;
+import ua.abond.lab4.core.tm.TransactionManager;
+import ua.abond.lab4.core.tm.bean.TransactionalBeanPostProcessor;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.util.Optional;
 
@@ -14,6 +17,8 @@ import java.util.Optional;
 @Prop("db.properties")
 @ComponentScan("ua.abond.lab4.dao.jdbc")
 public class DatabaseConfig {
+    private static final String JNDI_DATA_SOURCE_NAME = "java:comp/env/jdbc/dataSource";
+
     @Value("db.url")
     private String url;
     @Value("db.driver")
@@ -24,14 +29,20 @@ public class DatabaseConfig {
     private String password;
 
     @Bean
-    public DataSource getDataSource() {
-        PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        dataSource.setUrl(getEnvProperty("JDBC_DATABASE_URL").orElse(url));
-        dataSource.setUser(getEnvProperty("JDBC_DATABASE_USERNAME").orElse(username));
-        dataSource.setPassword(getEnvProperty("JDBC_DATABASE_PASSWORD").orElse(password));
-        dataSource.setInitialConnections(10);
-        dataSource.setMaxConnections(50);
-        return dataSource;
+    public DataSource getDataSource() throws NamingException {
+        DataSource result;
+        try {
+            Context context = new InitialContext();
+            result = (DataSource) context.lookup(JNDI_DATA_SOURCE_NAME);
+        } catch (NamingException e) {
+            PGPoolingDataSource dataSource = new PGPoolingDataSource();
+            dataSource.setUrl(getEnvProperty("JDBC_DATABASE_URL").orElse(url));
+            dataSource.setUser(getEnvProperty("JDBC_DATABASE_USERNAME").orElse(username));
+            dataSource.setPassword(getEnvProperty("JDBC_DATABASE_PASSWORD").orElse(password));
+            dataSource.setMaxConnections(50);
+            result = dataSource;
+        }
+        return result;
     }
 
     @Bean
@@ -40,9 +51,8 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public TransactionManager transactionManager(DataSource dataSource) {
-        TransactionManager tm = new TransactionManager(dataSource);
-        return tm;
+    public TransactionManager getTransactionManager(DataSource dataSource) {
+        return new TransactionManager(dataSource);
     }
 
     @Bean
