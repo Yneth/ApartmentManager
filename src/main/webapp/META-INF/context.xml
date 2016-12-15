@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/dataSource"
+              auth="Container"
+              type="javax.sql.DataSource"
+              testWhileIdle="true"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandonedTimeout="60"
+              removeAbandoned="true"
+              logAbandoned="true"
+
+              username="postgres"
+              password="123"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/apartments"/>
+</Context>
