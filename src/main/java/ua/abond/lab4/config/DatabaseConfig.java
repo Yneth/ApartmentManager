@@ -21,8 +21,6 @@ public class DatabaseConfig {
 
     @Value("db.url")
     private String url;
-    @Value("db.driver")
-    private String driver;
     @Value("db.username")
     private String username;
     @Value("db.password")
