@@ -1,7 +1,5 @@
 package ua.abond.lab4.core;
 
-import ua.abond.lab4.core.exception.BeansException;
-
 import java.util.Map;
 
 public interface BeanFactory {
@@ -9,9 +7,9 @@ public interface BeanFactory {
 
     <T> boolean containsBean(Class<T> type);
 
-    Object getBean(String name) throws BeansException;
+    Object getBean(String name);
 
-    <T> T getBean(Class<T> type) throws BeansException;
+    <T> T getBean(Class<T> type);
 
     <T> Map<String, T> getBeansOfType(Class<T> type);
 
