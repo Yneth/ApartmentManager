@@ -26,13 +26,13 @@
                         <td>${order.apartment.name}</td>
                         <td>${order.request.id}</td>
                         <td>${order.price}</td>
-                        <td>${order.payed}</td>
+                        <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/></td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
             <c:if test="${empty orders}">
-                <p>No orders yet.</p>
+                <p><fmt:message key="admin.orders.empty" bundle="${locale}"/></p>
             </c:if>
             <p:pagination-partial uri="/admin/orders"/>
         </div>

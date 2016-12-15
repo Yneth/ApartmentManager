@@ -38,7 +38,7 @@
                 </tbody>
             </table>
             <c:if test="${empty admins}">
-                <p>No admins yet.</p>
+                <p><fmt:message key="supersu.admins.empty" bundle="${locale}"/></p>
             </c:if>
             <p:error-partial/>
             <p:pagination-partial uri="/supersu/admins"/>

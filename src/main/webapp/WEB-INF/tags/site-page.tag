@@ -19,8 +19,12 @@
     </jsp:attribute>
 
     <jsp:attribute name="footer">
-        <div><a href="/?lang=en">en</a>&nbsp<a href="/?lang=ua">ua</a></div>
-        <div class="copyright right">Copyright © Anton 2016</div>
+        <div class="container">
+            <div class="row">
+                <a href="/?lang=en">en</a>&nbsp<a href="/?lang=ua">ua</a>
+                <span class="copyright right">Copyright © Anton 2016</span>
+            </div>
+        </div>
     </jsp:attribute>
 
     <jsp:body>

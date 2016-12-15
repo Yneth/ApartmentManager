@@ -27,7 +27,7 @@
                         <td>${order.apartment.name}</td>
                         <td>${order.request.id}</td>
                         <td>${order.price}</td>
-                        <td>${order.payed}</td>
+                        <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/></td>
                         <td>
                             <form class="form-group" action="/supersu/order/delete" method="POST">
                                 <input type="hidden" name="id" value="${order.id}"/>
@@ -40,7 +40,7 @@
                 </tbody>
             </table>
             <c:if test="${empty orders}">
-                <p>No orders yet.</p>
+                <p><fmt:message key="supersu.orders.empty" bundle="${locale}"/></p>
             </c:if>
             <p:pagination-partial uri="/supersu/orders"/>
         </div>
