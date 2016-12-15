@@ -1,6 +1,5 @@
 package ua.abond.lab4.core.jdbc;
 
-import org.apache.log4j.Logger;
 import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 import ua.abond.lab4.core.jdbc.util.ConnectionUtils;
 
@@ -15,7 +14,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 public abstract class JdbcTemplate {
-    private static final Logger logger = Logger.getLogger(JdbcTemplate.class);
     protected DataSource dataSource;
 
     public JdbcTemplate() {
@@ -120,7 +118,7 @@ public abstract class JdbcTemplate {
         try {
             commit(connection);
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to commit transaction.");
+            throw new DataAccessException("Failed to commit transaction.", e);
         }
     }
 

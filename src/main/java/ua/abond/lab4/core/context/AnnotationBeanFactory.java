@@ -3,7 +3,6 @@ package ua.abond.lab4.core.context;
 import org.apache.log4j.Logger;
 import ua.abond.lab4.core.*;
 import ua.abond.lab4.core.bean.*;
-import ua.abond.lab4.core.exception.BeansException;
 import ua.abond.lab4.core.exception.ImproperlyConfiguredException;
 import ua.abond.lab4.core.exception.NoSuchBeanException;
 
@@ -71,7 +70,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
     }
 
     @Override
-    public Object getBean(String name) throws BeansException {
+    public Object getBean(String name) {
         Objects.requireNonNull(name);
         if (!containsBean(name)) {
             throw new NoSuchBeanException();
@@ -81,7 +80,7 @@ public class AnnotationBeanFactory implements ConfigurableBeanFactory, BeanDefin
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getBean(Class<T> type) throws BeansException {
+    public <T> T getBean(Class<T> type) {
         Objects.requireNonNull(type);
         return (T) beans.values().stream().
                 filter(o -> type.isAssignableFrom(o.getClass())).

@@ -1,6 +1,5 @@
 package ua.abond.lab4.service.impl;
 
-import org.apache.log4j.Logger;
 import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.core.annotation.Inject;
 import ua.abond.lab4.core.web.support.Page;
@@ -16,8 +15,6 @@ import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 
 @Component
 public class OrderServiceImpl implements OrderService {
-    private static final Logger logger = Logger.getLogger(OrderServiceImpl.class);
-
     private final OrderDAO orderDAO;
 
     @Inject

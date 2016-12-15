@@ -1,6 +1,5 @@
 package ua.abond.lab4.service.impl;
 
-import org.apache.log4j.Logger;
 import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.core.annotation.Inject;
 import ua.abond.lab4.core.web.support.Page;
@@ -16,8 +15,6 @@ import java.util.Objects;
 
 @Component
 public class ApartmentServiceImpl implements ApartmentService {
-    private static final Logger logger = Logger.getLogger(ApartmentServiceImpl.class);
-
     private final ApartmentDAO apartmentDAO;
 
     @Inject
@@ -50,13 +47,11 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     @Override
     public Page<Apartment> list(Pageable pageable) {
-        logger.debug("Getting a list of apartments.");
         return apartmentDAO.list(pageable);
     }
 
     @Override
     public Page<Apartment> listMostAppropriate(Pageable pageable, Request filter) {
-        logger.debug("Getting a filtered list");
         return apartmentDAO.list(pageable, filter);
     }
 
