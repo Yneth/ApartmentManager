@@ -10,9 +10,9 @@ import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.web.dto.LoginDTO;
 import ua.abond.lab4.web.dto.UserSessionDTO;
 
-import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
@@ -51,13 +51,12 @@ public class LoginControllerTest extends ControllerTest {
 
     @Test
     public void testSuccessfulLogin() throws Exception {
-        User user = new User();
-        user.setPassword("123");
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setPassword("123");
-
-        when(mapperService.map(request, LoginDTO.class)).thenReturn(loginDTO);
-        when(userService.findByLogin(isNull())).thenReturn(Optional.of(user));
+        when(mapperService.map(request, LoginDTO.class)).
+                thenReturn(mock(LoginDTO.class));
+        when(userService.isAuthorized(any(LoginDTO.class))).
+                thenReturn(true);
+        when(userService.findByLogin(or(isNull(), anyString()))).
+                thenReturn(Optional.of(mock(User.class)));
         when(request.getSession()).thenReturn(httpSession);
 
         loginController.login(request, response);
@@ -68,11 +67,14 @@ public class LoginControllerTest extends ControllerTest {
     @Test
     public void testUnsuccessfulLogin() throws Exception {
         when(request.getSession(anyBoolean())).thenReturn(httpSession);
-        when(mapperService.map(request, LoginDTO.class)).thenReturn(mock(LoginDTO.class));
+        when(mapperService.map(request, LoginDTO.class)).
+                thenReturn(mock(LoginDTO.class));
+        when(userService.isAuthorized(any(LoginDTO.class))).
+                thenReturn(false);
 
         loginController.login(request, response);
 
-        verify(request).setAttribute("errors", Collections.singletonList("Wrong credentials."));
+        verify(request).setAttribute(anyString(), anyList());
         verify(request).getRequestDispatcher(LoginController.LOGIN_VIEW);
         verifyForward();
     }

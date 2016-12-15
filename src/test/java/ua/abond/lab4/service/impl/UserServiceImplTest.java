@@ -62,7 +62,7 @@ public class UserServiceImplTest extends JdbcDAOTest {
         String newPassword = "newPassword";
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
         changePasswordDTO.setNewPassword(newPassword);
-        changePasswordDTO.setOldPassword(byId.getPassword());
+        changePasswordDTO.setOldPassword("admin");
         userService.changePassword(byId.getId(), changePasswordDTO);
 
         User result = userService.getById(byId.getId());

@@ -12,19 +12,10 @@
     <logger name="ua.abond.lab4">
         <level value="debug"/>
     </logger>
-    <logger name="ua.abond.lab4.core.context" additivity="false">
-        <level value="info"/>
-    </logger>
-    <logger name="ua.abond.lab4.core.bean" additivity="false">
-        <level value="info"/>
-    </logger>
-    <logger name="ua.abond.lab4.core.web" additivity="false">
-        <level value="info"/>
-    </logger>
-    <logger name="ua.abond.lab4.service" additivity="false">
-        <level value="debug"/>
-    </logger>
 
+    <logger name="ua.abond.lab4.core" additivity="false">
+        <level value="off"/>
+    </logger>
     <logger name="org.dbunit">
         <level value="off"/>
     </logger>

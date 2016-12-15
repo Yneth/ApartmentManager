@@ -7,8 +7,9 @@
 
     <authorities id="0" name="ADMIN"/>
     <authorities id="1" name="USER"/>
-    <users id="0" login="admin" password="admin" authority_id="0"/>
-    <users id="1" second_name="Taras" last_name="Bulba" login="Taras" password="Bulba" authority_id="1"/>
+    <users id="0" login="admin" password="$2a$10$be0MmgpcsRtEQ5kTf0TcF.KwHBb6oZJhz9eNAirt9B3FBLoK8eBLy" authority_id="0"/>
+    <users id="1" first_name="Taras" last_name="Bulba" login="Taras"
+           password="$2a$10$6spImq/WvYE80OSAOVJJAuabjTc96Maip6v4yv8Y0R4T99hsB2dYS" authority_id="1"/>
 
     <requests id="0" user_id="0" room_count="2" apartment_type_id="0" from_date="2015-10-02 10:00:00"
               to_date="2016-10-02 10:00:00" status_id="0"/>
