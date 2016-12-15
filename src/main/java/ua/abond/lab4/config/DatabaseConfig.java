@@ -1,5 +1,6 @@
 package ua.abond.lab4.config;
 
+import org.apache.log4j.Logger;
 import org.postgresql.ds.PGPoolingDataSource;
 import ua.abond.lab4.core.annotation.*;
 import ua.abond.lab4.core.jdbc.JdbcTemplate;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @ComponentScan("ua.abond.lab4.dao.jdbc")
 public class DatabaseConfig {
     private static final String JNDI_DATA_SOURCE_NAME = "java:comp/env/jdbc/dataSource";
+    private static final Logger logger = Logger.getLogger(DatabaseConfig.class);
 
     @Value("db.url")
     private String url;
@@ -33,6 +35,8 @@ public class DatabaseConfig {
             Context context = new InitialContext();
             result = (DataSource) context.lookup(JNDI_DATA_SOURCE_NAME);
         } catch (NamingException e) {
+            logger.debug("Failed to find DataSource.", e);
+
             PGPoolingDataSource dataSource = new PGPoolingDataSource();
             dataSource.setUrl(getEnvProperty("JDBC_DATABASE_URL").orElse(url));
             dataSource.setUser(getEnvProperty("JDBC_DATABASE_USERNAME").orElse(username));
