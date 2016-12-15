@@ -21,6 +21,8 @@ import java.util.Optional;
 
 @Component
 public class UserServiceImpl implements UserService {
+    private static final String ADMIN = "admin";
+
     private final UserDAO userDAO;
     private final AuthorityDAO authorityDAO;
 
@@ -77,12 +79,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createAdmin(User user) throws ServiceException {
-        createUserWithAuth(user, "ADMIN");
+        createUserWithAuth(user, ADMIN);
     }
 
     @Override
     public Page<User> listAdmins(Pageable pageable) throws ServiceException {
-        Authority authority = authorityDAO.getByName("ADMIN").orElse(null);
+        Authority authority = authorityDAO.getByName(ADMIN).orElse(null);
         if (authority == null) {
             throw new ServiceException("Failed to get ADMIN authority.");
         }
@@ -92,7 +94,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteAdminById(Long id) throws ServiceException {
         userDAO.getById(id).
-                filter(user -> "ADMIN".equals(user.getAuthority().getName())).
+                filter(user -> ADMIN.equals(user.getAuthority().getName())).
                 map(user -> {
                     userDAO.deleteById(id);
                     return user;
