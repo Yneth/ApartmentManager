@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(Long id, ChangePasswordDTO dto) throws ServiceException {
         User userToUpdate = getById(id);
-        if (!userToUpdate.getPassword().equals(dto.getOldPassword())) {
+        if (!passwordEncoder.matches(dto.getOldPassword(), userToUpdate.getPassword())) {
             throw new UserOldPasswordMismatchException();
         }
         userToUpdate.setPassword(passwordEncoder.encode(dto.getNewPassword()));
