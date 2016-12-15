@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
-import java.util.Optional;
 
 @Controller
 public class LoginController {
@@ -59,20 +58,15 @@ public class LoginController {
         }
 
         LoginDTO loginDTO = mapperService.map(req, LoginDTO.class);
-        // TODO add validation
-        // TODO
-        Optional<User> user = userService.findByLogin(loginDTO.getLogin());
-        boolean rightCredentials = user.
-                map(User::getPassword).
-                map(pwd -> pwd.equals(loginDTO.getPassword())).
-                orElse(false);
+        validationService.validate(loginDTO);
 
-        if (rightCredentials) {
+        if (userService.isAuthorized(loginDTO)) {
             session = req.getSession();
-            session.setAttribute("user", new UserSessionDTO(user.get()));
+            User byLogin = userService.findByLogin(loginDTO.getLogin()).orElse(null);
+            session.setAttribute("user", new UserSessionDTO(byLogin));
             resp.sendRedirect("/");
         } else {
-            req.setAttribute("errors", Collections.singletonList("Wrong credentials."));
+            req.setAttribute("errors", Collections.singletonList("login.wrong.credentials"));
             getLoginPage(req, resp);
         }
     }
