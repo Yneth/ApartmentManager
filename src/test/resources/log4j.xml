@@ -16,6 +16,9 @@
     <logger name="ua.abond.lab4.core" additivity="false">
         <level value="off"/>
     </logger>
+    <logger name="ua.abond.lab4.config" additivity="false">
+        <level value="off"/>
+    </logger>
     <logger name="org.dbunit">
         <level value="off"/>
     </logger>
