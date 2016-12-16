@@ -12,7 +12,7 @@ public class ApartmentTypeRequestMapper implements RequestMapper<ApartmentType> 
     @Override
     public ApartmentType map(HttpServletRequest req) {
         ApartmentType apartmentType = new ApartmentType();
-        apartmentType.setId(Parse.longValue(req.getParameter("apartmentTypeId")));
+        apartmentType.setId(Parse.longObject(req.getParameter("apartmentTypeId")));
         return apartmentType;
     }
 }

@@ -15,11 +15,11 @@ public class PageableRequestMapper implements RequestMapper<Pageable> {
 
     @Override
     public DefaultPageable map(HttpServletRequest req) {
-        int page = Parse.integerPrimitive(req.getParameter("page"), DEFAULT_PAGE);
+        int page = Parse.intValue(req.getParameter("page"), DEFAULT_PAGE);
         if (page <= 0) {
             page = DEFAULT_PAGE;
         }
-        int pageSize = Parse.integerPrimitive(req.getParameter("pageSize"), DEFAULT_PAGE_SIZE);
+        int pageSize = Parse.intValue(req.getParameter("pageSize"), DEFAULT_PAGE_SIZE);
         if (pageSize <= 0) {
             pageSize = DEFAULT_PAGE_SIZE;
         }

@@ -53,7 +53,7 @@ public class SuperUserController {
     @RequestMapping(value = "/order/delete", method = RequestMethod.POST)
     public void deleteOrder(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
 
         orderService.deleteOrder(id);
         resp.sendRedirect("/supersu/orders");
@@ -92,7 +92,7 @@ public class SuperUserController {
     @RequestMapping(value = "/admin/delete", method = RequestMethod.POST)
     public void deleteAdmin(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         userService.deleteAdminById(id);
         resp.sendRedirect("/supersu/admins");
     }

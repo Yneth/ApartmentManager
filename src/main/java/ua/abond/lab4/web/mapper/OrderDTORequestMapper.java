@@ -12,9 +12,9 @@ public class OrderDTORequestMapper implements RequestMapper<OrderDTO> {
     @Override
     public OrderDTO map(HttpServletRequest req) {
         OrderDTO order = new OrderDTO();
-        order.setId(Parse.longValue(req.getParameter("id")));
-        order.setApartmentId(Parse.longValue(req.getParameter("apartmentId")));
-        order.setRequestId(Parse.longValue(req.getParameter("requestId")));
+        order.setId(Parse.longObject(req.getParameter("id")));
+        order.setApartmentId(Parse.longObject(req.getParameter("apartmentId")));
+        order.setRequestId(Parse.longObject(req.getParameter("requestId")));
         order.setPrice(Parse.bigDecimal(req.getParameter("price")));
         return order;
     }

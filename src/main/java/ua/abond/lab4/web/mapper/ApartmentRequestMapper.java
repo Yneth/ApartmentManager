@@ -14,12 +14,12 @@ public class ApartmentRequestMapper implements RequestMapper<Apartment> {
     @Override
     public Apartment map(HttpServletRequest req) {
         Apartment apartment = new Apartment();
-        apartment.setId(Parse.longValue(req.getParameter("id")));
+        apartment.setId(Parse.longObject(req.getParameter("id")));
         apartment.setName(req.getParameter("name"));
-        apartment.setRoomCount(Parse.integer(req.getParameter("roomCount"), 0));
+        apartment.setRoomCount(Parse.intObject(req.getParameter("roomCount"), 0));
         apartment.setType(new ApartmentTypeRequestMapper().map(req));
         apartment.setPrice(
-                Optional.ofNullable(Parse.doubleValue(req.getParameter("price"))).
+                Optional.ofNullable(Parse.doubleObject(req.getParameter("price"))).
                         map(BigDecimal::new).
                         orElse(null)
         );

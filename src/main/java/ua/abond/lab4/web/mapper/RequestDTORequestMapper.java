@@ -13,9 +13,9 @@ public class RequestDTORequestMapper implements RequestMapper<RequestDTO> {
     @Override
     public RequestDTO map(HttpServletRequest req) {
         RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setId(Parse.longValue(req.getParameter("id")));
-        requestDTO.setApartmentTypeId(Parse.longValue(req.getParameter("apartmentTypeId")));
-        requestDTO.setRoomCount(Parse.integerPrimitive(req.getParameter("roomCount")));
+        requestDTO.setId(Parse.longObject(req.getParameter("id")));
+        requestDTO.setApartmentTypeId(Parse.longObject(req.getParameter("apartmentTypeId")));
+        requestDTO.setRoomCount(Parse.intValue(req.getParameter("roomCount")));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
         requestDTO.setFrom(Parse.localDateTime(req.getParameter("from"), formatter));

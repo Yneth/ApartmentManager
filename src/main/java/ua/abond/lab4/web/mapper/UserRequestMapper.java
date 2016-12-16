@@ -11,7 +11,7 @@ public class UserRequestMapper implements RequestMapper<User> {
 
     @Override
     public User map(HttpServletRequest req) {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         String login = req.getParameter("login");
         String password = req.getParameter("password");
         String firstName = req.getParameter("firstName");

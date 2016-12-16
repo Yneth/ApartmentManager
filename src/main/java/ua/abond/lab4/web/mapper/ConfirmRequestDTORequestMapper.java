@@ -12,9 +12,9 @@ public class ConfirmRequestDTORequestMapper implements RequestMapper<ConfirmRequ
     @Override
     public ConfirmRequestDTO map(HttpServletRequest req) {
         ConfirmRequestDTO dto = new ConfirmRequestDTO();
-        dto.setRequestId(Parse.longValue(req.getParameter("id")));
-        dto.setUserId(Parse.longValue(req.getParameter("userId")));
-        dto.setApartmentId(Parse.longValue(req.getParameter("apartmentId")));
+        dto.setRequestId(Parse.longObject(req.getParameter("id")));
+        dto.setUserId(Parse.longObject(req.getParameter("userId")));
+        dto.setApartmentId(Parse.longObject(req.getParameter("apartmentId")));
         return dto;
     }
 }

@@ -58,7 +58,7 @@ public class UserController {
     @RequestMapping("/request")
     public void viewRequest(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         Request request = requestService.getById(id);
         req.setAttribute("request", request);
         req.getRequestDispatcher(REQUEST_VIEW).forward(req, resp);
@@ -90,7 +90,7 @@ public class UserController {
     @RequestMapping(value = "/request/reject", method = RequestMethod.POST)
     public void rejectRequest(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         String comment = req.getParameter("comment");
         requestService.rejectRequest(id, comment);
         resp.sendRedirect("/user/requests");
@@ -111,7 +111,7 @@ public class UserController {
     @RequestMapping("/order")
     public void viewOrder(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         Order order = orderService.getById(id);
         req.setAttribute("order", order);
         req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
@@ -121,7 +121,7 @@ public class UserController {
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        Long id = Parse.longValue(req.getParameter("id"));
+        Long id = Parse.longObject(req.getParameter("id"));
         orderService.payOrder(id);
         resp.sendRedirect("/user/orders");
     }
