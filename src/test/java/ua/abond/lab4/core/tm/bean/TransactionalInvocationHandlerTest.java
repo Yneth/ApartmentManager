@@ -1,4 +1,4 @@
-package ua.abond.lab4.core.bean;
+package ua.abond.lab4.core.tm.bean;
 
 import org.junit.Before;
 import org.junit.Test;
