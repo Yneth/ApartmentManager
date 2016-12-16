@@ -41,7 +41,6 @@ public class DatabaseConfig {
             dataSource.setUrl(getEnvProperty("JDBC_DATABASE_URL").orElse(url));
             dataSource.setUser(getEnvProperty("JDBC_DATABASE_USERNAME").orElse(username));
             dataSource.setPassword(getEnvProperty("JDBC_DATABASE_PASSWORD").orElse(password));
-            dataSource.setMaxConnections(50);
             result = dataSource;
         }
         return result;
