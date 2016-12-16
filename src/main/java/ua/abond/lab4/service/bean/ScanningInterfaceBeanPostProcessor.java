@@ -30,7 +30,7 @@ public abstract class ScanningInterfaceBeanPostProcessor<S, I> implements BeanPo
             S service = getService(factory);
             List<Class<?>> genericTypeClasses = ReflectionUtil.getGenericTypeClasses(beanType);
             if (genericTypeClasses.isEmpty() || genericTypeClasses.size() > 1) {
-
+                throw new IllegalArgumentException("Bean cannot contain more than 1 generic parameter");
             } else {
                 register(service, simpleName, interfaceLookup.cast(bean), genericTypeClasses.get(0));
             }
