@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 @ExceptionController
-public class ApplicationExceptionController {
+public class AppExceptionController {
 
     @ExceptionHandler(ValidationException.class)
     public HandlerMethodInfo handleValidationException(ExceptionHandlerData data) {
