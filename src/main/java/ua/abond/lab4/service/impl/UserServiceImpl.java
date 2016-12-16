@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Component
 public class UserServiceImpl implements UserService {
-    private static final String ADMIN = "admin";
+    private static final String ADMIN = "ADMIN";
 
     private final UserDAO userDAO;
     private final AuthorityDAO authorityDAO;
