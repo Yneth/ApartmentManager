@@ -1,68 +1,87 @@
 package ua.abond.lab4.service.impl;
 
 import org.apache.log4j.Logger;
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Transactional;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
+import ua.abond.lab4.dao.ApartmentDAO;
+import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
-import ua.abond.lab4.domain.Order;
-import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.domain.RequestStatus;
-import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.domain.*;
 import ua.abond.lab4.service.RequestService;
-import ua.abond.lab4.service.exception.*;
-import ua.abond.lab4.util.jdbc.exception.DataAccessException;
+import ua.abond.lab4.service.exception.RejectRequestException;
+import ua.abond.lab4.service.exception.RequestConfirmException;
+import ua.abond.lab4.service.exception.ResourceNotFoundException;
+import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.dto.RequestDTO;
+
+import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 
 @Component
 public class RequestServiceImpl implements RequestService {
     private static final Logger logger = Logger.getLogger(RequestServiceImpl.class);
 
-    private final OrderService orderService;
+    private final OrderDAO orderDAO;
     private final RequestDAO requestDAO;
+    private final ApartmentDAO apartmentDAO;
 
     @Inject
-    public RequestServiceImpl(OrderService orderService, RequestDAO requestDAO) {
-        this.orderService = orderService;
+    public RequestServiceImpl(OrderDAO orderDAO, RequestDAO requestDAO, ApartmentDAO apartmentDAO) {
+        this.orderDAO = orderDAO;
         this.requestDAO = requestDAO;
+        this.apartmentDAO = apartmentDAO;
     }
 
     @Override
-    public void createRequest(Request request) {
+    public void createRequest(RequestDTO dto) {
+        Request request = new Request();
+        request.setFrom(dto.getFrom());
+        request.setTo(dto.getTo());
+        request.setStatusComment(dto.getStatusComment());
         request.setStatus(RequestStatus.CREATED);
+
+        ApartmentType apartmentType = new ApartmentType();
+        apartmentType.setId(dto.getApartmentTypeId());
+        Apartment apartment = new Apartment();
+        apartment.setType(apartmentType);
+        apartment.setRoomCount(dto.getRoomCount());
+        request.setLookup(apartment);
+        User user = new User();
+        user.setId(dto.getUserId());
+        request.setUser(user);
         requestDAO.create(request);
+
+        dto.setId(request.getId());
     }
 
     @Override
+    @Transactional
     public void confirmRequest(ConfirmRequestDTO requestDTO)
             throws ServiceException {
         logger.debug(String.format("Confirming request with id: %s", requestDTO.getRequestId()));
-        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
-        if (request == null) {
-            throw new ResourceNotFoundException();
-        }
+        Request request = requestDAO.getById(requestDTO.getRequestId()).
+                orElseThrow(ResourceNotFoundException::new);
+        Apartment apartment = apartmentDAO.getById(requestDTO.getApartmentId()).
+                orElseThrow(ResourceNotFoundException::new);
+
         if (RequestStatus.CREATED != request.getStatus()) {
             throw new RequestConfirmException(String.format("Request with id %d is already confirmed or rejected",
                     request.getId()
             ));
         }
-        Order order = null;
-        try {
-            request.setStatus(RequestStatus.CONFIRMED);
-            requestDAO.update(request);
-            order = orderService.createOrder(requestDTO);
-        } catch (DataAccessException e) {
-            if (request.getStatus() == RequestStatus.CONFIRMED) {
-                request.setStatus(RequestStatus.CREATED);
-                requestDAO.update(request);
-            }
-            if (order != null && order.getId() != null) {
-                orderService.deleteOrder(order);
-            }
-            throw new RequestConfirmException(String.format("Failed to confirm request with id: %s",
-                    requestDTO.getRequestId()));
-        }
+
+        request.setStatus(RequestStatus.CONFIRMED);
+        requestDAO.update(request);
+
+        long dayCount = ChronoUnit.DAYS.between(request.getFrom(), request.getTo());
+        BigDecimal price = apartment.getPrice().multiply(new BigDecimal(dayCount));
+        requestDTO.setPrice(price);
+
+        orderDAO.create(new Order.Builder().buildFrom(requestDTO));
     }
 
     @Override
@@ -98,5 +117,10 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Page<Request> listCreated(Pageable pageable) {
         return requestDAO.list(pageable);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        requestDAO.deleteById(id);
     }
 }

@@ -1,9 +1,9 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.junit.Test;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
@@ -113,5 +113,17 @@ public class JdbcOrderDAOTest extends JdbcDAOTest {
         assertNotNull(page.getContent());
         assertEquals(1, page.getSize());
         assertEquals(2, page.getTotalPages());
+    }
+
+    @Test
+    public void testFindOrderByRequestId() throws Exception {
+        Order order = orderDAO.findByRequestId(1L).orElse(null);
+        assertNotNull(order);
+    }
+
+    @Test
+    public void testFindNonExistingOrderByRequestId() throws Exception {
+        Order order = orderDAO.findByRequestId(0L).orElse(null);
+        assertNull(order);
     }
 }

@@ -4,9 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Pageable;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Pageable;
+import ua.abond.lab4.core.web.support.SortOrder;
 
 import javax.servlet.http.HttpServletRequest;
 

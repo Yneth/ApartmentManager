@@ -1,31 +1,29 @@
 package ua.abond.lab4.dao.jdbc;
 
 import ua.abond.lab4.dao.DAO;
-import ua.abond.lab4.util.jdbc.Jdbc;
-
-import javax.sql.DataSource;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
 
 public abstract class JdbcDAO<T> implements DAO<T> {
-    protected final Jdbc jdbc;
+    protected final JdbcTemplate jdbcTemplate;
 
-    public JdbcDAO(DataSource dataSource) {
-        this.jdbc = new Jdbc(dataSource);
+    public JdbcDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public void rollback() {
-        jdbc.rollback();
+        jdbcTemplate.rollback();
     }
 
     public void commit() {
-        jdbc.commit();
+        jdbcTemplate.commit();
     }
 
     public void beginTransaction() {
-        jdbc.beginTransaction();
+        jdbcTemplate.beginTransaction();
     }
 
     public void endTransaction() {
-        jdbc.endTransaction();
+        jdbcTemplate.endTransaction();
     }
 
 }

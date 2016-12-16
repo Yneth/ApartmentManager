@@ -1,19 +1,21 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
-import ua.abond.lab4.config.core.web.support.DefaultPage;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
+import ua.abond.lab4.core.web.support.DefaultPage;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.dao.UserDAO;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.PreparedStatementSetter;
+import ua.abond.lab4.core.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,14 +41,14 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
     private String countSql;
 
     @Inject
-    public JdbcUserDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcUserDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override
     public void create(User entity) {
         KeyHolder holder = new KeyHolder();
-        jdbc.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
                     createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -63,7 +65,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Optional<User> getById(Long id) {
-        return jdbc.querySingle(getByIdSql,
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new UserMapper()
         );
@@ -71,7 +73,7 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void update(User entity) {
-        jdbc.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getFirstName());
                     ps.setString(2, entity.getLastName());
@@ -83,14 +85,14 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute(deleteByIdSql,
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<User> getByLogin(String login) {
-        return jdbc.querySingle(getByLoginSql,
+        return jdbcTemplate.querySingle(getByLoginSql,
                 ps -> ps.setString(1, login),
                 new UserMapper()
         );
@@ -98,11 +100,13 @@ public class JdbcUserDAO extends JdbcDAO<User> implements UserDAO {
 
     @Override
     public Page<User> list(Pageable pageable, Long authId) {
-        long count = jdbc.querySingle(countSql, ps -> ps.setLong(1, authId), rs -> rs.getLong(1)).
-                orElse(0L);
-        List<User> query = jdbc.query(
+        PreparedStatementSetter pss = ps -> ps.setLong(1, authId);
+
+        long count = jdbcTemplate.querySingle(countSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+        List<User> query = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
-                ps -> ps.setLong(1, authId),
+                pss,
                 new UserMapper()
         );
         return new DefaultPage<>(query, count, pageable);

@@ -1,9 +1,9 @@
 package ua.abond.lab4.dao.jdbc;
 
 import org.junit.Test;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.Apartment;
@@ -86,7 +86,7 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
 
     @Test
     public void testCount() {
-        assertEquals(3, apartmentDAO.count());
+        assertEquals(7, apartmentDAO.count());
     }
 
     @Test
@@ -105,15 +105,16 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     public void testListFiltered() {
         Request request = new Request();
         Apartment lookup = new Apartment();
-        lookup.setRoomCount(100);
+        lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
+        request.setFrom(LocalDateTime.now().minusYears(10));
 
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(3, page.getTotalElements());
+        assertEquals(5, page.getTotalElements());
         assertEquals(1, page.getTotalPages());
     }
 
@@ -121,15 +122,16 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
     public void testListFilteredPageByOne() {
         Request request = new Request();
         Apartment lookup = new Apartment();
-        lookup.setRoomCount(100);
+        lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
         request.setTo(LocalDateTime.now().minusYears(10));
+        request.setFrom(LocalDateTime.now().minusYears(10));
 
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, SortOrder.ASC), request);
         assertNotNull(page);
         assertNotNull(page.getContent());
-        assertEquals(3, page.getTotalElements());
-        assertEquals(3, page.getTotalPages());
+        assertEquals(5, page.getTotalElements());
+        assertEquals(5, page.getTotalPages());
     }
 }

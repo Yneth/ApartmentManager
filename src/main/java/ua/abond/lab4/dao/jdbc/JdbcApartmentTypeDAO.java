@@ -1,15 +1,15 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.RowMapper;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +21,6 @@ import java.util.Optional;
 @Prop("sql/apartment-type.sql.properties")
 public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
         implements ApartmentTypeDAO {
-
     @Value("sql.create")
     private String createSql;
     @Value("sql.update")
@@ -36,14 +35,14 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
     private String listSql;
 
     @Inject
-    public JdbcApartmentTypeDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcApartmentTypeDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override
     public void create(ApartmentType entity) {
         KeyHolder keyHolder = new KeyHolder();
-        jdbc.update(
+        jdbcTemplate.update(
                 conn -> {
                     PreparedStatement ps = conn.prepareStatement(createSql, Statement.RETURN_GENERATED_KEYS);
                     ps.setString(1, entity.getName());
@@ -55,7 +54,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public Optional<ApartmentType> getById(Long id) {
-        return jdbc.querySingle(getByIdSql,
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new ApartmentTypeRowMapper()
         );
@@ -63,7 +62,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public void update(ApartmentType entity) {
-        jdbc.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -73,12 +72,12 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute(deleteByIdSql, ps -> ps.setLong(1, id));
+        jdbcTemplate.execute(deleteByIdSql, ps -> ps.setLong(1, id));
     }
 
     @Override
     public Optional<ApartmentType> getByName(String name) {
-        return jdbc.querySingle(getByNameSql,
+        return jdbcTemplate.querySingle(getByNameSql,
                 ps -> ps.setString(1, name),
                 new ApartmentTypeRowMapper()
         );
@@ -86,7 +85,7 @@ public class JdbcApartmentTypeDAO extends JdbcDAO<ApartmentType>
 
     @Override
     public List<ApartmentType> list() {
-        return jdbc.query(listSql, new ApartmentTypeRowMapper());
+        return jdbcTemplate.query(listSql, new ApartmentTypeRowMapper());
     }
 
     private static class ApartmentTypeRowMapper implements RowMapper<ApartmentType> {

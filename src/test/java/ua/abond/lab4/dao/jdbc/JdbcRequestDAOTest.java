@@ -2,9 +2,9 @@ package ua.abond.lab4.dao.jdbc;
 
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.SortOrder;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.SortOrder;
 import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.dao.RequestDAO;
@@ -75,7 +75,7 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
         request.setTo(LocalDateTime.now());
         requestDAO.update(request);
 
-        assertEquals(request, requestDAO.getById(0L).get());
+        assertTrue(request.getTo().equals(requestDAO.getById(0L).get().getTo()));
     }
 
     @Test

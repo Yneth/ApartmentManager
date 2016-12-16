@@ -4,14 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
 
 public final class Parse {
 
     private Parse() {
     }
 
-    public static Integer integer(String str, Integer fallback) {
+    public static Integer intObject(String str, Integer fallback) {
         Integer result;
         try {
             result = Integer.parseInt(str);
@@ -21,19 +20,19 @@ public final class Parse {
         return result;
     }
 
-    public static Integer integer(String str) {
-        return integer(str, null);
+    public static Integer intObject(String str) {
+        return intObject(str, null);
     }
 
-    public static int integerPrimitive(String str) {
-        return integer(str, 0);
+    public static int intValue(String str) {
+        return intObject(str, 0);
     }
 
-    public static int integerPrimitive(String str, int defaultValue) {
-        return integer(str, defaultValue);
+    public static int intValue(String str, int defaultValue) {
+        return intObject(str, defaultValue);
     }
 
-    public static Long longValue(String str) {
+    public static Long longObject(String str) {
         Long result;
         try {
             result = Long.parseLong(str);
@@ -53,7 +52,7 @@ public final class Parse {
         return result;
     }
 
-    public static Double doubleValue(String price) {
+    public static Double doubleObject(String price) {
         Double result;
         try {
             result = Double.valueOf(price);
@@ -64,9 +63,13 @@ public final class Parse {
     }
 
     public static BigDecimal bigDecimal(String price) {
-        return Optional.ofNullable(Parse.doubleValue(price)).
-                map(BigDecimal::new).
-                orElse(null);
+        BigDecimal result;
+        try {
+            result = new BigDecimal(price);
+        } catch (NumberFormatException | NullPointerException e) {
+            result = null;
+        }
+        return result;
     }
 
     public static LocalDateTime localDateTime(String str, DateTimeFormatter formatter) {
@@ -77,12 +80,5 @@ public final class Parse {
             result = null;
         }
         return result;
-    }
-
-    public static String string(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str;
     }
 }

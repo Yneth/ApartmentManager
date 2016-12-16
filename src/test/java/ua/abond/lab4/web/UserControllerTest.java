@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.dao.ApartmentTypeDAO;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Order;
@@ -16,6 +16,9 @@ import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.service.exception.ValidationException;
+import ua.abond.lab4.web.dto.RequestDTO;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +51,9 @@ public class UserControllerTest extends ControllerTest {
 
     @Test
     public void testViewRequests() throws Exception {
-        mockUserToSession(create("login", "password"));
-        when(requestService.getUserRequests(or(isNull(), any(Pageable.class)), isNull())).
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
+        when(requestService.getUserRequests(or(any(Pageable.class), isNull()), or(any(Long.class), isNull()))).
                 thenReturn(mock(Page.class));
         userController.viewRequests(request, response);
         verify(request).getRequestDispatcher(UserController.REQUESTS_VIEW);
@@ -87,20 +91,19 @@ public class UserControllerTest extends ControllerTest {
         verifyForward();
     }
 
-    @Test
+    @Test(expected = ValidationException.class)
     public void testCreateRequestValidationError() throws Exception {
-        userController.getCreateRequestPage(request, response);
-        verify(request).setAttribute(anyString(), anyList());
-        verify(request).getRequestDispatcher(UserController.REQUEST_CREATE_VIEW);
-        verifyForward();
+        mockThrowValidationException(Request.class);
+        userController.createRequest(request, response);
+        verify(response, never()).sendRedirect(anyString());
     }
 
     @Test
     public void testCreateRequest() throws Exception {
-        when(request.getParameter("from")).thenReturn("2014-10-20T12:00");
-        when(request.getParameter("to")).thenReturn("2015-10-20T12:00");
-        when(request.getParameter("status")).thenReturn("0");
-        when(request.getParameter("roomCount")).thenReturn("2");
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
+        when(mapperService.map(request, RequestDTO.class)).
+                thenReturn(mock(RequestDTO.class));
         userController.createRequest(request, response);
         verify(response).sendRedirect(anyString());
     }
@@ -123,12 +126,13 @@ public class UserControllerTest extends ControllerTest {
 
     @Test
     public void testViewOrders() throws Exception {
-        mockUserToSession(create("login", "password"));
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
         when(orderService.getUserOrders(or(isNull(), any(Pageable.class)), or(any(Long.class), isNull()))).
                 thenReturn(mock(Page.class));
 
         userController.viewOrders(request, response);
-        verify(request).setAttribute(anyString(), or(anyList(), isNull()));
+        verify(request).setAttribute(anyString(), or(any(Page.class), isNull()));
         verify(request).getRequestDispatcher(UserController.ORDERS_VIEW);
         verifyForward();
     }
@@ -151,18 +155,5 @@ public class UserControllerTest extends ControllerTest {
         when(orderService.getById(or(any(Long.class), isNull()))).
                 thenThrow(new ServiceException());
         userController.viewOrder(request, response);
-    }
-
-    @Test
-    public void testPayOrder() throws Exception {
-        userController.payOrder(request, response);
-        verify(response).sendRedirect(anyString());
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testPayOrderWithException() throws Exception {
-        doThrow(new ServiceException()).when(orderService).
-                payOrder(or(isNull(), any(Long.class)));
-        userController.payOrder(request, response);
     }
 }

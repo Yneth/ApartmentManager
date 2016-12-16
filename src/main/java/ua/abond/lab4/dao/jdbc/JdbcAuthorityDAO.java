@@ -1,15 +1,15 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
 import ua.abond.lab4.dao.AuthorityDAO;
 import ua.abond.lab4.domain.Authority;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.RowMapper;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,16 +32,16 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
     private String getByNameSql;
 
     @Inject
-    public JdbcAuthorityDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcAuthorityDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override
     public void create(Authority entity) {
         KeyHolder holder = new KeyHolder();
-        jdbc.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO authorities (id, name) VALUES (DEFAULT, ?);",
+                    createSql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, entity.getName());
@@ -52,7 +52,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public Optional<Authority> getById(Long id) {
-        return jdbc.querySingle("SELECT id, name FROM authorities WHERE id = ?",
+        return jdbcTemplate.querySingle(getByIdSql,
                 ps -> ps.setLong(1, id),
                 new AuthorityMapper()
         );
@@ -60,7 +60,7 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void update(Authority entity) {
-        jdbc.execute("UPDATE authorities SET name = ? WHERE id = ?",
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setLong(2, entity.getId());
@@ -70,14 +70,14 @@ public class JdbcAuthorityDAO extends JdbcDAO<Authority>
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute("DELETE FROM authorities WHERE id = ?",
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Optional<Authority> getByName(String name) {
-        return jdbc.querySingle("SELECT id, name FROM authorities WHERE name = ?",
+        return jdbcTemplate.querySingle(getByNameSql,
                 ps -> ps.setString(1, name),
                 new AuthorityMapper()
         );

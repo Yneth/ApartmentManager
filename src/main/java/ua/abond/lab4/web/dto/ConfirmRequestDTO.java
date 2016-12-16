@@ -8,9 +8,6 @@ public class ConfirmRequestDTO {
     private Long userId;
     private BigDecimal price;
 
-    public ConfirmRequestDTO() {
-    }
-
     public Long getRequestId() {
         return requestId;
     }

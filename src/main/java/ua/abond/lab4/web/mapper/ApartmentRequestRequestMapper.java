@@ -1,5 +1,6 @@
 package ua.abond.lab4.web.mapper;
 
+import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.util.Parse;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class ApartmentRequestRequestMapper implements RequestMapper<Request> {
 
     @Override

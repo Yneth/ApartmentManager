@@ -25,9 +25,11 @@
         <dbunit.slf4j.log4j.version>1.7.21</dbunit.slf4j.log4j.version>
         <mockito.version>2.1.0-RC.1</mockito.version>
         <log4j.version>1.2.17</log4j.version>
+        <bcrypt.version>0.3m</bcrypt.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <maven.war.version>3.0.0</maven.war.version>
+        <maven.dependency.version>2.3</maven.dependency.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -56,6 +58,12 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${bcrypt.version}</version>
         </dependency>
 
         <dependency>
@@ -121,6 +129,43 @@
                         <warSourceDirectory>src/main/webapp/</warSourceDirectory>
                         <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.heroku.sdk</groupId>
+                    <artifactId>heroku-maven-plugin</artifactId>
+                    <version>1.1.2</version>
+                    <configuration>
+                        <appName>apartment-manager</appName>
+                        <processTypes>
+                            <web>
+                                java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT target/*.war
+                            </web>
+                        </processTypes>
+                    </configuration>
+
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>com.github.jsimone</groupId>
+                                        <artifactId>webapp-runner</artifactId>
+                                        <version>8.0.30.2</version>
+                                        <destFileName>webapp-runner.jar</destFileName>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>

@@ -7,13 +7,13 @@ import org.dbunit.dataset.xml.FlatDtdDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
 import org.junit.Before;
-import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
+import ua.abond.lab4.core.BeanFactory;
+import ua.abond.lab4.core.context.AnnotationBeanFactory;
 
 import java.io.FileOutputStream;
 
-public class JdbcDAOTest {
-    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
+public abstract class JdbcDAOTest {
+    private static final String TEST_PACKAGE = "ua.abond.lab4.config";
     private static final String DB_UNIT_DTD_PATH = "dbunit.dtd";
 
     protected IDataSet dataSet;
@@ -28,6 +28,7 @@ public class JdbcDAOTest {
 
         IDatabaseConnection connection = tester.getConnection();
         FlatDtdDataSet.write(connection.createDataSet(), new FileOutputStream(DB_UNIT_DTD_PATH));
+        connection.close();
         this.tester.setDataSet(dataSet);
         this.tester.onSetup();
     }

@@ -48,8 +48,10 @@ public class Order extends Entity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Order))
+            return false;
         Order order = (Order) o;
         return isPayed() == order.isPayed() &&
                 Objects.equals(getApartment(), order.getApartment()) &&

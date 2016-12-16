@@ -1,45 +1,25 @@
 package ua.abond.lab4.service.impl;
 
-import org.dbunit.IDatabaseTester;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
 import ua.abond.lab4.dao.OrderDAO;
+import ua.abond.lab4.dao.jdbc.JdbcDAOTest;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.exception.ServiceException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-public class OrderServiceTest {
+public class OrderServiceTest extends JdbcDAOTest {
     private static final String DATASET = "orders.xml";
-    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
-    private IDatabaseTester tester;
     private OrderDAO orderDAO;
     private OrderService orderService;
 
-    @Before
-    public void setUp() throws Exception {
-        BeanFactory bf = new AnnotationBeanFactory(TEST_PACKAGE);
-        orderService = bf.getBean(OrderService.class);
-        orderDAO = bf.getBean(OrderDAO.class);
-        tester = bf.getBean(IDatabaseTester.class);
-        tester.setDataSet(new FlatXmlDataSetBuilder().build(
-                Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream(DATASET)
-        ));
-        tester.setTearDownOperation(DatabaseOperation.CLEAN_INSERT);
-        tester.onSetup();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        tester.onTearDown();
+    @Override
+    public void onBeforeSetup() throws Exception {
+        orderService = beanFactory.getBean(OrderService.class);
+        orderDAO = beanFactory.getBean(OrderDAO.class);
+        dataSet = loadDataSet(DATASET);
     }
 
     @Test

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+    <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="ua.abond.lab4">
+        <level value="debug"/>
+    </logger>
+
+    <logger name="ua.abond.lab4.core" additivity="false">
+        <level value="off"/>
+    </logger>
+    <logger name="ua.abond.lab4.config" additivity="false">
+        <level value="off"/>
+    </logger>
+    <logger name="org.dbunit">
+        <level value="off"/>
+    </logger>
+
+    <root>
+        <priority value="DEBUG"/>
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</log4j:configuration>

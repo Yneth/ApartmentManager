@@ -1,84 +1,60 @@
 package ua.abond.lab4.service.impl;
 
-import org.dbunit.IDatabaseTester;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ua.abond.lab4.config.core.BeanFactory;
-import ua.abond.lab4.config.core.context.AnnotationBeanFactory;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
 import ua.abond.lab4.dao.ApartmentDAO;
+import ua.abond.lab4.dao.OrderDAO;
 import ua.abond.lab4.dao.RequestDAO;
-import ua.abond.lab4.dao.UserDAO;
+import ua.abond.lab4.dao.jdbc.JdbcDAOTest;
+import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.exception.ServiceException;
-import ua.abond.lab4.util.jdbc.exception.DataAccessException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
+import ua.abond.lab4.web.dto.RequestDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class RequestServiceTest {
+public class RequestServiceTest extends JdbcDAOTest {
     private static final String DATASET = "orders.xml";
-    private static final String TEST_PACKAGE = "ua.abond.lab4.db";
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private IDatabaseTester tester;
     private RequestDAO requestDAO;
-    private UserDAO userDAO;
+    private OrderDAO orderDAO;
     private ApartmentDAO apartmentDAO;
     private RequestService requestService;
     private OrderService orderService;
 
-    @Before
-    public void setUp() throws Exception {
-        BeanFactory bf = new AnnotationBeanFactory(TEST_PACKAGE);
-        requestDAO = bf.getBean(RequestDAO.class);
-        requestService = bf.getBean(RequestService.class);
-        userDAO = bf.getBean(UserDAO.class);
-        apartmentDAO = bf.getBean(ApartmentDAO.class);
-        orderService = bf.getBean(OrderService.class);
-        tester = bf.getBean(IDatabaseTester.class);
-        tester.setDataSet(new FlatXmlDataSetBuilder().build(
-                Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream(DATASET)
-        ));
-        tester.setTearDownOperation(DatabaseOperation.CLEAN_INSERT);
-        tester.onSetup();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        tester.onTearDown();
+    @Override
+    public void onBeforeSetup() throws Exception {
+        requestDAO = beanFactory.getBean(RequestDAO.class);
+        requestService = beanFactory.getBean(RequestService.class);
+        orderDAO = beanFactory.getBean(OrderDAO.class);
+        apartmentDAO = beanFactory.getBean(ApartmentDAO.class);
+        orderService = beanFactory.getBean(OrderService.class);
+        dataSet = loadDataSet(DATASET);
     }
 
     @Test
     public void createRequest() throws Exception {
-        Request request = new Request();
-        request.setUser(userDAO.getById(0L).get());
-        request.setLookup(apartmentDAO.getById(0L).get());
+        RequestDTO request = new RequestDTO();
+        request.setUserId(0L);
+        request.setApartmentTypeId(0L);
+        request.setRoomCount(10);
         request.setFrom(LocalDateTime.now().minusDays(10));
         request.setTo(LocalDateTime.now());
         requestService.createRequest(request);
 
         assertNotNull(request.getId());
-        Optional<Request> byId = requestDAO.getById(request.getId());
-        assertFalse(Optional.empty().equals(byId));
     }
 
     @Test
@@ -101,6 +77,7 @@ public class RequestServiceTest {
     public void testConfirmRejectedRequest() throws Exception {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(1L);
+        requestDTO.setApartmentId(Long.MIN_VALUE);
         requestService.confirmRequest(requestDTO);
     }
 
@@ -108,6 +85,7 @@ public class RequestServiceTest {
     public void testConfirmConfirmedRequest() throws Exception {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(2L);
+        requestDTO.setApartmentId(-2L);
         requestService.confirmRequest(requestDTO);
     }
 
@@ -156,35 +134,39 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void testOrderCountOnBadRequestUpdate() throws Exception {
-        RequestDAO requestDAO = mock(RequestDAO.class);
-        doThrow(new DataAccessException()).when(requestDAO).update(any());
-        RequestService requestService = new RequestServiceImpl(orderService, mock(RequestDAO.class));
-
+    public void testPriceAfterRequestConfirmation() throws ServiceException {
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
-        requestDTO.setRequestId(0L);
-        requestDTO.setPrice(new BigDecimal(100));
+        requestDTO.setRequestId(20L);
         requestDTO.setApartmentId(0L);
-        try {
-            requestService.confirmRequest(requestDTO);
-        } catch (ServiceException e) {
-        }
-        assertEquals(2, orderService.list(new DefaultPageable(1, 10, null)).getSize());
+        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
+
+        requestService.confirmRequest(requestDTO);
+        Order byRequestId = orderDAO.findByRequestId(request.getId()).orElse(null);
+        assertNotNull(byRequestId.getPrice());
+        assertTrue(byRequestId.getPrice().equals(new BigDecimal(600)));
+    }
+
+    @Test
+    public void testPriceAfterRequestConfirmationShouldWorkForOneDayInterval() throws ServiceException {
+        ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
+        requestDTO.setRequestId(21L);
+        requestDTO.setApartmentId(0L);
+        Request request = requestDAO.getById(requestDTO.getRequestId()).orElse(null);
+
+        requestService.confirmRequest(requestDTO);
+        Order byRequestId = orderDAO.findByRequestId(request.getId()).orElse(null);
+        assertNotNull(byRequestId.getPrice());
+        assertTrue(byRequestId.getPrice().equals(new BigDecimal(300)));
     }
 
     @Test
     public void testRequestStatusOnBadOrderSave() throws Exception {
-        OrderService orderService = mock(OrderService.class);
-        doThrow(new DataAccessException()).when(orderService).createOrder(any());
-        RequestService requestService = new RequestServiceImpl(orderService, requestDAO);
-
         ConfirmRequestDTO requestDTO = new ConfirmRequestDTO();
         requestDTO.setRequestId(0L);
         requestDTO.setPrice(new BigDecimal(100));
-        requestDTO.setApartmentId(0L);
         try {
             requestService.confirmRequest(requestDTO);
-        } catch (ServiceException e) {
+        } catch (Exception e) {
         }
         assertTrue(RequestStatus.CREATED == requestDAO.getById(0L).orElse(null).getStatus());
     }

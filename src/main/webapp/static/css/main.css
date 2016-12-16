@@ -1,7 +1,16 @@
+main {
+    min-height: calc(100vh - 120px);
+}
+
 .center {
     float: none;
     margin: 0 auto;
 }
+
+.right {
+    float: right;
+}
+
 .btn-right {
     float: right;
 }

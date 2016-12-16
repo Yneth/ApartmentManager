@@ -1,20 +1,21 @@
 package ua.abond.lab4.dao.jdbc;
 
-import ua.abond.lab4.config.core.annotation.Component;
-import ua.abond.lab4.config.core.annotation.Inject;
-import ua.abond.lab4.config.core.annotation.Prop;
-import ua.abond.lab4.config.core.annotation.Value;
-import ua.abond.lab4.config.core.web.support.DefaultPage;
-import ua.abond.lab4.config.core.web.support.DefaultPageable;
-import ua.abond.lab4.config.core.web.support.Page;
-import ua.abond.lab4.config.core.web.support.Pageable;
+import ua.abond.lab4.core.annotation.Component;
+import ua.abond.lab4.core.annotation.Inject;
+import ua.abond.lab4.core.annotation.Prop;
+import ua.abond.lab4.core.annotation.Value;
+import ua.abond.lab4.core.web.support.DefaultPage;
+import ua.abond.lab4.core.web.support.DefaultPageable;
+import ua.abond.lab4.core.web.support.Page;
+import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.*;
-import ua.abond.lab4.util.jdbc.KeyHolder;
-import ua.abond.lab4.util.jdbc.RowMapper;
-import ua.abond.lab4.util.jdbc.exception.DataAccessException;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.PreparedStatementSetter;
+import ua.abond.lab4.core.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,22 +40,24 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
     private String countSql;
     @Value("sql.user.orders")
     private String userOrdersSql;
+    @Value("sql.user.orders.count")
+    private String countUserOrdersSql;
 
     @Inject
-    public JdbcRequestDAO(DataSource dataSource) {
-        super(dataSource);
+    public JdbcRequestDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
 
     @Override
     public void create(Request entity) {
         KeyHolder holder = new KeyHolder();
-        jdbc.update(c -> {
+        jdbcTemplate.update(c -> {
             PreparedStatement ps = c.prepareStatement(createSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getUser().getId());
             ps.setInt(2, entity.getLookup().getRoomCount());
             ps.setLong(3, entity.getLookup().getType().getId());
-            ps.setObject(4, Timestamp.valueOf(entity.getTo()));
-            ps.setObject(5, Timestamp.valueOf(entity.getFrom()));
+            ps.setObject(4, Timestamp.valueOf(entity.getFrom()));
+            ps.setObject(5, Timestamp.valueOf(entity.getTo()));
             ps.setLong(6, entity.getStatus().ordinal());
             return ps;
         }, holder);
@@ -63,7 +66,7 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Optional<Request> getById(Long id) {
-        return jdbc.querySingle(
+        return jdbcTemplate.querySingle(
                 getByIdSql,
                 ps -> ps.setLong(1, id),
                 new RequestMapper()
@@ -72,13 +75,13 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void update(Request entity) {
-        jdbc.execute(updateSql,
+        jdbcTemplate.execute(updateSql,
                 ps -> {
                     ps.setLong(1, entity.getUser().getId());
                     ps.setInt(2, entity.getLookup().getRoomCount());
                     ps.setLong(3, entity.getLookup().getType().getId());
-                    ps.setObject(4, Timestamp.valueOf(entity.getTo()));
-                    ps.setObject(5, Timestamp.valueOf(entity.getFrom()));
+                    ps.setObject(4, Timestamp.valueOf(entity.getFrom()));
+                    ps.setObject(5, Timestamp.valueOf(entity.getTo()));
                     ps.setObject(6, entity.getStatus().ordinal());
                     ps.setObject(7, entity.getStatusComment());
                     ps.setObject(8, entity.getId());
@@ -88,14 +91,14 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public void deleteById(Long id) {
-        jdbc.execute(deleteByIdSql,
+        jdbcTemplate.execute(deleteByIdSql,
                 ps -> ps.setLong(1, id)
         );
     }
 
     @Override
     public Page<Request> list(Pageable pageable) {
-        List<Request> query = jdbc.query(
+        List<Request> query = jdbcTemplate.query(
                 String.format(listSql, pageable.getPageSize(), pageable.getOffset()),
                 new RequestMapper()
         );
@@ -104,17 +107,21 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
 
     @Override
     public Page<Request> getUserOrders(Pageable pageable, Long userId) {
-        List<Request> query = jdbc.query(
+        PreparedStatementSetter pss = ps -> ps.setLong(1, userId);
+        long count = jdbcTemplate.querySingle(countUserOrdersSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+
+        List<Request> query = jdbcTemplate.query(
                 String.format(userOrdersSql, pageable.getPageSize(), pageable.getOffset()),
-                ps -> ps.setLong(1, userId),
+                pss,
                 new RequestMapper()
         );
-        return new DefaultPage<>(query, count(), new DefaultPageable(1, 10, null));
+        return new DefaultPage<>(query, count, new DefaultPageable(1, 10, null));
     }
 
     @Override
     public long count() {
-        return jdbc.querySingle(countSql, rs -> rs.getLong(1)).
+        return jdbcTemplate.querySingle(countSql, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
     }
 
@@ -130,8 +137,8 @@ public class JdbcRequestDAO extends JdbcDAO<Request> implements RequestDAO {
             apartment.setRoomCount(rs.getInt(3));
             apartment.setType(type);
             request.setLookup(apartment);
-            request.setTo(rs.getObject(6, Timestamp.class).toLocalDateTime());
-            request.setFrom(rs.getObject(7, Timestamp.class).toLocalDateTime());
+            request.setFrom(rs.getObject(6, Timestamp.class).toLocalDateTime());
+            request.setTo(rs.getObject(7, Timestamp.class).toLocalDateTime());
             request.setStatus(RequestStatus.values()[rs.getInt(8)]);
             request.setStatusComment(rs.getString(9));
             return request;

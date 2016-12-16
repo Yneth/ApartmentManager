@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.Authority;
 import ua.abond.lab4.domain.User;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +67,7 @@ public class AuthorityFilterTest {
         authority.setName(auth);
         user.setAuthority(authority);
         when(request.getSession(anyBoolean())).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(user);
+        when(session.getAttribute("user")).thenReturn(new UserSessionDTO(user));
 
         authorityFilter.doFilter(request, response, chain);
 

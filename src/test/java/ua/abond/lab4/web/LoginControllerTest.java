@@ -7,13 +7,14 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.UserService;
+import ua.abond.lab4.web.dto.LoginDTO;
+import ua.abond.lab4.web.dto.UserSessionDTO;
 
-import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest extends ControllerTest {
@@ -32,8 +33,8 @@ public class LoginControllerTest extends ControllerTest {
 
     @Test
     public void testGetLoginPageSendRedirect() throws Exception {
-        User user = create("test", "test");
-        mockUserToSession(user);
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
 
         loginController.getLoginPage(request, response);
         verify(response).sendRedirect("/");
@@ -41,10 +42,8 @@ public class LoginControllerTest extends ControllerTest {
 
     @Test
     public void testLoginIfAlreadyLoggedIn() throws Exception {
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
-
-        User user = create("test", "test");
-        mockUserToSession(user);
+        when(mapperService.map(request, UserSessionDTO.class)).
+                thenReturn(mock(UserSessionDTO.class));
 
         loginController.login(request, response);
         verify(response).sendRedirect("/");
@@ -52,26 +51,30 @@ public class LoginControllerTest extends ControllerTest {
 
     @Test
     public void testSuccessfulLogin() throws Exception {
-        when(request.getSession(anyBoolean())).thenReturn(httpSession);
+        when(mapperService.map(request, LoginDTO.class)).
+                thenReturn(mock(LoginDTO.class));
+        when(userService.isAuthorized(any(LoginDTO.class))).
+                thenReturn(true);
+        when(userService.findByLogin(or(isNull(), anyString()))).
+                thenReturn(Optional.of(mock(User.class)));
         when(request.getSession()).thenReturn(httpSession);
 
-        User user = create("test", "test");
-        when(request.getParameter("login")).thenReturn(user.getLogin());
-        when(request.getParameter("password")).thenReturn(user.getPassword());
-
-        when(userService.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
         loginController.login(request, response);
         verify(response).sendRedirect("/");
-        verify(httpSession).setAttribute("user", user);
+        verify(httpSession).setAttribute(eq("user"), any(UserSessionDTO.class));
     }
 
     @Test
     public void testUnsuccessfulLogin() throws Exception {
         when(request.getSession(anyBoolean())).thenReturn(httpSession);
+        when(mapperService.map(request, LoginDTO.class)).
+                thenReturn(mock(LoginDTO.class));
+        when(userService.isAuthorized(any(LoginDTO.class))).
+                thenReturn(false);
 
         loginController.login(request, response);
 
-        verify(request).setAttribute("errors", Collections.singletonList("Wrong credentials."));
+        verify(request).setAttribute(anyString(), anyList());
         verify(request).getRequestDispatcher(LoginController.LOGIN_VIEW);
         verifyForward();
     }
