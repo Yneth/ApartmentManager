@@ -14,15 +14,13 @@
                     <input type="hidden" name="userId" value="${sessionScope.user.id}"/>
 
                     <p:request-partial request="${request}"/>
-
                     <c:if test="${request.status == 'CREATED'}">
                         <c:if test="${empty apartments}">
-                            <p>No appropriate apartments.</p>
+                            <p>
+                                <fmt:message key="admin.request.confirm.apartments.null" bundle="${locale}"/>
+                            </p>
                         </c:if>
                         <c:if test="${not empty apartments}">
-                            <label for="cost-text"><fmt:message key="order.price" bundle="${locale}"/></label>
-                            <input class="form-control" id="cost-text" type="text" name="price"/>
-
                             <c:forEach items="${apartments}" var="apartment">
                                 <div class="radio">
                                     <label><input type="radio" name="apartmentId" value="${apartment.id}"/>

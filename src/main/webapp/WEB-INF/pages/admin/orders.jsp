@@ -17,6 +17,7 @@
                     <td><fmt:message key="request.id" bundle="${locale}"/></td>
                     <td><fmt:message key="order.price" bundle="${locale}"/></td>
                     <td><fmt:message key="order.payed" bundle="${locale}"/></td>
+                    <td><fmt:message key="order.pay" bundle="${locale}"/></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,15 @@
                         <td>${order.request.id}</td>
                         <td>${order.price}</td>
                         <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/></td>
+                        <td>
+                            <c:if test="${not empty order.payed && !order.payed}">
+                                <form class="form-group" method="POST" action="/admin/order/pay">
+                                    <input type="hidden" name="id" value="${order.id}"/>
+                                    <input class="form-control btn btn-success" type="submit"
+                                           value="<fmt:message key="order.pay" bundle="${locale}"/>"/>
+                                </form>
+                            </c:if>
+                        </td>
                     </tr>
                 </c:forEach>
                 </tbody>

@@ -74,6 +74,11 @@
                             <fmt:message key="index.supersu.edit.orders" bundle="${locale}"/> »
                         </a>
                     </p>
+                    <p>
+                        <a class="btn btn-primary" href="/supersu/requests" role="button">
+                            <fmt:message key="index.admin.view.requests" bundle="${locale}"/> »
+                        </a>
+                    </p>
                 </c:if>
             </div>
         </div>

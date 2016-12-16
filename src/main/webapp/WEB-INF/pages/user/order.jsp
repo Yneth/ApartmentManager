@@ -8,14 +8,6 @@
         <div class="jumbotron">
             <p:order-partial/>
             <p:error-partial/>
-
-            <c:if test="${not empty order.payed && !order.payed}">
-                <form class="form-group" method="POST" action="/user/order/pay">
-                    <input type="hidden" name="id" value="${order.id}"/>
-                    <br>
-                    <input class="form-control btn btn-success" type="submit" value="Pay"/>
-                </form>
-            </c:if>
         </div>
     </div>
 </t:user-page>

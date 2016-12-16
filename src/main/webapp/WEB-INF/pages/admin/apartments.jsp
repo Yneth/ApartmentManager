@@ -41,8 +41,8 @@
                 </c:if>
                 </tbody>
             </table>
-            <c:if test="${page.totalElements == 0}">
-                <p>No apartments yet.</p>
+            <c:if test="${empty apartments}">
+                <p><fmt:message key="admin.apartments.empty" bundle="${locale}"/></p>
             </c:if>
             <p:pagination-partial uri="/admin/apartments"/>
         </div>
