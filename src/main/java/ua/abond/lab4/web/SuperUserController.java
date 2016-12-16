@@ -8,6 +8,7 @@ import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.core.web.support.RequestMethod;
 import ua.abond.lab4.domain.Order;
+import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.*;
 import ua.abond.lab4.util.Parse;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/supersu")
 public class SuperUserController {
     public static final String ORDERS_VIEW = "/WEB-INF/pages/supersu/orders.jsp";
+    public static final String REQUESTS_VIEW = "/WEB-INF/pages/supersu/requests.jsp";
     public static final String ADMINS_VIEW = "/WEB-INF/pages/supersu/admins.jsp";
     public static final String CREATE_ADMIN_VIEW = "/WEB-INF/pages/supersu/create-admin.jsp";
 
@@ -57,6 +59,27 @@ public class SuperUserController {
 
         orderService.deleteOrder(id);
         resp.sendRedirect("/supersu/orders");
+    }
+
+    @RequestMapping("/requests")
+    public void viewRequests(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
+
+        Page<Request> page = requestService.list(pageable);
+        req.setAttribute("page", page);
+
+        req.getRequestDispatcher(REQUESTS_VIEW).forward(req, resp);
+    }
+
+    @OnException("/supersu/requests")
+    @RequestMapping(value = "/request/delete", method = RequestMethod.POST)
+    public void deleteRequest(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Long id = Parse.longObject(req.getParameter("id"));
+
+        requestService.deleteById(id);
+        resp.sendRedirect("/supersu/requests");
     }
 
     @OnException("/supersu/admins")

@@ -8,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.service.exception.ServiceException;
 
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.Mockito.*;
@@ -29,5 +30,18 @@ public class AdminOrderControllerTest extends ControllerTest {
 
         verify(request).getRequestDispatcher(AdminOrderController.ORDERS_VIEW);
         verifyForward();
+    }
+
+    @Test
+    public void testPayOrder() throws Exception {
+        adminController.payOrder(request, response);
+        verify(response).sendRedirect(anyString());
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testPayOrderWithException() throws Exception {
+        doThrow(new ServiceException()).when(orderService).
+                payOrder(or(isNull(), any(Long.class)));
+        adminController.payOrder(request, response);
     }
 }

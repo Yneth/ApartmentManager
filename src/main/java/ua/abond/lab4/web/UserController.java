@@ -116,13 +116,4 @@ public class UserController {
         req.setAttribute("order", order);
         req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
     }
-
-    @OnException(value = "/user/order")
-    @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
-    public void payOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
-        Long id = Parse.longObject(req.getParameter("id"));
-        orderService.payOrder(id);
-        resp.sendRedirect("/user/orders");
-    }
 }

@@ -156,17 +156,4 @@ public class UserControllerTest extends ControllerTest {
                 thenThrow(new ServiceException());
         userController.viewOrder(request, response);
     }
-
-    @Test
-    public void testPayOrder() throws Exception {
-        userController.payOrder(request, response);
-        verify(response).sendRedirect(anyString());
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testPayOrderWithException() throws Exception {
-        doThrow(new ServiceException()).when(orderService).
-                payOrder(or(isNull(), any(Long.class)));
-        userController.payOrder(request, response);
-    }
 }

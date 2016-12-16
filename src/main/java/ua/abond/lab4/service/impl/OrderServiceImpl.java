@@ -5,6 +5,7 @@ import ua.abond.lab4.core.annotation.Inject;
 import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.dao.OrderDAO;
+import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.exception.OrderAlreadyPayedException;
@@ -16,14 +17,18 @@ import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 @Component
 public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
+    private final RequestDAO requestDAO;
 
     @Inject
-    public OrderServiceImpl(OrderDAO orderDAO) {
+    public OrderServiceImpl(OrderDAO orderDAO, RequestDAO requestDAO) {
         this.orderDAO = orderDAO;
+        this.requestDAO = requestDAO;
     }
 
     @Override
-    public void deleteOrder(Long id) {
+    public void deleteOrder(Long id) throws ServiceException {
+        Order byId = getById(id);
+        requestDAO.deleteById(byId.getRequest().getId());
         orderDAO.deleteById(id);
     }
 

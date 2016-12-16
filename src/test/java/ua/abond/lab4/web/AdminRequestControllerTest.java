@@ -72,7 +72,7 @@ public class AdminRequestControllerTest extends ControllerTest {
 
     @Test
     public void testDeleteRequest() throws Exception {
-        adminController.deleteRequest(request, response);
+        adminController.rejectRequest(request, response);
         verify(response).sendRedirect(anyString());
     }
 }

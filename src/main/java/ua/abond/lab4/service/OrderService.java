@@ -13,7 +13,7 @@ public interface OrderService {
 
     void payOrder(Long id) throws ServiceException;
 
-    void deleteOrder(Long id);
+    void deleteOrder(Long id) throws ServiceException;
 
     Page<Order> list(Pageable pageable);
 

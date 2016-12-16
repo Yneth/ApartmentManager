@@ -8,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.domain.User;
 import ua.abond.lab4.service.OrderService;
+import ua.abond.lab4.service.RequestService;
 import ua.abond.lab4.service.UserService;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.service.exception.ValidationException;
@@ -22,6 +23,8 @@ public class SuperUserControllerTest extends ControllerTest {
     private UserService userService;
     @Mock
     private OrderService orderService;
+    @Mock
+    private RequestService requestService;
     @InjectMocks
     private SuperUserController superUserController;
 
@@ -35,6 +38,19 @@ public class SuperUserControllerTest extends ControllerTest {
     @Test
     public void testDeleteOrder() throws Exception {
         superUserController.deleteOrder(request, response);
+        verify(response).sendRedirect(anyString());
+    }
+
+    @Test
+    public void testViewRequests() throws Exception {
+        superUserController.viewRequests(request, response);
+        verifyForward();
+        verify(request).getRequestDispatcher(SuperUserController.REQUESTS_VIEW);
+    }
+
+    @Test
+    public void testDeleteRequest() throws Exception {
+        superUserController.deleteRequest(request, response);
         verify(response).sendRedirect(anyString());
     }
 
