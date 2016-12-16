@@ -5,6 +5,9 @@ import java.util.Objects;
 public class Authority extends Entity<Long> {
     private String name;
 
+    public Authority() {
+    }
+
     public String getName() {
         return name;
     }
