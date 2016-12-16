@@ -14,11 +14,12 @@ public class ChangePasswordDTOValidator implements Validator<ChangePasswordDTO> 
     @Override
     public List<String> validate(ChangePasswordDTO object) {
         List<String> errors = new ArrayList<>();
-        if (Objects.isNull(object.getOldPassword())) {
+        String oldPassword = object.getOldPassword();
+        if (Objects.isNull(oldPassword) || "".equals(oldPassword)) {
             errors.add("account.password.error.null");
         }
         String newPassword = object.getNewPassword();
-        if (Objects.isNull(newPassword)) {
+        if (Objects.isNull(newPassword) || "".equals(newPassword)) {
             errors.add("account.password.new.error.null");
         }
         String newPasswordCopy = object.getNewPasswordCopy();
