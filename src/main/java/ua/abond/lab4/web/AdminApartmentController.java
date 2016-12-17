@@ -70,7 +70,7 @@ public class AdminApartmentController {
         req.getRequestDispatcher(APARTMENT_VIEW).forward(req, resp);
     }
 
-    @OnException(value = "/admin/apartment/order")
+    @OnException(value = "/admin/apartment")
     @RequestMapping(value = "/apartment/update", method = RequestMethod.POST)
     public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
