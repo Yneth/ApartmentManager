@@ -18,12 +18,13 @@ import java.util.ResourceBundle;
 
 @ExceptionController
 public class AppExceptionController {
+    private static final String ERRORS_ATTR = "errors";
 
     @ExceptionHandler(ValidationException.class)
     public HandlerMethodInfo handleValidationException(ExceptionHandlerData data) {
         ValidationException exception = (ValidationException) data.getException();
         List<String> errors = exception.getErrors();
-        data.getRequest().setAttribute("errors", errors);
+        data.getRequest().setAttribute(ERRORS_ATTR, errors);
         return getForward(data);
     }
 
@@ -96,7 +97,7 @@ public class AppExceptionController {
     }
 
     private void setError(HttpServletRequest req, String message) {
-        req.setAttribute("errors", Collections.singletonList(message));
+        req.setAttribute(ERRORS_ATTR, Collections.singletonList(message));
     }
 
     private ResourceBundle getBundle(String lang) {

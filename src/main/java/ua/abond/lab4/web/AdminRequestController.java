@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/admin")
 public class AdminRequestController {
+    private static final String REQUESTS_MAPPING = "/admin/requests";
     public static final String REQUEST_VIEW = "/WEB-INF/pages/admin/request.jsp";
     public static final String REQUESTS_VIEW = "/WEB-INF/pages/admin/requests.jsp";
 
@@ -41,7 +42,7 @@ public class AdminRequestController {
         validationService.validate(dto);
 
         requestService.confirmRequest(dto);
-        resp.sendRedirect("/admin/requests");
+        resp.sendRedirect(REQUESTS_MAPPING);
     }
 
     @RequestMapping("/request")
@@ -63,7 +64,7 @@ public class AdminRequestController {
             throws Exception {
         Long id = Parse.longObject(req.getParameter("id"));
         requestService.rejectRequest(id, null);
-        resp.sendRedirect("/admin/requests");
+        resp.sendRedirect(REQUESTS_MAPPING);
     }
 
     @RequestMapping("/requests")

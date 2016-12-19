@@ -24,46 +24,12 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
     public Object postProcessAfterInitialization(ConfigurableBeanFactory factory, Object bean, String simpleName) {
         Arrays.stream(bean.getClass().getDeclaredFields()).
                 filter(f -> f.isAnnotationPresent(Inject.class)).
-                forEach(f -> fieldInjection(factory, bean, f));
+                forEach(f -> inject(factory, bean, f));
 
         Arrays.stream(bean.getClass().getDeclaredMethods()).
                 filter(m -> m.isAnnotationPresent(Inject.class)).
-                forEach(m -> setterInjection(factory, bean, m));
+                forEach(m -> injectToSetter(factory, bean, m));
         return bean;
-    }
-
-    private void fieldInjection(ConfigurableBeanFactory factory, Object bean, Field f) {
-        logger.debug("Trying to inject " + f.getName() + " of type " + f.getType()
-                + " to '" + bean.getClass().getSimpleName() + "'");
-
-        Method setter = findSetter(bean, f);
-        if (setter != null) {
-            setterInjection(factory, bean, setter);
-        } else {
-            Object inject = getBean(factory, f.getType());
-            fieldInjection(bean, inject, f);
-        }
-    }
-
-    private void setterInjection(ConfigurableBeanFactory factory, Object bean, Method setter) {
-        logger.debug(String.format("Trying to inject to method '%s' bean of type '%s' of '%s' object",
-                setter.getName(), setter.getReturnType(), bean.getClass().getSimpleName()
-        ));
-        if (setter.getParameterCount() == 1 && isSetter(setter)) {
-            Object inject = getBean(factory, setter.getParameterTypes()[0]);
-
-            fieldInjection(bean, inject, setter);
-        } else {
-            throw new BeanInstantiationException(String.format("Setter '%s' of bean '%s' has invalid declaration.",
-                    setter.getName(), bean.getClass().getSimpleName()
-            ));
-        }
-    }
-
-    private boolean isSetter(Method setter) {
-        String name = setter.getName();
-        return name.length() > 3 && name.startsWith("set")
-                && void.class.isAssignableFrom(setter.getReturnType());
     }
 
     private Object getBean(ConfigurableBeanFactory factory, Class<?> type) {
@@ -75,37 +41,16 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
         }
     }
 
-    private void fieldInjection(Object bean, Object inject, Method setter) {
-        fieldInjection(bean, inject, () -> {
-            try {
-                if (!setter.isAccessible()) {
-                    setter.setAccessible(true);
-                }
-                setter.invoke(bean, inject);
-            } catch (InvocationTargetException e) {
-                throw new BeanInstantiationException(String.format("Method '%s' threw an exception.", setter.getName()), e);
-            }
-        });
-    }
+    private void inject(ConfigurableBeanFactory factory, Object bean, Field f) {
+        logger.debug("Trying to injectToField " + f.getName() + " of type " + f.getType()
+                + " to '" + bean.getClass().getSimpleName() + "'");
 
-    private void fieldInjection(Object bean, Object inject, Field f) {
-        fieldInjection(bean, inject, () -> {
-            if (!f.isAccessible()) {
-                f.setAccessible(true);
-            }
-            f.set(bean, inject);
-        });
-    }
-
-    private void fieldInjection(Object bean, Object inject, InjectionCallback callback) {
-        try {
-            callback.inject();
-        } catch (IllegalAccessException e) {
-            throw new BeanInstantiationException(
-                    String.format("Failed to inject '%s' to '%s'.",
-                            inject.getClass().getSimpleName(), bean.getClass().getSimpleName()
-                    ), e
-            );
+        Method setter = findSetter(bean, f);
+        if (setter != null) {
+            injectToSetter(factory, bean, setter);
+        } else {
+            Object injectable = getBean(factory, f.getType());
+            injectToField(bean, injectable, f);
         }
     }
 
@@ -115,6 +60,61 @@ public class InjectAnnotationBeanPostProcessor implements BeanPostProcessor, Ord
                 filter(m -> setterName.equals(m.getName())).
                 filter(m -> m.getParameterCount() == 1).
                 findFirst().orElse(null);
+    }
+
+    private void injectToSetter(ConfigurableBeanFactory factory, Object bean, Method setter) {
+        logger.debug(String.format("Trying to injectToField to method '%s' bean of type '%s' of '%s' object",
+                setter.getName(), setter.getReturnType(), bean.getClass().getSimpleName()
+        ));
+        if (setter.getParameterCount() == 1 && isSetter(setter)) {
+            Object injectable = getBean(factory, setter.getParameterTypes()[0]);
+
+            injectToSetter(bean, injectable, setter);
+        } else {
+            throw new BeanInstantiationException(String.format("Setter '%s' of bean '%s' has invalid declaration.",
+                    setter.getName(), bean.getClass().getSimpleName()
+            ));
+        }
+    }
+
+    private void injectToSetter(Object bean, Object injectable, Method setter) {
+        inject(bean, injectable, () -> {
+            try {
+                if (!setter.isAccessible()) {
+                    setter.setAccessible(true);
+                }
+                setter.invoke(bean, injectable);
+            } catch (InvocationTargetException e) {
+                throw new BeanInstantiationException(String.format("Method '%s' threw an exception.", setter.getName()), e);
+            }
+        });
+    }
+
+    private boolean isSetter(Method setter) {
+        String name = setter.getName();
+        return name.length() > 3 && name.startsWith("set")
+                && void.class.isAssignableFrom(setter.getReturnType());
+    }
+
+    private void injectToField(Object bean, Object injectable, Field f) {
+        inject(bean, injectable, () -> {
+            if (!f.isAccessible()) {
+                f.setAccessible(true);
+            }
+            f.set(bean, injectable);
+        });
+    }
+
+    private void inject(Object bean, Object injectable, InjectionCallback callback) {
+        try {
+            callback.inject();
+        } catch (IllegalAccessException e) {
+            throw new BeanInstantiationException(
+                    String.format("Failed to injectToField '%s' to '%s'.",
+                            injectable.getClass().getSimpleName(), bean.getClass().getSimpleName()
+                    ), e
+            );
+        }
     }
 
     private String firstToUppercase(String str) {

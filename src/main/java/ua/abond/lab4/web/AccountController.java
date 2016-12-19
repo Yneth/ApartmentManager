@@ -22,6 +22,7 @@ import java.util.Optional;
 public class AccountController {
     public static final String ACCOUNT_VIEW = "/WEB-INF/pages/account/account.jsp";
     private static final String LOGIN_MAPPING = "/login";
+    private static final String ACCOUNT_MAPPING = "/login";
 
     @Inject
     private UserService userService;
@@ -43,7 +44,7 @@ public class AccountController {
         }
     }
 
-    @OnException("/account")
+    @OnException(ACCOUNT_MAPPING)
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public void updateAccount(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
@@ -52,13 +53,13 @@ public class AccountController {
             User user = mapperService.map(req, User.class);
             user.setId(sessionUser.getId());
             userService.updateAccount(user);
-            resp.sendRedirect("/account");
+            resp.sendRedirect(ACCOUNT_MAPPING);
         } else {
             resp.sendRedirect(LOGIN_MAPPING);
         }
     }
 
-    @OnException("/account")
+    @OnException(ACCOUNT_MAPPING)
     @RequestMapping(value = "/password/change", method = RequestMethod.POST)
     public void changePassword(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
@@ -69,7 +70,7 @@ public class AccountController {
             validationService.validate(dto);
 
             userService.changePassword(user.getId(), dto);
-            resp.sendRedirect("/account");
+            resp.sendRedirect(ACCOUNT_MAPPING);
         } else {
             resp.sendRedirect(LOGIN_MAPPING);
         }

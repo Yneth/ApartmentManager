@@ -19,6 +19,8 @@ import java.util.Collections;
 
 @Controller
 public class LoginController {
+    private static final String HOME_MAPPING = "/";
+    private static final String LOGIN_MAPPING = "/login";
     public static final String LOGIN_VIEW = "/WEB-INF/pages/login.jsp";
 
     private final UserService userService;
@@ -32,24 +34,24 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @RequestMapping("/login")
+    @RequestMapping(LOGIN_MAPPING)
     public void getLoginPage(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         UserSessionDTO sessionUser = mapperService.map(req, UserSessionDTO.class);
         if (sessionUser != null) {
-            resp.sendRedirect("/");
+            resp.sendRedirect(HOME_MAPPING);
             return;
         }
         req.getRequestDispatcher(LOGIN_VIEW).forward(req, resp);
     }
 
-    @OnException("/login")
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @OnException(LOGIN_MAPPING)
+    @RequestMapping(value = LOGIN_MAPPING, method = RequestMethod.POST)
     public void login(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         UserSessionDTO sessionUser = mapperService.map(req, UserSessionDTO.class);
         if (sessionUser != null) {
-            resp.sendRedirect("/");
+            resp.sendRedirect(HOME_MAPPING);
             return;
         }
         HttpSession session = req.getSession(false);
@@ -64,7 +66,7 @@ public class LoginController {
             session = req.getSession();
             User byLogin = userService.findByLogin(loginDTO.getLogin()).orElse(null);
             session.setAttribute("user", new UserSessionDTO(byLogin));
-            resp.sendRedirect("/");
+            resp.sendRedirect(HOME_MAPPING);
         } else {
             req.setAttribute("errors", Collections.singletonList("login.wrong.credentials"));
             getLoginPage(req, resp);

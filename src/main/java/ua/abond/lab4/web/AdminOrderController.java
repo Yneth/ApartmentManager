@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/admin")
 public class AdminOrderController {
+    private static final String ORDERS_MAPPING = "/admin/orders";
     public static final String ORDERS_VIEW = "/WEB-INF/pages/admin/orders.jsp";
 
     @Inject
@@ -38,12 +39,12 @@ public class AdminOrderController {
         req.getRequestDispatcher(ORDERS_VIEW).forward(req, resp);
     }
 
-    @OnException(value = "/admin/orders")
+    @OnException(value = ORDERS_MAPPING)
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
     public void payOrder(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         Long id = Parse.longObject(req.getParameter("id"));
         orderService.payOrder(id);
-        resp.sendRedirect("/admin/orders");
+        resp.sendRedirect(ORDERS_MAPPING);
     }
 }
