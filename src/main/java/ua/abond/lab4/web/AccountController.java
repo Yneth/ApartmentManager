@@ -22,7 +22,7 @@ import java.util.Optional;
 public class AccountController {
     public static final String ACCOUNT_VIEW = "/WEB-INF/pages/account/account.jsp";
     private static final String LOGIN_MAPPING = "/login";
-    private static final String ACCOUNT_MAPPING = "/login";
+    private static final String ACCOUNT_MAPPING = "/account";
 
     @Inject
     private UserService userService;
