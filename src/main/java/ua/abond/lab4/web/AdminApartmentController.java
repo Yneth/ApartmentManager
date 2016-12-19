@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/admin")
 public class AdminApartmentController {
+    private static final String APARTMENTS_MAPPING = "/admin/apartments";
     public static final String APARTMENTS_VIEW = "/WEB-INF/pages/admin/apartments.jsp";
     public static final String APARTMENT_VIEW = "/WEB-INF/pages/admin/apartment.jsp";
     public static final String APARTMENT_CREATE_VIEW = "/WEB-INF/pages/admin/create-apartment.jsp";
@@ -58,7 +59,7 @@ public class AdminApartmentController {
         validationService.validate(apartment);
 
         apartmentService.createApartment(apartment);
-        resp.sendRedirect("/admin/apartments");
+        resp.sendRedirect(APARTMENTS_MAPPING);
     }
 
     @RequestMapping("/apartment")
@@ -78,6 +79,6 @@ public class AdminApartmentController {
         validationService.validate(apartment);
 
         apartmentService.updateApartment(apartment);
-        resp.sendRedirect("/admin/apartments");
+        resp.sendRedirect(APARTMENTS_MAPPING);
     }
 }

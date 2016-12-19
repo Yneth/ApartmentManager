@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/supersu")
 public class SuperUserController {
+    private static final String ADMINS_MAPPING = "/supersu/admins";
     public static final String ORDERS_VIEW = "/WEB-INF/pages/supersu/orders.jsp";
     public static final String REQUESTS_VIEW = "/WEB-INF/pages/supersu/requests.jsp";
     public static final String ADMINS_VIEW = "/WEB-INF/pages/supersu/admins.jsp";
@@ -32,13 +33,8 @@ public class SuperUserController {
     private RequestService requestService;
     @Inject
     private OrderService orderService;
-
-    private final UserService userService;
-
     @Inject
-    public SuperUserController(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @RequestMapping("/orders")
     public void viewOrders(HttpServletRequest req, HttpServletResponse resp)
@@ -82,7 +78,7 @@ public class SuperUserController {
         resp.sendRedirect("/supersu/requests");
     }
 
-    @OnException("/supersu/admins")
+    @OnException(ADMINS_MAPPING)
     @RequestMapping("/admins")
     public void viewAdmins(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
@@ -111,13 +107,13 @@ public class SuperUserController {
         resp.sendRedirect("/");
     }
 
-    @OnException("/supersu/admins")
+    @OnException(ADMINS_MAPPING)
     @RequestMapping(value = "/admin/delete", method = RequestMethod.POST)
     public void deleteAdmin(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         Long id = Parse.longObject(req.getParameter("id"));
         userService.deleteAdminById(id);
-        resp.sendRedirect("/supersu/admins");
+        resp.sendRedirect(ADMINS_MAPPING);
     }
 }
 
