@@ -56,6 +56,7 @@ public class AdminApartmentController {
     public void createApartment(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         Apartment apartment = mapperService.map(req, Apartment.class);
+        req.setAttribute("apartment", apartment);
         validationService.validate(apartment);
 
         apartmentService.createApartment(apartment);
@@ -76,6 +77,7 @@ public class AdminApartmentController {
     public void updateApartment(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         Apartment apartment = mapperService.map(req, Apartment.class);
+        req.setAttribute("apartment", apartment);
         validationService.validate(apartment);
 
         apartmentService.updateApartment(apartment);

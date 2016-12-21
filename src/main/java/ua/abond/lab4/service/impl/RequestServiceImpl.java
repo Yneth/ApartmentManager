@@ -63,8 +63,7 @@ public class RequestServiceImpl implements RequestService {
     public void confirmRequest(ConfirmRequestDTO requestDTO)
             throws ServiceException {
         logger.debug(String.format("Confirming request with id: %s", requestDTO.getRequestId()));
-        Request request = requestDAO.getById(requestDTO.getRequestId()).
-                orElseThrow(ResourceNotFoundException::new);
+        Request request = getById(requestDTO.getRequestId());
         Apartment apartment = apartmentDAO.getById(requestDTO.getApartmentId()).
                 orElseThrow(ResourceNotFoundException::new);
 
@@ -97,10 +96,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void rejectRequest(Long id, String comment) throws ServiceException {
-        Request request = requestDAO.getById(id).orElse(null);
-        if (request == null) {
-            throw new ResourceNotFoundException();
-        }
+        Request request = getById(id);
         if (RequestStatus.CREATED != request.getStatus()) {
             throw new RejectRequestException();
         }

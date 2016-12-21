@@ -11,6 +11,7 @@ import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -31,8 +32,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     public void updateApartment(Apartment apartment) throws ServiceException {
         Objects.requireNonNull(apartment.getId());
 
-        Apartment toUpdate = apartmentDAO.getById(apartment.getId()).
-                orElseThrow(ResourceNotFoundException::new);
+        Apartment toUpdate = getById(apartment.getId());
         toUpdate.setName(apartment.getName());
         toUpdate.setPrice(apartment.getPrice());
         toUpdate.setType(apartment.getType());
@@ -48,6 +48,11 @@ public class ApartmentServiceImpl implements ApartmentService {
     @Override
     public Page<Apartment> list(Pageable pageable) {
         return apartmentDAO.list(pageable);
+    }
+
+    @Override
+    public Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+        return apartmentDAO.listFree(pageable, from, to);
     }
 
     @Override

@@ -6,6 +6,8 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.exception.ServiceException;
 
+import java.time.LocalDateTime;
+
 public interface ApartmentService {
     Apartment getById(Long id) throws ServiceException;
 
@@ -16,6 +18,8 @@ public interface ApartmentService {
     void deleteApartment(Long id);
 
     Page<Apartment> list(Pageable pageable);
+
+    Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to);
 
     Page<Apartment> listMostAppropriate(Pageable pageable, Request filter);
 }
