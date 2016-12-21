@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class CharsetFilter extends HttpFilter {
+    public static final String DEFAULT_ENCODING = "UTF-8";
     private static final String ENCODING_ATTR = "requestEncoding";
-    private static final String DEFAULT_ENCODING = "UTF-8";
 
     private String encoding;
 
@@ -29,5 +29,9 @@ public class CharsetFilter extends HttpFilter {
         response.setCharacterEncoding(encoding);
 
         chain.doFilter(request, response);
+    }
+
+    public String getEncoding() {
+        return encoding;
     }
 }
