@@ -1,5 +1,6 @@
 package ua.abond.lab4.web.filter;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -26,21 +27,24 @@ public class AuthorityFilterTest {
     @Mock
     private HttpServletResponse response;
     @Mock
-    private AuthorityFilter filter;
-    @Mock
     private FilterChain chain;
+    private Filter filter;
+
+    @Before
+    public void setUp() {
+        filter = new AuthorityFilter();
+    }
 
     @Test(expected = NullPointerException.class)
     public void testInitWithNullAuthorityParam() throws Exception {
-        new AuthorityFilter().init(filterConfig);
+        filter.init(filterConfig);
     }
 
     @Test
     public void testDoFilterUnauthorized() throws Exception {
-        Filter authorityFilter = new AuthorityFilter();
-        mockInitParameter(authorityFilter, "admin");
+        mockInitParameter(filter, "admin");
 
-        authorityFilter.doFilter(request, response, chain);
+        filter.doFilter(request, response, chain);
 
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
@@ -50,17 +54,15 @@ public class AuthorityFilterTest {
         ServletRequest req = mock(ServletRequest.class);
         ServletResponse resp = mock(ServletResponse.class);
 
-        Filter authorityFilter = new AuthorityFilter();
-        mockInitParameter(authorityFilter, "admin");
+        mockInitParameter(filter, "admin");
 
-        authorityFilter.doFilter(req, resp, chain);
+        filter.doFilter(req, resp, chain);
     }
 
     @Test
     public void testDoFilterSuccess() throws Exception {
         String auth = "admin";
-        Filter authorityFilter = new AuthorityFilter();
-        mockInitParameter(authorityFilter, auth);
+        mockInitParameter(filter, auth);
 
         User user = new User();
         Authority authority = new Authority();
@@ -69,7 +71,7 @@ public class AuthorityFilterTest {
         when(request.getSession(anyBoolean())).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(new UserSessionDTO(user));
 
-        authorityFilter.doFilter(request, response, chain);
+        filter.doFilter(request, response, chain);
 
         verify(chain).doFilter(request, response);
     }
