@@ -13,5 +13,5 @@
               username="postgres"
               password="123"
               driverClassName="org.postgresql.Driver"
-              url="jdbc:postgresql://localhost:5432/apartments"/>
+              url="jdbc:postgresql://localhost:5432/apartments?characterEncoding=UTF-8"/>
 </Context>
