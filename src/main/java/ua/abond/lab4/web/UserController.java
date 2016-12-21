@@ -19,11 +19,15 @@ import ua.abond.lab4.web.mapper.PageableRequestMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    public static final String APARTMENTS_VIEW = "/WEB-INF/pages/user/apartments.jsp";
     public static final String ORDER_VIEW = "/WEB-INF/pages/user/order.jsp";
     public static final String ORDERS_VIEW = "/WEB-INF/pages/user/orders.jsp";
     public static final String REQUEST_VIEW = "/WEB-INF/pages/user/request.jsp";
@@ -40,6 +44,8 @@ public class UserController {
     private RequestService requestService;
     @Inject
     private OrderService orderService;
+    @Inject
+    private ApartmentService apartmentService;
     @Inject
     private ApartmentTypeDAO apartmentTypeDAO;
 
@@ -79,6 +85,7 @@ public class UserController {
         UserSessionDTO user = mapperService.map(req, UserSessionDTO.class);
         RequestDTO request = mapperService.map(req, RequestDTO.class);
 
+        req.setAttribute("request", request);
         validationService.validate(request);
 
         request.setUserId(user.getId());
@@ -115,5 +122,25 @@ public class UserController {
         Order order = orderService.getById(id);
         req.setAttribute("order", order);
         req.getRequestDispatcher(ORDER_VIEW).forward(req, resp);
+    }
+
+    @RequestMapping("/apartments")
+    public void viewApartments(HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
+        Pageable pageable = mapperService.map(req, Pageable.class);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
+        LocalDateTime from = Parse.localDateTime(req.getParameter("from"), dtf);
+        LocalDateTime to = Parse.localDateTime(req.getParameter("to"), dtf);
+
+        req.setAttribute("from", from);
+        req.setAttribute("to", to);
+
+        if (Objects.isNull(from) || Objects.isNull(to)) {
+            req.setAttribute("page", apartmentService.list(pageable));
+        } else {
+            req.setAttribute("page", apartmentService.listFree(pageable, from, to));
+        }
+        req.getRequestDispatcher(APARTMENTS_VIEW).forward(req, resp);
     }
 }
