@@ -10,7 +10,6 @@ import java.util.*;
 public final class ReflectionUtil {
 
     private ReflectionUtil() {
-
     }
 
     public static Class[] getClasses(String packageName)
