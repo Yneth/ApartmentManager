@@ -11,14 +11,16 @@
             <label for="room-count-input">
                 <fmt:message key="request.roomCount" bundle="${locale}"/> :
             </label>
-            <input class="form-control" id="room-count-input" type="text" name="roomCount"/>
+            <input class="form-control" id="room-count-input" type="text" name="roomCount"
+                   value="${request.roomCount}"/>
 
             <label for="apartment-type-select">
                 <fmt:message key="apartment.type" bundle="${locale}"/>:
             </label>
             <select class="form-control" id="apartment-type-select" name="apartmentTypeId">
                 <c:forEach items="${apartmentTypes}" var="apartmentType">
-                    <option value="${apartmentType.id}">
+                    <option ${request.apartmentTypeId == apartmentType.id}
+                            value="${apartmentType.id}">
                         <fmt:message key="apartment.type.${fn:toLowerCase(apartmentType.name)}" bundle="${locale}"/>
                     </option>
                 </c:forEach>
@@ -26,12 +28,14 @@
             <label for="from-datetime-input">
                 <fmt:message key="request.from" bundle="${locale}"/>:
             </label>
-            <input class="form-control" id="from-datetime-input" type="datetime-local" name="from"/>
+            <input class="form-control" id="from-datetime-input" type="datetime-local" name="from"
+                   value="${request.from}"/>
 
             <label for="to-datetime-input">
                 <fmt:message key="request.to" bundle="${locale}"/>:
             </label>
-            <input class="form-control" id="to-datetime-input" type="datetime-local" name="to"/>
+            <input class="form-control" id="to-datetime-input" type="datetime-local" name="to"
+                   value="${request.to}"/>
             <br>
             <input class="form-control btn btn-primary" type="submit"
                    value="<fmt:message key="create" bundle="${locale}"/> "/>

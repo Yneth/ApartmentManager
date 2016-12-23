@@ -4,6 +4,11 @@ import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.core.annotation.Inject;
 import ua.abond.lab4.core.annotation.Prop;
 import ua.abond.lab4.core.annotation.Value;
+import ua.abond.lab4.core.jdbc.JdbcTemplate;
+import ua.abond.lab4.core.jdbc.KeyHolder;
+import ua.abond.lab4.core.jdbc.PreparedStatementSetter;
+import ua.abond.lab4.core.jdbc.RowMapper;
+import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 import ua.abond.lab4.core.web.support.DefaultPage;
 import ua.abond.lab4.core.web.support.Page;
 import ua.abond.lab4.core.web.support.Pageable;
@@ -11,16 +16,12 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
-import ua.abond.lab4.core.jdbc.JdbcTemplate;
-import ua.abond.lab4.core.jdbc.KeyHolder;
-import ua.abond.lab4.core.jdbc.PreparedStatementSetter;
-import ua.abond.lab4.core.jdbc.RowMapper;
-import ua.abond.lab4.core.jdbc.exception.DataAccessException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,10 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     private String filterMostAppropriateSql;
     @Value("sql.filter.count")
     private String countMostAppropriateSql;
+    @Value("sql.listFree")
+    private String listFreeSql;
+    @Value("sql.listFree.count")
+    private String countFreeSql;
 
     @Inject
     public JdbcApartmentDAO(JdbcTemplate jdbcTemplate) {
@@ -118,6 +123,23 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
 
         List<Apartment> query = jdbcTemplate.query(
                 String.format(filterMostAppropriateSql, pageable.getPageSize(), pageable.getOffset()),
+                pss,
+                new ApartmentMapper()
+        );
+        return new DefaultPage<>(query, count, pageable);
+    }
+
+    @Override
+    public Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+        PreparedStatementSetter pss = rs -> {
+            rs.setTimestamp(1, Timestamp.valueOf(to));
+            rs.setTimestamp(2, Timestamp.valueOf(from));
+        };
+        long count = jdbcTemplate.querySingle(countFreeSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+
+        List<Apartment> query = jdbcTemplate.query(
+                String.format(listFreeSql, pageable.getPageSize(), pageable.getOffset()),
                 pss,
                 new ApartmentMapper()
         );

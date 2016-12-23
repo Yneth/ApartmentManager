@@ -27,5 +27,4 @@ public class BeanAnnotationBeanFactoryPostProcessor implements BeanFactoryPostPr
     private BeanDefinition toBeanDefinition(Method method) {
         return new BeanDefinition(method.getReturnType(), method);
     }
-
 }

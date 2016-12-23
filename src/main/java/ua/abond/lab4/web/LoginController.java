@@ -68,6 +68,7 @@ public class LoginController {
             session.setAttribute("user", new UserSessionDTO(byLogin));
             resp.sendRedirect(HOME_MAPPING);
         } else {
+            req.setAttribute("user", loginDTO);
             req.setAttribute("errors", Collections.singletonList("login.wrong.credentials"));
             getLoginPage(req, resp);
         }

@@ -84,10 +84,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> listAdmins(Pageable pageable) throws ServiceException {
-        Authority authority = authorityDAO.getByName(ADMIN).orElse(null);
-        if (authority == null) {
-            throw new ServiceException("Failed to get ADMIN authority.");
-        }
+        Authority authority = authorityDAO.getByName(ADMIN).
+                orElseThrow(() -> new ServiceException("Failed to get ADMIN authority."));
         return userDAO.list(pageable, authority.getId());
     }
 

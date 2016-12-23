@@ -9,16 +9,19 @@
         <div class="jumbotron">
             <form class="col-sm-5 center form-group" method="post" action="/supersu/admin/new">
                 <label for="login-input"><fmt:message key="login" bundle="${locale}"/>: </label>
-                <input class="form-control" id="login-input" type="text" name="login"/>
+                <input class="form-control" id="login-input" type="text" name="login"
+                    value="${user.login}"/>
 
                 <label for="password-input"><fmt:message key="password" bundle="${locale}"/>: </label>
                 <input class="form-control" id="password-input" type="password" name="password"/>
 
                 <label for="first-name-input"><fmt:message key="register.firstname" bundle="${locale}"/>: </label>
-                <input class="form-control" id="first-name-input" type="text" name="firstName"/>
+                <input class="form-control" id="first-name-input" type="text" name="firstName"
+                    value="${user.firstName}"/>
 
                 <label for="last-name-input"><fmt:message key="register.lastname" bundle="${locale}"/>: </label>
-                <input class="form-control" id="last-name-input" type="text" name="lastName"/>
+                <input class="form-control" id="last-name-input" type="text" name="lastName"
+                    value="${user.lastName}"/>
                 <br>
                 <input class="btn btn-primary form-control" type="submit"
                        value="<fmt:message key="create" bundle="${locale}"/>"/>

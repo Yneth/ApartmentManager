@@ -101,6 +101,7 @@ public class SuperUserController {
     public void createAdmin(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         User user = mapperService.map(req, User.class);
+        req.setAttribute("user", user);
         validationService.validate(user);
 
         userService.createAdmin(user);

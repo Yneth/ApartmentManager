@@ -9,7 +9,6 @@ import ua.abond.lab4.dao.RequestDAO;
 import ua.abond.lab4.domain.Order;
 import ua.abond.lab4.service.OrderService;
 import ua.abond.lab4.service.exception.OrderAlreadyPayedException;
-import ua.abond.lab4.service.exception.OrderNotFoundException;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 import ua.abond.lab4.web.dto.ConfirmRequestDTO;
@@ -47,10 +46,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void payOrder(Long id) throws ServiceException {
-        Order order = orderDAO.getById(id).orElse(null);
-        if (order == null) {
-            throw new OrderNotFoundException();
-        }
+        Order order = getById(id);
         if (order.isPayed()) {
             throw new OrderAlreadyPayedException();
         }

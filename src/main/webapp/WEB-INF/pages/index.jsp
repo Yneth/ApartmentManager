@@ -55,6 +55,11 @@
                             <fmt:message key="index.user.create.request" bundle="${locale}"/> »
                         </a>
                     </p>
+                    <p>
+                        <a class="btn btn-primary" href="/user/apartments" role="button">
+                            <fmt:message key="index.user.view.apartments" bundle="${locale}"/>
+                        </a>
+                    </p>
                 </c:if>
                 <c:if test="${sessionScope.user.authority.name == 'SUPERSU'}">
                     <h1>Hi, ${sessionScope.user.login}.</h1>

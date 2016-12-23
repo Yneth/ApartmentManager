@@ -53,6 +53,7 @@ public class RegisterController {
         }
 
         User user = mapperService.map(req, User.class);
+        req.setAttribute("user", user);
         validationService.validate(user);
 
         service.register(user);
