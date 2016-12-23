@@ -20,7 +20,6 @@ public final class ConnectionUtils {
 
     public static Connection getConnection(DataSource ds, boolean autoCommit) {
         Objects.requireNonNull(ds);
-
         try {
             logger.debug("Retrieving connection.");
             Connection connection = ds.getConnection();
@@ -32,9 +31,7 @@ public final class ConnectionUtils {
     }
 
     public static void commit(Connection conn) {
-        if (conn == null) {
-            return;
-        }
+        Objects.requireNonNull(conn);
         try {
             conn.commit();
         } catch (SQLException e) {
@@ -43,9 +40,7 @@ public final class ConnectionUtils {
     }
 
     public static void rollback(Connection conn) {
-        if (conn == null) {
-            return;
-        }
+        Objects.requireNonNull(conn);
         try {
             conn.rollback();
         } catch (SQLException e) {
@@ -54,9 +49,7 @@ public final class ConnectionUtils {
     }
 
     public static void closeConnection(Connection conn) {
-        if (conn == null) {
-            return;
-        }
+        Objects.requireNonNull(conn);
         try {
             logger.debug("Closing connection.");
             conn.close();
