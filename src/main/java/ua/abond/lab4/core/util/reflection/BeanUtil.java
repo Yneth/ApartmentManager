@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 public final class BeanUtil {
 
     private BeanUtil() {
-
     }
 
     public static Object create(String beanName, BeanCreationCallback callback) {
