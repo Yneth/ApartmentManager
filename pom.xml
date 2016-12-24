@@ -16,6 +16,7 @@
         <sonarq.version>3.0.2</sonarq.version>
 
         <servlet.version>3.1.0</servlet.version>
+        <jsp.version>2.0</jsp.version>
         <jstl.version>1.2</jstl.version>
 
         <postgre.version>9.4.1208.jre7</postgre.version>
@@ -26,10 +27,14 @@
         <mockito.version>2.1.0-RC.1</mockito.version>
         <log4j.version>1.2.17</log4j.version>
         <bcrypt.version>0.3m</bcrypt.version>
+        <joda.money.version>0.12</joda.money.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <maven.war.version>3.0.0</maven.war.version>
         <maven.dependency.version>2.3</maven.dependency.version>
+
+        <maven.heroku.version>1.1.2</maven.heroku.version>
+        <heroku.tomcat.version>8.0.30.2</heroku.tomcat.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -41,6 +46,11 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${jsp.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -58,6 +68,12 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.joda</groupId>
+            <artifactId>joda-money</artifactId>
+            <version>${joda.money.version}</version>
         </dependency>
 
         <dependency>
@@ -133,7 +149,7 @@
                 <plugin>
                     <groupId>com.heroku.sdk</groupId>
                     <artifactId>heroku-maven-plugin</artifactId>
-                    <version>1.1.2</version>
+                    <version>${maven.heroku.version}</version>
                     <configuration>
                         <appName>apartment-manager</appName>
                         <processTypes>
@@ -142,7 +158,6 @@
                             </web>
                         </processTypes>
                     </configuration>
-
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -159,7 +174,7 @@
                                     <artifactItem>
                                         <groupId>com.github.jsimone</groupId>
                                         <artifactId>webapp-runner</artifactId>
-                                        <version>8.0.30.2</version>
+                                        <version>${heroku.tomcat.version}</version>
                                         <destFileName>webapp-runner.jar</destFileName>
                                     </artifactItem>
                                 </artifactItems>
