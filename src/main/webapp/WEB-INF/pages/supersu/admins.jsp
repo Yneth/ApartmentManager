@@ -8,15 +8,15 @@
 <t:supersu-page>
     <div class="container">
         <div class="jumbotron">
-            <h1><fmt:message key="admins" bundle="${locale}"/></h1>
+            <h1><fmt:message key="admins" bundle="${bundle}"/></h1>
             <table class="table">
                 <thead>
                 <tr>
                     <td>Id</td>
-                    <td><fmt:message key="user.firstname" bundle="${locale}"/></td>
-                    <td><fmt:message key="user.lastname" bundle="${locale}"/></td>
-                    <td><fmt:message key="user.login" bundle="${locale}"/></td>
-                    <td><fmt:message key="view" bundle="${locale}"/></td>
+                    <td><fmt:message key="user.firstname" bundle="${bundle}"/></td>
+                    <td><fmt:message key="user.lastname" bundle="${bundle}"/></td>
+                    <td><fmt:message key="user.login" bundle="${bundle}"/></td>
+                    <td><fmt:message key="view" bundle="${bundle}"/></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,7 +30,7 @@
                             <form action="/supersu/admin/delete" method="POST">
                                 <input type="hidden" name="id" value="${admin.id}"/>
                                 <input class="btn btn-danger" type="submit"
-                                       value="<fmt:message key="delete" bundle="${locale}"/>"/>
+                                       value="<fmt:message key="delete" bundle="${bundle}"/>"/>
                             </form>
                         </td>
                     </tr>
@@ -38,7 +38,7 @@
                 </tbody>
             </table>
             <c:if test="${empty admins}">
-                <p><fmt:message key="supersu.admins.empty" bundle="${locale}"/></p>
+                <p><fmt:message key="supersu.admins.empty" bundle="${bundle}"/></p>
             </c:if>
             <p:error-partial/>
             <p:pagination-partial uri="/supersu/admins"/>

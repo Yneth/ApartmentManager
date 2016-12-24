@@ -7,5 +7,5 @@
        value="${not empty errors ? errors : sessionScope.errors }"/>
 
 <c:forEach items="${errs}" var="error">
-    <p><fmt:message key="${error}" bundle="${locale}"/></p>
+    <p><fmt:message key="${error}" bundle="${bundle}"/></p>
 </c:forEach>

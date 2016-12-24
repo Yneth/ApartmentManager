@@ -12,76 +12,76 @@
         <div class="container">
             <div class="jumbotron">
                 <c:if test="${sessionScope.user.authority.name == 'ADMIN'}">
-                    <h1><fmt:message key="index.hello" bundle="${locale}"/>, ${sessionScope.user.login}</h1>
+                    <h1><fmt:message key="index.hello" bundle="${bundle}"/>, ${sessionScope.user.login}</h1>
                     <p>
-                        <fmt:message key="index.admin.hello.message" bundle="${locale}"/>.
+                        <fmt:message key="index.admin.hello.message" bundle="${bundle}"/>.
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/admin/orders" role="button">
-                            <fmt:message key="index.admin.view.orders" bundle="${locale}"/> »
+                            <fmt:message key="index.admin.view.orders" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/admin/requests" role="button">
-                            <fmt:message key="index.admin.view.requests" bundle="${locale}"/> »
+                            <fmt:message key="index.admin.view.requests" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/admin/apartments" role="button">
-                            <fmt:message key="index.admin.view.apartments" bundle="${locale}"/> »
+                            <fmt:message key="index.admin.view.apartments" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/admin/apartment/new" role="button">
-                            <fmt:message key="index.admin.create.apartment" bundle="${locale}"/> »
+                            <fmt:message key="index.admin.create.apartment" bundle="${bundle}"/> »
                         </a>
                     </p>
                 </c:if>
                 <c:if test="${sessionScope.user.authority.name == 'USER'}">
-                    <h1><fmt:message key="index.hello" bundle="${locale}"/>, ${sessionScope.user.login}.</h1>
-                    <p><fmt:message key="index.user.hello.message" bundle="${locale}"/>.</p>
+                    <h1><fmt:message key="index.hello" bundle="${bundle}"/>, ${sessionScope.user.login}.</h1>
+                    <p><fmt:message key="index.user.hello.message" bundle="${bundle}"/>.</p>
                     <p>
                         <a class="btn btn-primary" href="/user/orders" role="button">
-                            <fmt:message key="index.user.view.orders" bundle="${locale}"/> »
+                            <fmt:message key="index.user.view.orders" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/user/requests" role="button">
-                            <fmt:message key="index.user.view.requests" bundle="${locale}"/> »
+                            <fmt:message key="index.user.view.requests" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/user/request/new" role="button">
-                            <fmt:message key="index.user.create.request" bundle="${locale}"/> »
+                            <fmt:message key="index.user.create.request" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/user/apartments" role="button">
-                            <fmt:message key="index.user.view.apartments" bundle="${locale}"/>
+                            <fmt:message key="index.user.view.apartments" bundle="${bundle}"/>
                         </a>
                     </p>
                 </c:if>
                 <c:if test="${sessionScope.user.authority.name == 'SUPERSU'}">
                     <h1>Hi, ${sessionScope.user.login}.</h1>
-                    <p><fmt:message key="index.supersu.hello.message" bundle="${locale}"/>.</p>
+                    <p><fmt:message key="index.supersu.hello.message" bundle="${bundle}"/>.</p>
                     <p>
                         <a class="btn btn-primary" href="/supersu/admin/new" role="button">
-                            <fmt:message key="index.supersu.create.admin" bundle="${locale}"/> »
+                            <fmt:message key="index.supersu.create.admin" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/supersu/admins" role="button">
-                            <fmt:message key="index.supersu.view.admins" bundle="${locale}"/> »
+                            <fmt:message key="index.supersu.view.admins" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/supersu/orders" role="button">
-                            <fmt:message key="index.supersu.edit.orders" bundle="${locale}"/> »
+                            <fmt:message key="index.supersu.edit.orders" bundle="${bundle}"/> »
                         </a>
                     </p>
                     <p>
                         <a class="btn btn-primary" href="/supersu/requests" role="button">
-                            <fmt:message key="index.admin.view.requests" bundle="${locale}"/> »
+                            <fmt:message key="index.admin.view.requests" bundle="${bundle}"/> »
                         </a>
                     </p>
                 </c:if>

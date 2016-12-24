@@ -9,18 +9,18 @@
         <div class="row">
             <form class="form-group col-sm-5 center" method="post" action="/login">
                 <label for="login-input">
-                    <fmt:message key="login" bundle="${locale}"/>:
+                    <fmt:message key="login" bundle="${bundle}"/>:
                 </label>
                 <input class="form-control" id="login-input" type="text" name="login"/>
                 <label for="password-input">
-                    <fmt:message key="password" bundle="${locale}"/>:
+                    <fmt:message key="password" bundle="${bundle}"/>:
                 </label>
                 <input class="form-control" id="password-input" type="password" name="password"/>
                 <br/>
                 <input class="form-control btn btn-primary" type="submit"
-                       value="<fmt:message key="login" bundle="${locale}"/>"/>
+                       value="<fmt:message key="login" bundle="${bundle}"/>"/>
                 <a class="btn-right" href="/register">
-                    <fmt:message key="register" bundle="${locale}"/>
+                    <fmt:message key="register" bundle="${bundle}"/>
                 </a>
             </form>
         </div>

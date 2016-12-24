@@ -11,42 +11,42 @@
             <div class="jumbotron">
                 <div class="col-sm-10 center">
                     <h1>
-                        <fmt:message key="account.message" bundle="${locale}"/>
+                        <fmt:message key="account.message" bundle="${bundle}"/>
                     </h1>
                     <div class="center col-sm-5">
                         <h2>
-                            <fmt:message key="account.update" bundle="${locale}"/>
+                            <fmt:message key="account.update" bundle="${bundle}"/>
                         </h2>
                         <form class="form-group" action="/account/update" method="POST">
                             <label for="first-name">
-                                <fmt:message key="user.firstname" bundle="${locale}"/>
+                                <fmt:message key="user.firstname" bundle="${bundle}"/>
                             </label>
                             <input id="first-name" class="form-control" name="firstName"
                                    value="${requestScope.user.firstName}"/>
                             <label for="last-name">
-                                <fmt:message key="user.lastname" bundle="${locale}"/>
+                                <fmt:message key="user.lastname" bundle="${bundle}"/>
                             </label>
                             <input id="last-name" class="form-control" name="lastName"
                                    value="${requestScope.user.lastName}"/>
                             <br/>
                             <input class="form-control btn btn-primary" type="submit"
-                                   value="<fmt:message key="update" bundle="${locale}"/>"/>
+                                   value="<fmt:message key="update" bundle="${bundle}"/>"/>
                         </form>
                         <h2>
-                            <fmt:message key="account.change.password" bundle="${locale}"/>
+                            <fmt:message key="account.change.password" bundle="${bundle}"/>
                         </h2>
                         <form class="form-group" action="/account/password/change" method="POST">
-                            <label for="old-password"><fmt:message key="user.password.old" bundle="${locale}"/></label>
+                            <label for="old-password"><fmt:message key="user.password.old" bundle="${bundle}"/></label>
                             <input id="old-password" class="form-control" type="password" name="oldPassword"/>
-                            <label for="new-password"><fmt:message key="user.password.new" bundle="${locale}"/></label>
+                            <label for="new-password"><fmt:message key="user.password.new" bundle="${bundle}"/></label>
                             <input id="new-password" class="form-control" type="password" name="newPassword"/>
                             <label for="new-password-copy">
-                                <fmt:message key="user.password.new.copy" bundle="${locale}"/>
+                                <fmt:message key="user.password.new.copy" bundle="${bundle}"/>
                             </label>
                             <input id="new-password-copy" class="form-control" type="password" name="newPasswordCopy"/>
                             <br/>
                             <input class="form-control btn btn-success" type="submit"
-                                   value="<fmt:message key="update" bundle="${locale}"/>"/>
+                                   value="<fmt:message key="update" bundle="${bundle}"/>"/>
                         </form>
                         <p:error-partial/>
                     </div>

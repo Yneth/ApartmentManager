@@ -17,7 +17,7 @@
                     <c:if test="${request.status == 'CREATED'}">
                         <c:if test="${empty apartments}">
                             <p>
-                                <fmt:message key="admin.request.confirm.apartments.null" bundle="${locale}"/>
+                                <fmt:message key="admin.request.confirm.apartments.null" bundle="${bundle}"/>
                             </p>
                         </c:if>
                         <c:if test="${not empty apartments}">
@@ -30,7 +30,7 @@
                             </c:forEach>
                             <br>
                             <input class="form-control btn btn-success" type="submit"
-                                   value="<fmt:message key="request.confirm" bundle="${locale}"/>"/>
+                                   value="<fmt:message key="request.confirm" bundle="${bundle}"/>"/>
                         </c:if>
                     </c:if>
                 </form>

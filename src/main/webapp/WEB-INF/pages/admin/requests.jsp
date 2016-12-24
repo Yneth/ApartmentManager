@@ -11,7 +11,7 @@
             <p:requests-partial/>
             <p:pagination-partial uri="/admin/requests"/>
             <c:if test="${empty requests}">
-                <p><fmt:message key="admin.requests.empty" bundle="${locale}"/></p>
+                <p><fmt:message key="admin.requests.empty" bundle="${bundle}"/></p>
             </c:if>
         </div>
     </div>

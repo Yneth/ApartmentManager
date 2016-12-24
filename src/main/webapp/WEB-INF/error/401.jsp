@@ -5,7 +5,7 @@
 <t:site-page>
     <div class="container">
         <div class="jumbotron">
-            <h1><fmt:message key="error.code.401" bundle="${locale}"/></h1>
+            <h1><fmt:message key="error.code.401" bundle="${bundle}"/></h1>
         </div>
     </div>
 </t:site-page>

@@ -8,16 +8,16 @@
 <t:admin-page>
     <div class="container">
         <div class="jumbotron">
-            <h1><fmt:message key="apartments" bundle="${locale}"/></h1>
+            <h1><fmt:message key="apartments" bundle="${bundle}"/></h1>
             <table class="table">
                 <thead>
                 <tr>
                     <td>Id</td>
-                    <td><fmt:message key="apartment.name" bundle="${locale}"/></td>
-                    <td><fmt:message key="apartment.roomCount" bundle="${locale}"/></td>
-                    <td><fmt:message key="apartment.type" bundle="${locale}"/></td>
-                    <td><fmt:message key="apartment.price" bundle="${locale}"/></td>
-                    <td><fmt:message key="edit" bundle="${locale}"/></td>
+                    <td><fmt:message key="apartment.name" bundle="${bundle}"/></td>
+                    <td><fmt:message key="apartment.roomCount" bundle="${bundle}"/></td>
+                    <td><fmt:message key="apartment.type" bundle="${bundle}"/></td>
+                    <td><fmt:message key="apartment.price" bundle="${bundle}"/></td>
+                    <td><fmt:message key="edit" bundle="${bundle}"/></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,12 +28,12 @@
                             <td>${apartment.name}</td>
                             <td>${apartment.roomCount}</td>
                             <td>
-                                <fmt:message key="apartment.type.${apartment.type.name}" bundle="${locale}"/>
+                                <fmt:message key="apartment.type.${apartment.type.name}" bundle="${bundle}"/>
                             </td>
                             <td>${apartment.price}</td>
                             <td>
                                 <a class="btn btn-primary" href="/admin/apartment?id=${apartment.id}">
-                                    <fmt:message key="edit" bundle="${locale}"/>
+                                    <fmt:message key="edit" bundle="${bundle}"/>
                                 </a>
                             </td>
                         </tr>
@@ -42,7 +42,7 @@
                 </tbody>
             </table>
             <c:if test="${empty apartments}">
-                <p><fmt:message key="admin.apartments.empty" bundle="${locale}"/></p>
+                <p><fmt:message key="admin.apartments.empty" bundle="${bundle}"/></p>
             </c:if>
             <p:pagination-partial uri="/admin/apartments"/>
         </div>

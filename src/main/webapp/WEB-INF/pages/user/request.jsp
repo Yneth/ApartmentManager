@@ -13,7 +13,7 @@
                     <form class="form-group" action="/user/request/reject" method="post">
                         <input type="hidden" name="id" value="${request.id}"/>
                         <input class="form-control btn btn-danger" type="submit"
-                               value="<fmt:message key="order.reject" bundle="${locale}"/>"/>
+                               value="<fmt:message key="order.reject" bundle="${bundle}"/>"/>
                     </form>
                 </c:if>
             </c:if>

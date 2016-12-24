@@ -8,16 +8,16 @@
 <t:admin-page>
     <div class="container">
         <div class="jumbotron">
-            <h1><fmt:message key="orders" bundle="${locale}"/></h1>
+            <h1><fmt:message key="orders" bundle="${bundle}"/></h1>
             <table class="table">
                 <thead>
                 <tr>
                     <td>Id</td>
-                    <td><fmt:message key="apartment.name" bundle="${locale}"/></td>
-                    <td><fmt:message key="request.id" bundle="${locale}"/></td>
-                    <td><fmt:message key="order.price" bundle="${locale}"/></td>
-                    <td><fmt:message key="order.payed" bundle="${locale}"/></td>
-                    <td><fmt:message key="order.pay" bundle="${locale}"/></td>
+                    <td><fmt:message key="apartment.name" bundle="${bundle}"/></td>
+                    <td><fmt:message key="request.id" bundle="${bundle}"/></td>
+                    <td><fmt:message key="order.price" bundle="${bundle}"/></td>
+                    <td><fmt:message key="order.payed" bundle="${bundle}"/></td>
+                    <td><fmt:message key="order.pay" bundle="${bundle}"/></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -27,13 +27,13 @@
                         <td>${order.apartment.name}</td>
                         <td>${order.request.id}</td>
                         <td>${order.price}</td>
-                        <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${locale}"/></td>
+                        <td><fmt:message key="${order.payed ? 'yes' : 'no'}" bundle="${bundle}"/></td>
                         <td>
                             <c:if test="${not empty order.payed && !order.payed}">
                                 <form class="form-group" method="POST" action="/admin/order/pay">
                                     <input type="hidden" name="id" value="${order.id}"/>
                                     <input class="form-control btn btn-success" type="submit"
-                                           value="<fmt:message key="order.pay" bundle="${locale}"/>"/>
+                                           value="<fmt:message key="order.pay" bundle="${bundle}"/>"/>
                                 </form>
                             </c:if>
                         </td>
@@ -42,7 +42,7 @@
                 </tbody>
             </table>
             <c:if test="${empty orders}">
-                <p><fmt:message key="admin.orders.empty" bundle="${locale}"/></p>
+                <p><fmt:message key="admin.orders.empty" bundle="${bundle}"/></p>
             </c:if>
             <p:pagination-partial uri="/admin/orders"/>
         </div>

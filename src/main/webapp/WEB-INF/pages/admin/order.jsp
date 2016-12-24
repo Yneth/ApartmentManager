@@ -9,7 +9,7 @@
         <div class="jumbotron">
             <p:order-partial/>
             <c:if test="${empty orders}">
-                <p><fmt:message key="admin.orders.empty" bundle="${locale}"/></p>
+                <p><fmt:message key="admin.orders.empty" bundle="${bundle}"/></p>
             </c:if>
             <p:error-partial/>
         </div>

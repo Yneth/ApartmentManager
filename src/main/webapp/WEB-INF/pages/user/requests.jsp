@@ -14,7 +14,7 @@
                 <p:pagination-partial uri="/user/requests"/>
                 <c:if test="${empty requests}">
                     <p>
-                        <fmt:message key="user.requests.empty" bundle="${locale}"/>
+                        <fmt:message key="user.requests.empty" bundle="${bundle}"/>
                     </p>
                 </c:if>
                 <p:error-partial/>

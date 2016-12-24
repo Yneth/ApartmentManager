@@ -9,36 +9,36 @@
     <div class="jumbotron">
         <form class="form-group col-sm-5 center" method="post" action="/user/request/new">
             <label for="room-count-input">
-                <fmt:message key="request.roomCount" bundle="${locale}"/> :
+                <fmt:message key="request.roomCount" bundle="${bundle}"/> :
             </label>
             <input class="form-control" id="room-count-input" type="text" name="roomCount"
                    value="${request.roomCount}"/>
 
             <label for="apartment-type-select">
-                <fmt:message key="apartment.type" bundle="${locale}"/>:
+                <fmt:message key="apartment.type" bundle="${bundle}"/>:
             </label>
             <select class="form-control" id="apartment-type-select" name="apartmentTypeId">
                 <c:forEach items="${apartmentTypes}" var="apartmentType">
                     <option ${request.apartmentTypeId == apartmentType.id}
                             value="${apartmentType.id}">
-                        <fmt:message key="apartment.type.${fn:toLowerCase(apartmentType.name)}" bundle="${locale}"/>
+                        <fmt:message key="apartment.type.${fn:toLowerCase(apartmentType.name)}" bundle="${bundle}"/>
                     </option>
                 </c:forEach>
             </select>
             <label for="from-datetime-input">
-                <fmt:message key="request.from" bundle="${locale}"/>:
+                <fmt:message key="request.from" bundle="${bundle}"/>:
             </label>
-            <input class="form-control" id="from-datetime-input" type="datetime-local" name="from"
+            <input class="form-control" id="from-datetime-input" type="date" name="from"
                    value="${request.from}"/>
 
             <label for="to-datetime-input">
-                <fmt:message key="request.to" bundle="${locale}"/>:
+                <fmt:message key="request.to" bundle="${bundle}"/>:
             </label>
-            <input class="form-control" id="to-datetime-input" type="datetime-local" name="to"
+            <input class="form-control" id="to-datetime-input" type="date" name="to"
                    value="${request.to}"/>
             <br>
             <input class="form-control btn btn-primary" type="submit"
-                   value="<fmt:message key="create" bundle="${locale}"/> "/>
+                   value="<fmt:message key="create" bundle="${bundle}"/> "/>
         </form>
         <p:error-partial/>
     </div>
