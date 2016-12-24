@@ -16,6 +16,7 @@ public class HandlerMethod {
     public HandlerMethod(Object declaringObject, Method method) {
         Objects.requireNonNull(declaringObject);
         Objects.requireNonNull(method);
+
         this.declaringObject = declaringObject;
         this.method = method;
     }
