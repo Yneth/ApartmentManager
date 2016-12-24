@@ -19,14 +19,13 @@ public abstract class HttpFilter implements Filter {
         }
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
-        doHttpFilter(httpReq, httpResp, chain);
+        doFilter(httpReq, httpResp, chain);
     }
+
+    protected abstract void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException;
 
     @Override
     public void destroy() {
     }
-
-    protected abstract void doHttpFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException;
-
 }

@@ -25,7 +25,7 @@ public class AuthorityFilter extends HttpFilter {
     }
 
     @Override
-    protected void doHttpFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         final String auth = authority;
 

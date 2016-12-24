@@ -12,6 +12,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Locale;
+
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,7 +44,7 @@ public class LocaleCookieFilterTest {
         filter.doFilter(request, response, chain);
 
         verify(chain).doFilter(request, response);
-        verify(request).setAttribute(LocaleCookieFilter.LANG_KEY, lang);
+        verify(request).setAttribute(LocaleCookieFilter.LOCALE_KEY, Locale.forLanguageTag(lang));
     }
 
     @Test
@@ -73,12 +75,14 @@ public class LocaleCookieFilterTest {
     @Test
     public void setLangFromCookie() throws Exception {
         String lang = "en";
+        Cookie[] cookies = {new Cookie(LocaleCookieFilter.LANG_KEY, lang)};
         when(request.getCookies()).
-                thenReturn(new Cookie[]{new Cookie(LocaleCookieFilter.LANG_KEY, lang)});
+                thenReturn(cookies);
+
         filter.doFilter(request, response, chain);
 
         verify(chain).doFilter(request, response);
         verify(request).getCookies();
-        verify(request).setAttribute(LocaleCookieFilter.LANG_KEY, lang);
+        verify(request).setAttribute(LocaleCookieFilter.LOCALE_KEY, Locale.forLanguageTag(lang));
     }
 }

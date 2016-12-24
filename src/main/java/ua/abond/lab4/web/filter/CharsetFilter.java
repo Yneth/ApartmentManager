@@ -23,7 +23,7 @@ public class CharsetFilter extends HttpFilter {
     }
 
     @Override
-    protected void doHttpFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         request.setCharacterEncoding(encoding);
         response.setCharacterEncoding(encoding);
