@@ -6,6 +6,7 @@ import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.Validator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +18,11 @@ public class RequestValidator implements Validator<Request> {
     @Override
     public List<String> validate(Request object) {
         List<String> errors = new ArrayList<>();
-        LocalDateTime from = object.getFrom();
+        LocalDate from = object.getFrom();
         if (Objects.isNull(from)) {
             errors.add("request.validation.from.null");
         }
-        LocalDateTime to = object.getTo();
+        LocalDate to = object.getTo();
         if (Objects.isNull(to)) {
             errors.add("request.validation.to.null");
         }

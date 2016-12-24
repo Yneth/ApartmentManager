@@ -1,13 +1,14 @@
 package ua.abond.lab4.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Request extends Entity<Long> {
     private User user;
     private Apartment lookup;
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private LocalDate from;
+    private LocalDate to;
     private String statusComment;
     private RequestStatus status;
 
@@ -30,19 +31,19 @@ public class Request extends Entity<Long> {
         this.lookup = lookup;
     }
 
-    public LocalDateTime getFrom() {
+    public LocalDate getFrom() {
         return from;
     }
 
-    public void setFrom(LocalDateTime from) {
+    public void setFrom(LocalDate from) {
         this.from = from;
     }
 
-    public LocalDateTime getTo() {
+    public LocalDate getTo() {
         return to;
     }
 
-    public void setTo(LocalDateTime to) {
+    public void setTo(LocalDate to) {
         this.to = to;
     }
 

@@ -4,7 +4,7 @@ import ua.abond.lab4.core.annotation.Component;
 import ua.abond.lab4.service.Validator;
 import ua.abond.lab4.web.dto.RequestDTO;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,11 +15,11 @@ public class RequestDTOValidator implements Validator<RequestDTO> {
     @Override
     public List<String> validate(RequestDTO object) {
         List<String> errors = new ArrayList<>();
-        LocalDateTime from = object.getFrom();
+        LocalDate from = object.getFrom();
         if (Objects.isNull(from)) {
             errors.add("request.validation.from.null");
         }
-        LocalDateTime to = object.getTo();
+        LocalDate to = object.getTo();
         if (Objects.isNull(to)) {
             errors.add("request.validation.to.null");
         }
@@ -38,7 +38,7 @@ public class RequestDTOValidator implements Validator<RequestDTO> {
             if (from.isAfter(to)) {
                 errors.add("request.validation.from.after.to");
             }
-            if (from.isBefore(LocalDateTime.now().plusDays(1))) {
+            if (from.isBefore(LocalDate.now().plusDays(1))) {
                 errors.add("request.validation.from.past");
             }
         }

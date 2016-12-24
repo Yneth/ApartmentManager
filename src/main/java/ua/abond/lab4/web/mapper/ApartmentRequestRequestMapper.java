@@ -6,8 +6,7 @@ import ua.abond.lab4.domain.RequestStatus;
 import ua.abond.lab4.util.Parse;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @Component
 public class ApartmentRequestRequestMapper implements RequestMapper<Request> {
@@ -16,9 +15,8 @@ public class ApartmentRequestRequestMapper implements RequestMapper<Request> {
     public Request map(HttpServletRequest req) {
         Request request = new Request();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
-        LocalDateTime from = Parse.localDateTime(req.getParameter("from"), formatter);
-        LocalDateTime to = Parse.localDateTime(req.getParameter("to"), formatter);
+        LocalDate from = Parse.localDate(req.getParameter("from"));
+        LocalDate to = Parse.localDate(req.getParameter("to"));
 
         request.setTo(to);
         request.setFrom(from);

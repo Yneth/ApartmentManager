@@ -10,7 +10,7 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,8 +108,8 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
-        request.setTo(LocalDateTime.now().minusYears(10));
-        request.setFrom(LocalDateTime.now().minusYears(10));
+        request.setTo(LocalDate.now().minusYears(10));
+        request.setFrom(LocalDate.now().minusYears(10));
 
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 10, SortOrder.ASC), request);
         assertNotNull(page);
@@ -125,8 +125,8 @@ public class JdbcApartmentDAOTest extends JdbcDAOTest {
         lookup.setRoomCount(4);
         lookup.setType(apartmentTypeDAO.getByName("business").get());
         request.setLookup(lookup);
-        request.setTo(LocalDateTime.now().minusYears(10));
-        request.setFrom(LocalDateTime.now().minusYears(10));
+        request.setTo(LocalDate.now().minusYears(10));
+        request.setFrom(LocalDate.now().minusYears(10));
 
         Page<Apartment> page = apartmentDAO.list(new DefaultPageable(1, 1, SortOrder.ASC), request);
         assertNotNull(page);

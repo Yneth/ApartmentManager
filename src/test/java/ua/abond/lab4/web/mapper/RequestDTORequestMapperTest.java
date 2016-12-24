@@ -7,9 +7,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ua.abond.lab4.web.dto.RequestDTO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,8 +20,8 @@ public class RequestDTORequestMapperTest {
 
     @Test
     public void testMap() throws Exception {
-        when(request.getParameter("from")).thenReturn("2015-10-20T10:22");
-        when(request.getParameter("to")).thenReturn("2016-10-20T10:22");
+        when(request.getParameter("from")).thenReturn("2015-10-20");
+        when(request.getParameter("to")).thenReturn("2016-10-20");
         when(request.getParameter("roomCount")).thenReturn("1");
         when(request.getParameter("apartmentTypeId")).thenReturn("1");
         when(request.getParameter("statusComment")).thenReturn("test");
@@ -28,8 +29,8 @@ public class RequestDTORequestMapperTest {
         assertEquals(1, map.getRoomCount());
         assertEquals(new Long(1), map.getApartmentTypeId());
         assertEquals("test", map.getStatusComment());
-        assertEquals(LocalDateTime.of(2015, 10, 20, 10, 22), map.getFrom());
-        assertEquals(LocalDateTime.of(2016, 10, 20, 10, 22), map.getTo());
+        assertEquals(LocalDate.of(2015, 10, 20), map.getFrom());
+        assertEquals(LocalDate.of(2016, 10, 20), map.getTo());
     }
 
     @Test

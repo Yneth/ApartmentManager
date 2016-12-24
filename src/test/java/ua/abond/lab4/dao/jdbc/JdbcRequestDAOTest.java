@@ -13,7 +13,7 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -42,8 +42,8 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
 
         request.setLookup(apartment);
         request.setUser(userDAO.getById(0L).get());
-        request.setFrom(LocalDateTime.now().minusDays(10));
-        request.setTo(LocalDateTime.now());
+        request.setFrom(LocalDate.now().minusDays(10));
+        request.setTo(LocalDate.now());
         request.setStatus(RequestStatus.CREATED);
         requestDAO.create(request);
 
@@ -72,7 +72,7 @@ public class JdbcRequestDAOTest extends JdbcDAOTest {
     @Test
     public void update() throws Exception {
         Request request = requestDAO.getById(0L).get();
-        request.setTo(LocalDateTime.now());
+        request.setTo(LocalDate.now());
         requestDAO.update(request);
 
         assertTrue(request.getTo().equals(requestDAO.getById(0L).get().getTo()));

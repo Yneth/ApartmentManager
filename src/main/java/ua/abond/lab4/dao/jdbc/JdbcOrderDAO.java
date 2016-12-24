@@ -165,8 +165,8 @@ public class JdbcOrderDAO extends JdbcDAO<Order> implements OrderDAO {
         public Order mapRow(ResultSet rs) throws SQLException {
             Order order = new OrderMapper().mapRow(rs);
             Request request = order.getRequest();
-            request.setFrom(rs.getTimestamp(6).toLocalDateTime());
-            request.setTo(rs.getTimestamp(7).toLocalDateTime());
+            request.setFrom(rs.getDate(6).toLocalDate());
+            request.setTo(rs.getDate(7).toLocalDate());
 
             Apartment apartment = order.getApartment();
             apartment.setName(rs.getString(8));

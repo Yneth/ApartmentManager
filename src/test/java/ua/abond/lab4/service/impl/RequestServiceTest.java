@@ -17,7 +17,7 @@ import ua.abond.lab4.web.dto.ConfirmRequestDTO;
 import ua.abond.lab4.web.dto.RequestDTO;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -50,8 +50,8 @@ public class RequestServiceTest extends JdbcDAOTest {
         request.setUserId(0L);
         request.setApartmentTypeId(0L);
         request.setRoomCount(10);
-        request.setFrom(LocalDateTime.now().minusDays(10));
-        request.setTo(LocalDateTime.now());
+        request.setFrom(LocalDate.now().minusDays(10));
+        request.setTo(LocalDate.now());
         requestService.createRequest(request);
 
         assertNotNull(request.getId());

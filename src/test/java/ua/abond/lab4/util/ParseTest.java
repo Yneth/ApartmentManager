@@ -3,6 +3,7 @@ package ua.abond.lab4.util;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -84,6 +85,19 @@ public class ParseTest {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm:ss.SSS");
         assertNull(Parse.localDateTime("dsadjask", dtf));
+    }
+
+    @Test
+    public void testParseLocalDate() throws Exception {
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        assertEquals(now, Parse.localDate(now.format(dtf), dtf));
+    }
+
+    @Test
+    public void testParseLocalDateReturnFallback() throws Exception {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        assertNull(Parse.localDate("dsadjask", dtf));
     }
 
     private enum TestEnum {

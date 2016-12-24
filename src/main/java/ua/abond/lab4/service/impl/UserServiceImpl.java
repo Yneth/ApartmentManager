@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    // Add transaction isolation serializable
     public void register(User user) throws ServiceException {
         createUserWithAuth(user, "USER");
     }

@@ -19,7 +19,7 @@ import ua.abond.lab4.web.mapper.PageableRequestMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -130,8 +130,8 @@ public class UserController {
         Pageable pageable = mapperService.map(req, Pageable.class);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
-        LocalDateTime from = Parse.localDateTime(req.getParameter("from"), dtf);
-        LocalDateTime to = Parse.localDateTime(req.getParameter("to"), dtf);
+        LocalDate from = Parse.localDate(req.getParameter("from"), dtf);
+        LocalDate to = Parse.localDate(req.getParameter("to"), dtf);
 
         req.setAttribute("from", from);
         req.setAttribute("to", to);

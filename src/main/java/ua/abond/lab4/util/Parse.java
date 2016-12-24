@@ -1,6 +1,7 @@
 package ua.abond.lab4.util;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -76,6 +77,27 @@ public final class Parse {
         LocalDateTime result = null;
         try {
             result = LocalDateTime.parse(str, formatter);
+        } catch (DateTimeParseException | NullPointerException e) {
+            result = null;
+        }
+        return result;
+    }
+
+    // TODO: cover with tests
+    public static LocalDate localDate(String str) {
+        LocalDate result = null;
+        try {
+            result = LocalDate.parse(str);
+        } catch (DateTimeParseException | NullPointerException e) {
+            result = null;
+        }
+        return result;
+    }
+
+    public static LocalDate localDate(String str, DateTimeFormatter formatter) {
+        LocalDate result = null;
+        try {
+            result = LocalDate.parse(str, formatter);
         } catch (DateTimeParseException | NullPointerException e) {
             result = null;
         }

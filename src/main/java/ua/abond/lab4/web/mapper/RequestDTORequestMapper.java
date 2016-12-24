@@ -5,7 +5,6 @@ import ua.abond.lab4.util.Parse;
 import ua.abond.lab4.web.dto.RequestDTO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class RequestDTORequestMapper implements RequestMapper<RequestDTO> {
@@ -17,9 +16,8 @@ public class RequestDTORequestMapper implements RequestMapper<RequestDTO> {
         requestDTO.setApartmentTypeId(Parse.longObject(req.getParameter("apartmentTypeId")));
         requestDTO.setRoomCount(Parse.intValue(req.getParameter("roomCount")));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H:mm");
-        requestDTO.setFrom(Parse.localDateTime(req.getParameter("from"), formatter));
-        requestDTO.setTo(Parse.localDateTime(req.getParameter("to"), formatter));
+        requestDTO.setFrom(Parse.localDate(req.getParameter("from")));
+        requestDTO.setTo(Parse.localDate(req.getParameter("to")));
 
         requestDTO.setStatusComment(req.getParameter("statusComment"));
         return requestDTO;

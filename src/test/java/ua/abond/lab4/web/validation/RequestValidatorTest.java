@@ -5,7 +5,7 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -23,8 +23,8 @@ public class RequestValidatorTest {
     @Test
     public void testRoomCountLessThanZero() {
         Request request = new Request();
-        request.setFrom(LocalDateTime.now());
-        request.setTo(LocalDateTime.now().plusDays(10));
+        request.setFrom(LocalDate.now());
+        request.setTo(LocalDate.now().plusDays(10));
 
         Apartment apartment = new Apartment();
         apartment.setRoomCount(-10);
@@ -41,8 +41,8 @@ public class RequestValidatorTest {
     @Test
     public void testRoomCountGreaterThenMax() {
         Request request = new Request();
-        request.setFrom(LocalDateTime.now());
-        request.setTo(LocalDateTime.now().plusDays(10));
+        request.setFrom(LocalDate.now());
+        request.setTo(LocalDate.now().plusDays(10));
 
         Apartment apartment = new Apartment();
         apartment.setRoomCount(100);
@@ -59,8 +59,8 @@ public class RequestValidatorTest {
     @Test
     public void testSuccessfulValidation() {
         Request request = new Request();
-        request.setFrom(LocalDateTime.now());
-        request.setTo(LocalDateTime.now().plusDays(10));
+        request.setFrom(LocalDate.now());
+        request.setTo(LocalDate.now().plusDays(10));
 
         Apartment apartment = new Apartment();
         apartment.setRoomCount(10);

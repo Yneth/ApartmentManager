@@ -8,8 +8,7 @@ import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.domain.RequestStatus;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -21,8 +20,8 @@ public class ApartmentRequestRequestMapperTest {
 
     @Test
     public void testMap() throws Exception {
-        when(request.getParameter("from")).thenReturn("2015-10-20T10:22");
-        when(request.getParameter("to")).thenReturn("2016-10-20T10:22");
+        when(request.getParameter("from")).thenReturn("2015-10-20");
+        when(request.getParameter("to")).thenReturn("2016-10-20");
         when(request.getParameter("roomCount")).thenReturn("1");
         when(request.getParameter("apartmentTypeId")).thenReturn("1");
         when(request.getParameter("status")).thenReturn("confirmed");
@@ -32,8 +31,8 @@ public class ApartmentRequestRequestMapperTest {
         assertEquals(new Long(1), map.getLookup().getType().getId());
         assertEquals(RequestStatus.CONFIRMED, map.getStatus());
         assertEquals("test", map.getStatusComment());
-        assertEquals(LocalDateTime.of(2015, 10, 20, 10, 22), map.getFrom());
-        assertEquals(LocalDateTime.of(2016, 10, 20, 10, 22), map.getTo());
+        assertEquals(LocalDate.of(2015, 10, 20), map.getFrom());
+        assertEquals(LocalDate.of(2016, 10, 20), map.getTo());
     }
 
     @Test

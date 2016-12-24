@@ -11,6 +11,7 @@ import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -51,7 +52,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+    public Page<Apartment> listFree(Pageable pageable, LocalDate from, LocalDate to) {
         return apartmentDAO.listFree(pageable, from, to);
     }
 

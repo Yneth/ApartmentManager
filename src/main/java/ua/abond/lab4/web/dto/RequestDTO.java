@@ -1,14 +1,14 @@
 package ua.abond.lab4.web.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class RequestDTO {
     private Long id;
     private Long userId;
     private int roomCount;
     private Long apartmentTypeId;
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private LocalDate from;
+    private LocalDate to;
     private String statusComment;
 
     public Long getId() {
@@ -27,11 +27,11 @@ public class RequestDTO {
         return apartmentTypeId;
     }
 
-    public LocalDateTime getFrom() {
+    public LocalDate getFrom() {
         return from;
     }
 
-    public LocalDateTime getTo() {
+    public LocalDate getTo() {
         return to;
     }
 
@@ -55,11 +55,11 @@ public class RequestDTO {
         this.apartmentTypeId = apartmentTypeId;
     }
 
-    public void setFrom(LocalDateTime from) {
+    public void setFrom(LocalDate from) {
         this.from = from;
     }
 
-    public void setTo(LocalDateTime to) {
+    public void setTo(LocalDate to) {
         this.to = to;
     }
 

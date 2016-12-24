@@ -17,11 +17,8 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -115,8 +112,8 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
         PreparedStatementSetter pss = ps -> {
             ps.setInt(1, filter.getLookup().getRoomCount());
             ps.setString(2, filter.getLookup().getType().getName());
-            ps.setObject(3, Timestamp.valueOf(filter.getTo()));
-            ps.setObject(4, Timestamp.valueOf(filter.getFrom()));
+            ps.setDate(3, Date.valueOf(filter.getTo()));
+            ps.setDate(4, Date.valueOf(filter.getFrom()));
         };
         long count = jdbcTemplate.querySingle(countMostAppropriateSql, pss, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));
@@ -130,10 +127,10 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     }
 
     @Override
-    public Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+    public Page<Apartment> listFree(Pageable pageable, LocalDate from, LocalDate to) {
         PreparedStatementSetter pss = rs -> {
-            rs.setTimestamp(1, Timestamp.valueOf(to));
-            rs.setTimestamp(2, Timestamp.valueOf(from));
+            rs.setDate(1, Date.valueOf(to));
+            rs.setDate(2, Date.valueOf(from));
         };
         long count = jdbcTemplate.querySingle(countFreeSql, pss, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));

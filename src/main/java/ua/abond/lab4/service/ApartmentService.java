@@ -6,6 +6,7 @@ import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.exception.ServiceException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface ApartmentService {
@@ -19,7 +20,7 @@ public interface ApartmentService {
 
     Page<Apartment> list(Pageable pageable);
 
-    Page<Apartment> listFree(Pageable pageable, LocalDateTime from, LocalDateTime to);
+    Page<Apartment> listFree(Pageable pageable, LocalDate from, LocalDate to);
 
     Page<Apartment> listMostAppropriate(Pageable pageable, Request filter);
 }
