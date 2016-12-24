@@ -3,6 +3,7 @@ package ua.abond.lab4.core.web.method;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class ExceptionHandlerData {
     private final HttpServletRequest request;
@@ -12,6 +13,11 @@ public class ExceptionHandlerData {
 
     public ExceptionHandlerData(HttpServletRequest request, HttpServletResponse response,
                                 Method handler, Throwable exception) {
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(response);
+        Objects.requireNonNull(handler);
+        Objects.requireNonNull(exception);
+
         this.request = request;
         this.response = response;
         this.handler = handler;
