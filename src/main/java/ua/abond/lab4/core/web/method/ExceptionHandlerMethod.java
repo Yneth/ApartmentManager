@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class ExceptionHandlerMethod {
     private static final Logger logger = Logger.getLogger(ExceptionHandlerMethod.class);
@@ -12,6 +13,9 @@ public class ExceptionHandlerMethod {
     private final Object declaringObject;
 
     public ExceptionHandlerMethod(Method method, Object declaringObject) {
+        Objects.requireNonNull(method);
+        Objects.requireNonNull(declaringObject);
+
         this.method = method;
         this.declaringObject = declaringObject;
     }
