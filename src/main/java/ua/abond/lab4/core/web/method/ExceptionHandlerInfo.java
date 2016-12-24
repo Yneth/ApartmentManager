@@ -6,6 +6,8 @@ public class ExceptionHandlerInfo {
     private final Class<? extends Throwable> exception;
 
     public ExceptionHandlerInfo(Class<? extends Throwable> exception) {
+        Objects.requireNonNull(exception);
+
         this.exception = exception;
     }
 
