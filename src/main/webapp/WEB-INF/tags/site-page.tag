@@ -7,11 +7,17 @@
     <jsp:attribute name="head">
         <title><fmt:message key="project.name" bundle="${bundle}"/></title>
 
+        <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" href="/static/css/main.css"/>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+        <script src="/static/js/main.js"></script>
     </jsp:attribute>
 
     <jsp:attribute name="header">
