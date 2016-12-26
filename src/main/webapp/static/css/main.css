@@ -18,6 +18,12 @@ main {
     content: '';
 }
 
+.center-vertical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .center {
     float: none;
     margin: 0 auto;
@@ -34,8 +40,7 @@ main {
 .navbar {
     min-height: 61px;
     margin-bottom: 0;
-
-    border-bottom: solid 1px;
+    border-bottom: solid 1px #aaa;
 }
 
 .navbar-right {
@@ -108,10 +113,15 @@ main {
     line-height: 16px;
 }
 
+.filter-box .room-types .row {
+    float: left;
+}
+
 .filter-box .dates input {
     width: 33.3%;
 }
 
+.filter-box .room-types .row,
 .filter-box .rooms select {
     width: 66.6%;
 }
@@ -129,24 +139,34 @@ main {
     border-color: rgba(220, 224, 224, 0.5);
 }
 
+.apartments-box {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.apartments-box .apartment {
+    float: left;
+    padding: 10px;
+}
+
+.apartments-box .apartment .info {
+    word-wrap: break-word;
+}
+
 .apartments-box .apartment .info,
 .apartments-box .apartment header img {
     width: 100%;
 }
 
-.apartments-box .apartment .info .details {
-    padding-right: 0;
-}
-
+.apartments-box .apartment .info,
 .apartments-box .apartment .info .price,
-.apartments-box .apartment .info .details,
-.apartments-box .apartment .info .details .name,
-.apartments-box .apartment .info .details .room-count {
+.apartments-box .apartment .info .type {
     float: left;
 }
 
-.apartments-box .apartment .info .details .room-count {
-    padding-right: 0;
+.apartments-box .apartment .info .name,
+.apartments-box .apartment .info .room-count {
+    float: right;
     text-align: right;
 }
 

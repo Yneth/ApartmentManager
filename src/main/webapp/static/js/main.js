@@ -2,9 +2,11 @@
     $(document).ready(function () {
         $('.input-daterange').each(function () {
             $(this).datepicker({
-                minDate: Date.now(),
+                format: 'yyyy-mm-dd',
+                startDate: new Date(),
                 beforeShowDay: function (date) {
-                    return $.inArray(date, dates) === -1;
+                    return typeof dates === "undefined" ||
+                        $.inArray(date, dates) === -1;
                 }
             });
         });

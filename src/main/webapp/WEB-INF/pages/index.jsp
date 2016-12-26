@@ -5,87 +5,58 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags/partials" %>
 
 <t:site-page>
-    <c:if test="${empty sessionScope.user}">
-        <p:login-partial/>
-    </c:if>
-    <c:if test="${not empty sessionScope.user}">
+    <script>var dates = [];</script>
+
+    <div class="center-vertical">
         <div class="container">
-            <div class="jumbotron">
-                <c:if test="${sessionScope.user.authority.name == 'ADMIN'}">
-                    <h1><fmt:message key="index.hello" bundle="${bundle}"/>, ${sessionScope.user.login}</h1>
-                    <p>
-                        <fmt:message key="index.admin.hello.message" bundle="${bundle}"/>.
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/admin/orders" role="button">
-                            <fmt:message key="index.admin.view.orders" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/admin/requests" role="button">
-                            <fmt:message key="index.admin.view.requests" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/admin/apartments" role="button">
-                            <fmt:message key="index.admin.view.apartments" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/admin/apartment/new" role="button">
-                            <fmt:message key="index.admin.create.apartment" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                </c:if>
-                <c:if test="${sessionScope.user.authority.name == 'USER'}">
-                    <h1><fmt:message key="index.hello" bundle="${bundle}"/>, ${sessionScope.user.login}.</h1>
-                    <p><fmt:message key="index.user.hello.message" bundle="${bundle}"/>.</p>
-                    <p>
-                        <a class="btn btn-primary" href="/user/orders" role="button">
-                            <fmt:message key="index.user.view.orders" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/user/requests" role="button">
-                            <fmt:message key="index.user.view.requests" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/user/request/new" role="button">
-                            <fmt:message key="index.user.create.request" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/user/apartments" role="button">
-                            <fmt:message key="index.user.view.apartments" bundle="${bundle}"/>
-                        </a>
-                    </p>
-                </c:if>
-                <c:if test="${sessionScope.user.authority.name == 'SUPERSU'}">
-                    <h1>Hi, ${sessionScope.user.login}.</h1>
-                    <p><fmt:message key="index.supersu.hello.message" bundle="${bundle}"/>.</p>
-                    <p>
-                        <a class="btn btn-primary" href="/supersu/admin/new" role="button">
-                            <fmt:message key="index.supersu.create.admin" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/supersu/admins" role="button">
-                            <fmt:message key="index.supersu.view.admins" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/supersu/orders" role="button">
-                            <fmt:message key="index.supersu.edit.orders" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                    <p>
-                        <a class="btn btn-primary" href="/supersu/requests" role="button">
-                            <fmt:message key="index.admin.view.requests" bundle="${bundle}"/> »
-                        </a>
-                    </p>
-                </c:if>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="search-form clearfix">
+                        <form action="/apartments" method="get">
+                            <div class="search-item location">
+                                <label for="location-text">
+                                    <fmt:message key="search.filter.where" bundle="${bundle}"/>
+                                </label>
+                                <input id="location-text" type="text" name="location"
+                                       placeholder="<fmt:message key="search.filter.where.placeholder" bundle="${bundle}"/>"/>
+                            </div>
+                            <div class="search-item dates input-daterange">
+                                <label>
+                                    <fmt:message key="search.filter.when" bundle="${bundle}"/>
+                                </label>
+                                <div class="date">
+                                    <input class="date-input" id="from" type="text" name="from"
+                                           placeholder="<fmt:message key="search.filter.check.in" bundle="${bundle}"/>"/>
+                                </div>
+                                <div class="date-arrow">
+                                    <svg viewBox="0 0 1000 1000">
+                                        <path d="M694.4 242.4l249.1 249.1c11 11 11 21 0 32L694.4 772.7c-5 5-10 7-16 7s-11-2-16-7c-11-11-11-21 0-32l210.1-210.1H67.1c-13 0-23-10-23-23s10-23 23-23h805.4L662.4 274.5c-21-21.1 11-53.1 32-32.1z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div class="date">
+                                    <input class="date-input" id="to" type="text" name="to"
+                                           placeholder="<fmt:message key="search.filter.check.out" bundle="${bundle}"/>"/>
+                                </div>
+                            </div>
+                            <div class="search-item guests">
+                                <label for="guest-select-box">
+                                    <fmt:message key="search.filter.rooms" bundle="${bundle}"/>
+                                </label>
+                                <select id="guest-select-box" name="roomCount">
+                                    <c:forEach begin="1" end="16" var="i">
+                                        <option value="${i}">${i}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div class="search-item submit">
+                                <input class="btn btn-primary" type="submit"
+                                       value="<fmt:message key="search" bundle="${bundle}"/>"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </c:if>
+    </div>
 </t:site-page>
