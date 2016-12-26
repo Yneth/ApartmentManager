@@ -5,9 +5,9 @@ import ua.abond.lab4.core.web.support.Pageable;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.web.dto.SearchApartmentDTO;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public interface ApartmentService {
     Apartment getById(Long id) throws ServiceException;
@@ -19,6 +19,8 @@ public interface ApartmentService {
     void deleteApartment(Long id);
 
     Page<Apartment> list(Pageable pageable);
+
+    Page<Apartment> list(Pageable pageable, SearchApartmentDTO search);
 
     Page<Apartment> listFree(Pageable pageable, LocalDate from, LocalDate to);
 

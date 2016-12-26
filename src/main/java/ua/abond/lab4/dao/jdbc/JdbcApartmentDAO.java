@@ -16,11 +16,16 @@ import ua.abond.lab4.dao.ApartmentDAO;
 import ua.abond.lab4.domain.Apartment;
 import ua.abond.lab4.domain.ApartmentType;
 import ua.abond.lab4.domain.Request;
+import ua.abond.lab4.web.dto.SearchApartmentDTO;
 
-import java.sql.*;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Prop("sql/apartment.sql.properties")
@@ -111,9 +116,31 @@ public class JdbcApartmentDAO extends JdbcDAO<Apartment>
     public Page<Apartment> list(Pageable pageable, Request filter) {
         PreparedStatementSetter pss = ps -> {
             ps.setInt(1, filter.getLookup().getRoomCount());
-            ps.setString(2, filter.getLookup().getType().getName());
+            ps.setLong(2, filter.getLookup().getType().getId());
             ps.setDate(3, Date.valueOf(filter.getTo()));
             ps.setDate(4, Date.valueOf(filter.getFrom()));
+        };
+        long count = jdbcTemplate.querySingle(countMostAppropriateSql, pss, rs -> rs.getLong(1)).
+                orElseThrow(() -> new DataAccessException("Count cannot be null."));
+
+        List<Apartment> query = jdbcTemplate.query(
+                String.format(filterMostAppropriateSql, pageable.getPageSize(), pageable.getOffset()),
+                pss,
+                new ApartmentMapper()
+        );
+        return new DefaultPage<>(query, count, pageable);
+    }
+
+    @Override
+    public Page<Apartment> list(Pageable pageable, SearchApartmentDTO filter) {
+        PreparedStatementSetter pss = ps -> {
+            ps.setInt(1, filter.getRoomCount());
+            ps.setString(2, filter.getApartmentTypeIds().stream().
+                    map(Object::toString).
+                    collect(Collectors.joining(","))
+            );
+            ps.setDate(3, Date.valueOf(filter.getCheckOut()));
+            ps.setDate(4, Date.valueOf(filter.getCheckIn()));
         };
         long count = jdbcTemplate.querySingle(countMostAppropriateSql, pss, rs -> rs.getLong(1)).
                 orElseThrow(() -> new DataAccessException("Count cannot be null."));

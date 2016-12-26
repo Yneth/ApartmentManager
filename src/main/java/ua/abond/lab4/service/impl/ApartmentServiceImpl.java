@@ -10,9 +10,9 @@ import ua.abond.lab4.domain.Request;
 import ua.abond.lab4.service.ApartmentService;
 import ua.abond.lab4.service.exception.ResourceNotFoundException;
 import ua.abond.lab4.service.exception.ServiceException;
+import ua.abond.lab4.web.dto.SearchApartmentDTO;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -49,6 +49,11 @@ public class ApartmentServiceImpl implements ApartmentService {
     @Override
     public Page<Apartment> list(Pageable pageable) {
         return apartmentDAO.list(pageable);
+    }
+
+    @Override
+    public Page<Apartment> list(Pageable pageable, SearchApartmentDTO search) {
+        return apartmentDAO.list(pageable, search);
     }
 
     @Override
